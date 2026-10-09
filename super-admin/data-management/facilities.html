@@ -1,0 +1,3041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | Facilities</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-dark: #2d163f;
+      --purple-soft: #f6f1fc;
+      --gold: #f9b937;
+      --gold-soft: #fff6de;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+      --danger: #e05454;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .topbar-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      background: #f3edf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topbar-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .topbar-brand-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .topbar-brand-link:hover {
+      opacity: 0.92;
+    }
+
+    .topbar-title-main {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .topbar-title-sub {
+      font-size: 0.75rem;
+      color: #e2d4ff;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+    .topbar-link {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .topbar-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .topbar-notify {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topbar-notify-btn {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.16);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .topbar-notify-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+
+    .topbar-user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--purple);
+    }
+
+    .chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      margin-right: 0.75rem;
+    }
+
+    .nav-toggle:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-toggle-line {
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .user-menu,
+    .notify-menu {
+      position: absolute;
+      top: 130%;
+      right: 0;
+      background: #fff;
+      color: var(--text-main);
+      min-width: 160px;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 10;
+    }
+
+    .user-menu a,
+    .notify-menu div {
+      display: block;
+      padding: 0.45rem 0.9rem;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    .user-menu a:hover,
+    .notify-menu div:hover {
+      background: var(--purple-soft);
+      color: var(--purple);
+    }
+
+    .user-menu a.logout {
+      color: var(--danger);
+    }
+
+    .topbar-user.open .user-menu {
+      display: block;
+    }
+
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 50;
+    }
+
+    .tooltip:hover::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tooltip.open::after,
+    .tooltip.open:hover::after {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    .tooltip-left::after {
+      left: 0;
+      right: auto;
+    }
+
+    .topbar-tabs {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.8rem;
+      overflow-x: visible;
+      overflow-y: visible;
+      background: var(--purple-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .topbar-tab {
+      text-decoration: none;
+      color: #e2d4ff;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .topbar-tab:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+
+    .topbar-tab.active {
+      border-bottom-color: var(--gold);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .layout-row {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .nav-bar {
+      background: var(--purple-dark);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      width: 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: fixed;
+      top: 88px;
+      left: 0;
+      height: calc(100vh - 88px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 15;
+    }
+
+    .nav-bar.nav-bar-open {
+      transform: translateX(0);
+    }
+
+    .nav-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c9b8f3;
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      color: #e8ddff;
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background: #fff;
+      color: var(--purple-dark);
+      font-weight: 600;
+    }
+
+    .page {
+      flex: 1;
+      padding: 1.75rem 1.5rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 1280px;
+      width: 100%;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .page > .filters-row.approval-notice,
+    .page > .sched-flow-section {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .main-card.sched-flow-section > .flow-panel-title,
+    .main-card.sched-flow-section > .flow-panel-sub {
+      text-align: center;
+    }
+
+    .main-card.sched-flow-section > .btn-flow-back {
+      align-self: flex-start;
+    }
+
+    .filters-row {
+      background: #fff;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-soft);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .filters-row label {
+      font-weight: 500;
+      color: var(--text-main);
+      font-size: 0.85rem;
+    }
+
+    .filters-row select {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 0.35rem 0.9rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: var(--purple-soft);
+      color: var(--text-main);
+      min-width: 180px;
+      outline: none;
+    }
+
+    .main-card {
+      background: #fff;
+      border-radius: 1rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.5rem 1.5rem 1.65rem;
+      box-shadow: 0 12px 40px rgba(45, 22, 63, 0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    #flowBuildings.main-card {
+      padding: 1.65rem 1.65rem 1.75rem;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .main-header-title {
+      font-size: 1.15rem;
+    }
+
+    .main-header-title span {
+      font-weight: 600;
+    }
+
+    .main-header-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+    }
+
+    .toolbar-group {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      overflow: hidden;
+    }
+
+    .toolbar-group button,
+    .toolbar-group span {
+      border: 0;
+      padding: 0.35rem 0.7rem;
+      background: transparent;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .toolbar-group button.primary {
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .toolbar-icon {
+      font-size: 0.9rem;
+    }
+
+    .toolbar-pill {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 0.35rem 0.8rem;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .toolbar-pill-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .toolbar-pill-value {
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-overlay.building-edit-modal {
+      z-index: 100;
+    }
+    .modal-overlay.room-edit-modal {
+      z-index: 200;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 480px;
+      width: 100%;
+      max-height: 85vh;
+      overflow: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      border: 1px solid var(--border-soft);
+    }
+
+    .modal-box.modal-room-edit {
+      max-width: 560px;
+    }
+
+    .room-edit-summary {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--purple-soft);
+      border-radius: 8px;
+      line-height: 1.45;
+    }
+
+    .room-edit-summary strong {
+      color: var(--text-main);
+    }
+
+    .modal-box h2 {
+      font-size: 1.2rem;
+      color: var(--purple);
+      margin-bottom: 1rem;
+    }
+    .day-rooms-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .day-rooms-list li {
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.35rem;
+      cursor: pointer;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .day-rooms-list li:hover {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple);
+    }
+    .modal-box .btn-close, .modal-box .btn-back {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .modal-box .btn-close:hover, .modal-box .btn-back:hover {
+      background: var(--purple);
+      color: #fff;
+    }
+
+    .room-schedule-modal .time-plot {
+      margin-top: 1rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fbf9ff;
+      display: flex;
+    }
+    .time-plot-labels {
+      flex: 0 0 3.5rem;
+      padding: 0.25rem 0;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--border-soft);
+    }
+    .time-plot-track {
+      flex: 1;
+      position: relative;
+      height: 480px;
+      min-height: 320px;
+    }
+    .time-plot-block {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      background: var(--purple);
+      color: #fff;
+      padding: 0.4rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    .time-plot-block .block-time { font-weight: 700; margin-bottom: 0.15rem; }
+    .time-plot-block .block-subject { font-weight: 500; opacity: 0.98; }
+    .time-plot-block .block-code { font-size: 0.7rem; opacity: 0.9; }
+
+    .btn-flow-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-flow-back:hover {
+      background: var(--purple-soft);
+    }
+
+    .building-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      justify-content: center;
+    }
+
+    .building-card-wrap {
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+    }
+
+    .building-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(145deg, #fff 0%, #faf6ff 55%, var(--purple-soft) 160%);
+      box-shadow: 0 4px 20px rgba(92, 38, 126, 0.08);
+      transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.18s ease;
+    }
+
+    .building-card:hover {
+      border-color: rgba(92, 38, 126, 0.35);
+      box-shadow: 0 14px 36px rgba(92, 38, 126, 0.14);
+      transform: translateY(-2px);
+    }
+
+    .building-card--unavailable {
+      background: linear-gradient(145deg, #f8f8f8 0%, #f3f4f6 55%, #ececec 160%);
+    }
+
+    .building-card--unavailable .building-card-name {
+      color: #6b7280;
+    }
+
+    .badge-building-unavail {
+      display: inline-block;
+      margin-top: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.55rem;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .building-avail-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      width: 100%;
+      margin-bottom: 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .building-avail-toggle input {
+      width: 2.35rem;
+      height: 1.2rem;
+      accent-color: var(--purple);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .building-unavail-banner {
+      margin: 0 0 1rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      color: #78350f;
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .badge-room-status.status-building-off {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .building-card-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 132px;
+      padding: 1.5rem 1.4rem 1rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .building-card-main:hover .building-card-name {
+      color: var(--purple-dark);
+    }
+
+    .building-card-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 0.45rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .building-card-meta {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .building-card-footer {
+      padding: 0.85rem 1rem 1rem;
+      border-top: 1px solid rgba(227, 217, 240, 0.95);
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .btn-building-edit {
+      width: 100%;
+      font-size: 0.88rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid rgba(92, 38, 126, 0.22);
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .btn-building-edit:hover {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple);
+    }
+
+    .building-grid-footer {
+      margin-top: 0.35rem;
+      padding-top: 0.5rem;
+    }
+
+    .btn-add-building {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 14px;
+      border: 2px dashed rgba(92, 38, 126, 0.28);
+      background: linear-gradient(180deg, #faf8fc 0%, #fff 100%);
+      color: var(--purple);
+      font-weight: 600;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-add-building:hover {
+      border-color: var(--purple);
+      background: var(--purple-soft);
+      box-shadow: 0 6px 20px rgba(92, 38, 126, 0.1);
+    }
+
+    .modal-overlay.add-building-modal {
+      z-index: 220;
+    }
+
+    .building-edit-section {
+      margin-bottom: 1.1rem;
+      padding: 0.85rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .building-edit-section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--purple);
+      margin-bottom: 0.35rem;
+    }
+
+    .building-edit-section-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+      line-height: 1.4;
+    }
+
+    .building-edit-proximity-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 480px) {
+      .building-edit-proximity-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dept-checkbox-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.75rem;
+      margin-top: 0.35rem;
+    }
+
+    .dept-checkbox-grid label {
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .building-edit-floor-dept {
+      margin: 0.5rem 0 0.75rem;
+      padding: 0.55rem 0.5rem;
+      border-radius: 8px;
+      background: rgba(246, 241, 252, 0.8);
+      border: 1px dashed rgba(92, 38, 126, 0.2);
+    }
+
+    .building-edit-floor-dept-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .building-edit-muted {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .building-edit-wrap-details {
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+    }
+
+    .building-edit-wrap-details summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      font-family: inherit;
+    }
+
+    .building-edit-wrap-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .building-edit-wrap-details summary::before {
+      content: '▸';
+      font-size: 0.75rem;
+      opacity: 0.85;
+      transition: transform 0.15s ease;
+    }
+
+    .building-edit-wrap-details[open] summary::before {
+      transform: rotate(90deg);
+      display: inline-block;
+    }
+
+    .building-edit-wrap-inner {
+      padding: 0.75rem;
+      border-top: 1px solid var(--border-soft);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .building-edit-wrap-inner .building-edit-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .building-edit-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .building-edit-content {
+      max-height: min(55vh, 420px);
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .building-edit-toggle-row {
+      margin-bottom: 0.75rem;
+    }
+
+    .building-edit-checkbox-label {
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .building-edit-add-floor {
+      margin-bottom: 0.75rem;
+    }
+
+    .building-edit-floor-block {
+      margin-bottom: 1rem;
+      padding: 0.75rem 0.65rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: #faf8fc;
+    }
+
+    .building-edit-floor-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .building-edit-floor-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--purple);
+    }
+
+    .building-edit-room-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .building-edit-room-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.86rem;
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 0.45rem 0.5rem;
+    }
+
+    .btn-building-edit-danger {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.45rem;
+      border-radius: 6px;
+      border: 1px solid rgba(224, 84, 84, 0.4);
+      background: #fff;
+      color: var(--danger);
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-building-edit-danger:hover:not(:disabled) {
+      background: rgba(224, 84, 84, 0.08);
+    }
+
+    .btn-building-edit-danger:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .modal-building-edit {
+      max-width: 520px;
+    }
+
+    .building-edit-footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-building-remove {
+      font-size: 0.88rem;
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(224, 84, 84, 0.45);
+      background: #fff;
+      color: var(--danger);
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+
+    .btn-building-remove:hover {
+      background: rgba(224, 84, 84, 0.1);
+    }
+
+    .room-status-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .room-floor-section {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .room-floor-heading {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--purple);
+      margin: 0.5rem 0 0.35rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .room-status-list > .room-floor-section:first-child .room-floor-heading {
+      margin-top: 0;
+    }
+
+    .room-floor-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    @media (max-width: 960px) {
+      .room-floor-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      .room-floor-list { grid-template-columns: 1fr; }
+    }
+    .room-floor-list > li {
+      list-style: none;
+      min-width: 0;
+      display: flex;
+    }
+
+    .room-status-row {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      min-width: 0;
+      gap: 0.35rem;
+      padding: 0.85rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: linear-gradient(145deg, #fff 0%, #faf6ff 80%);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .room-status-row:hover {
+      border-color: rgba(92, 38, 126, 0.3);
+      box-shadow: 0 8px 20px rgba(92, 38, 126, 0.1);
+    }
+
+    .room-status-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 0.45rem;
+      width: 100%;
+      min-width: 0;
+      padding: 0;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .room-status-main:hover {
+      background: transparent;
+    }
+
+    .btn-room-edit {
+      flex-shrink: 0;
+      align-self: center;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--purple);
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn-room-edit:hover {
+      background: var(--purple);
+      color: #fff;
+    }
+
+    .room-status-item-left {
+      font-weight: 700;
+      color: var(--purple);
+      font-size: 1.02rem;
+      overflow-wrap: anywhere;
+    }
+
+    .room-status-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .badge-room-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.28rem 0.6rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-room-status.status-active {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .badge-room-status.status-vacant {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .badge-room-status.status-under_maintenance {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .flow-panel-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .flow-panel-sub {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 1.15rem;
+      line-height: 1.45;
+    }
+
+    .edit-schedule-panel {
+      margin-top: 1.25rem;
+      padding: 1.15rem 1.1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+
+    .edit-schedule-panel h2 {
+      font-size: 1rem;
+      color: var(--purple);
+      margin-bottom: 0.5rem;
+    }
+
+    .edit-schedule-panel .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .form-grid-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.75rem 1rem;
+    }
+
+    .form-group-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .form-group-flow[hidden] { display: none !important; }
+
+    .form-group-flow label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-group-flow .form-control {
+      padding: 0.5rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      font-family: inherit;
+      font-size: 0.88rem;
+    }
+
+    .form-actions-flow {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .btn-flow-primary {
+      padding: 0.55rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--purple);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-flow-secondary {
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .sched-flow-section[hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .nav-bar {
+        width: 75%;
+        max-width: 260px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 1rem;
+      }
+
+      .nav-bar {
+        padding-inline: 1rem;
+      }
+
+      .topbar {
+        padding-inline: 1rem;
+      }
+    }
+
+    .topbar-tabs .topbar-datetime {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.05rem;
+      font-size: 0.72rem;
+      color: #c9b8f3;
+      line-height: 1.2;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-left: auto;
+      order: 99;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .topbar-tabs .topbar-datetime .topbar-datetime-date { opacity: 0.95; }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+  </style>
+  <link rel="stylesheet" href="../../css/app-header-sticky.css" />
+  <link rel="stylesheet" href="../../css/dm-room-types.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="../home-dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo">
+            <img src="../../Attri/mculogo.jpg" alt="MCU logo" />
+          </div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Super Admin</span>
+        <div class="topbar-notify" aria-label="Notifications">
+          <button class="topbar-notify-btn" type="button">
+            &#128276;
+            <span class="topbar-notify-dot" aria-hidden="true"></span>
+          </button>
+          <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <span>Ryan Registrar</span>
+          <div class="avatar">RR</div>
+          <div class="user-menu" role="menu">
+            <a href="../account.html" role="menuitem">Account</a>
+            <a href="../requests.html" role="menuitem">Requests</a>
+            <a href="../settings.html" role="menuitem">Settings</a>
+            <a href="../../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="topbar-tabs" aria-label="Data management sections">
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <a href="college-departments.html" class="topbar-tab">College and departments</a>
+      <a href="sections.html" class="topbar-tab">Sections</a>
+      <a href="add-curriculum.html" class="topbar-tab">Curriculums</a>
+      <a href="facilities.html" class="topbar-tab active">Facilities</a>
+    </div>
+
+    </div>
+    <nav class="sec-subtabs-wrap" aria-label="Facilities pages">
+      <div class="sec-subtabs" role="tablist">
+        <button type="button" class="sec-subtab is-active" role="tab" id="facTabBuildings" data-fac-pane="buildings" aria-selected="true">Buildings</button>
+        <button type="button" class="sec-subtab" role="tab" id="facTabRoomTypes" data-fac-pane="types" aria-selected="false">Room types</button>
+      </div>
+    </nav>
+
+    <div class="layout-row">
+      <nav class="nav-bar" id="main-nav" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="../home-dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="college-departments.html">Data Management</a>
+        <a class="nav-link" href="../faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="../create-schedule.html">Create Schedule</a>
+        <a class="nav-link" href="../curriculums/curriculum-filters.html">Curriculums</a>
+        <a class="nav-link" href="../final-report.html">Reports</a>
+        <a class="nav-link" href="../requests.html">Requests</a>
+        <a class="nav-link" href="../account-management.html">Account Management</a>
+        <a class="nav-link" href="../logs.html">Transaction Log</a>
+      </nav>
+
+      <main class="page">
+      <section id="flowBuildings" class="main-card sched-flow-section" aria-label="Choose building">
+        <div class="flow-panel-title">Buildings</div>
+        <p class="flow-panel-sub">Select a building to see rooms and their status.</p>
+        <div class="building-grid" id="buildingGrid"></div>
+        <div class="building-grid-footer">
+          <button type="button" class="btn-add-building" id="btnAddBuilding">+ Add building</button>
+        </div>
+      </section>
+
+      <section id="flowRooms" class="main-card sched-flow-section" hidden aria-label="Rooms in building">
+        <button type="button" class="btn-flow-back" id="btnBackToBuildings">← Back to buildings</button>
+        <div class="flow-panel-title" id="roomsPanelTitle">Rooms</div>
+        <p class="flow-panel-sub" id="roomsPanelSub">Open a room to edit its status and details. Use Edit building on the card to add or remove rooms.</p>
+        <p class="building-unavail-banner" id="buildingUnavailBanner" hidden>
+          This building and all of its rooms are unavailable for scheduling. Turn availability back on from the building card.
+        </p>
+        <ul class="room-status-list" id="roomStatusList"></ul>
+      </section>
+
+      <section id="flowRoomTypes" class="main-card sched-flow-section" hidden aria-label="Room types">
+        <div class="flow-panel-title">Room types</div>
+        <p class="flow-panel-sub">Add, rename, or replace types here. Rooms and curriculum lecture/lab tags follow the name. Lecture and Off-campus cannot be changed.</p>
+        <div class="rt-toolbar">
+          <button type="button" class="btn-add-building" id="btnAddRoomType">+ Add room type</button>
+        </div>
+        <ul class="rt-list" id="roomTypeList"></ul>
+      </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="roomEditModal" class="modal-overlay room-edit-modal" aria-hidden="true">
+    <div class="modal-box modal-room-edit" role="dialog" aria-modal="true" aria-labelledby="roomEditModalTitle">
+      <h2 id="roomEditModalTitle">Room</h2>
+      <div id="roomEditSummary" class="room-edit-summary"></div>
+      <div class="edit-schedule-panel" id="editSchedulePanel" style="margin-top:0; box-shadow:none; border:none; padding:0;">
+        <h2 id="roomEditPanelTitle" style="font-size:1rem; margin-bottom:0.35rem;">Edit room</h2>
+        <p class="hint" id="roomEditFormHint">Set status, college, type, and capacity.</p>
+        <form id="scheduleFormFlow">
+          <div class="form-grid-flow">
+            <div class="form-group-flow" id="flowRoomNewWrap" hidden>
+              <label for="flowRoomNew">Room ID</label>
+              <input type="text" id="flowRoomNew" class="form-control" maxlength="30" placeholder="e.g. 101" autocomplete="off" />
+            </div>
+            <div class="form-group-flow">
+              <label for="flowStatus">Status</label>
+              <select id="flowStatus" class="form-control" required>
+                <option value="active">Active</option>
+                <option value="under_maintenance">Under maintenance</option>
+              </select>
+            </div>
+            <div class="form-group-flow" id="flowCollegeSingleWrap">
+              <label for="flowCollege">College</label>
+              <select id="flowCollege" class="form-control"></select>
+            </div>
+            <div class="form-group-flow">
+              <label for="flowType">Type</label>
+              <select id="flowType" class="form-control" required></select>
+            </div>
+            <div class="form-group-flow">
+              <label for="flowCapacity">Capacity</label>
+              <input type="number" id="flowCapacity" class="form-control" min="1" step="1" placeholder="e.g. 40" required />
+            </div>
+          </div>
+          <div class="form-actions-flow">
+            <button type="submit" class="btn-flow-primary" id="scheduleFormSubmitBtn">Save</button>
+            <button type="reset" class="btn-flow-secondary">Clear</button>
+            <button type="button" class="btn-flow-secondary" id="btnCloseRoomEditModal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="buildingEditModal" class="modal-overlay building-edit-modal" aria-hidden="true">
+    <div class="modal-box modal-building-edit" role="dialog" aria-modal="true" aria-labelledby="buildingEditModalTitle">
+      <h2 id="buildingEditModalTitle">Edit building</h2>
+      <p id="buildingEditHint" class="building-edit-hint"></p>
+      <div id="buildingEditContent" class="building-edit-content"></div>
+      <div class="form-actions-flow building-edit-footer-actions" style="margin-top: 1rem;">
+        <button type="button" class="btn-building-remove" id="btnRemoveBuilding">Remove building</button>
+        <button type="button" class="btn-flow-primary" id="btnCloseBuildingEdit">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="addBuildingModal" class="modal-overlay add-building-modal" aria-hidden="true">
+    <div class="modal-box modal-building-edit" role="dialog" aria-modal="true" aria-labelledby="addBuildingModalTitle">
+      <h2 id="addBuildingModalTitle">Add building</h2>
+      <p class="building-edit-hint" style="margin-bottom: 1rem;">Set name, floors, proximity to nearby buildings, and which colleges may use each floor or the whole building.</p>
+      <form id="addBuildingForm">
+        <div class="form-grid-flow">
+          <div class="form-group-flow" style="grid-column: 1 / -1;">
+            <label for="addBuildingName">Building name</label>
+            <input type="text" id="addBuildingName" class="form-control" required placeholder="e.g. Science Annex" autocomplete="off" />
+          </div>
+          <div class="form-group-flow" style="grid-column: 1 / -1;">
+            <label class="building-edit-checkbox-label">
+              <input type="checkbox" id="addBuildingUseFloors" checked /> Organize rooms by floor
+            </label>
+          </div>
+          <div class="form-group-flow" id="addBuildingFloorCountWrap">
+            <label for="addBuildingFloorCount">Number of floors</label>
+            <input type="number" id="addBuildingFloorCount" class="form-control" min="1" max="40" value="3" />
+          </div>
+          <div class="form-group-flow" style="grid-column: 1 / -1;">
+            <div class="building-edit-section-title">Proximity</div>
+            <p class="building-edit-section-desc">Choose up to two nearby buildings. These are recommended first when you change schedules.</p>
+            <div class="building-edit-proximity-row">
+              <select id="addProximity1" class="form-control" aria-label="Nearby building 1"></select>
+              <select id="addProximity2" class="form-control" aria-label="Nearby building 2"></select>
+            </div>
+          </div>
+          <div class="form-group-flow" style="grid-column: 1 / -1;">
+            <label class="building-edit-checkbox-label">
+              <input type="checkbox" id="addBuildingSingleDept" /> Single college only (only that college may use this building)
+            </label>
+            <select id="addBuildingDeptOnly" class="form-control" style="margin-top: 0.5rem;" disabled aria-label="College for whole building"></select>
+          </div>
+        </div>
+        <div id="addBuildingFloorDeptWrap" class="building-edit-content" style="max-height: none; margin-top: 0.75rem;"></div>
+        <div class="form-actions-flow" style="margin-top: 1rem;">
+          <button type="submit" class="btn-flow-primary">Add building</button>
+          <button type="button" class="btn-flow-secondary" id="btnCancelAddBuilding">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../../js/api-client.js"></script>
+  <script src="../../js/session-boot.js"></script>
+  <script src="../../js/org-store.js"></script>
+  <script src="../../js/room-types.js"></script>
+  <script src="../../js/facilities-store.js"></script>
+  <script src="../../js/data-boot.js"></script>
+  <script src="../../js/room-types-page.js"></script>
+  <script>
+    (function () {
+      const navToggle = document.querySelector('.nav-toggle');
+      const navBar = document.querySelector('.nav-bar');
+      const user = document.querySelector('.topbar-user');
+      const userMenu = document.querySelector('.user-menu');
+
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+
+      if (user && userMenu) {
+        user.addEventListener('click', function (event) {
+          event.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+
+        userMenu.addEventListener('click', function (event) {
+          event.stopPropagation();
+        });
+
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+    })();
+
+    var buildingOrder = [];
+    var buildingNames = {};
+    var roomsByBuilding = {};
+    var roomFloorById = {};
+    var buildingUsesFloors = {};
+    var extraFloorsByBuilding = {};
+    var roomAllocation = {};
+    var roomTimetables = {};
+    var buildingEditState = { bkey: null };
+
+    var COLLEGE_OPTIONS = [];
+    var MULTI_COLLEGE_ID = '__multi__';
+
+    var buildingProximity = {};
+    var floorDepartmentsByBuilding = {};
+    var buildingDeptOnly = {};
+    var buildingAvailable = {};
+
+    function roomGet(map, bkey, rid) {
+      return window.FacilitiesStore.roomGet(map, bkey, rid);
+    }
+    function roomSet(map, bkey, rid, val) {
+      window.FacilitiesStore.roomSet(map, bkey, rid, val);
+    }
+    function roomDel(map, bkey, rid) {
+      window.FacilitiesStore.roomDel(map, bkey, rid);
+    }
+
+    function collegeLabel(collegeId) {
+      if (!collegeId || collegeId === MULTI_COLLEGE_ID) return 'General use (any college)';
+      for (var i = 0; i < COLLEGE_OPTIONS.length; i++) {
+        if (COLLEGE_OPTIONS[i].id === collegeId) return COLLEGE_OPTIONS[i].label;
+      }
+      if (window.OrgStore && typeof OrgStore.collegeName === 'function') {
+        var fromOrg = OrgStore.collegeName(collegeId);
+        if (fromOrg) return fromOrg;
+      }
+      return collegeId || '—';
+    }
+
+    function getRoomFloorDeptKey(bkey, rid) {
+      if (!buildingUsesFloors[bkey]) return '_flat';
+      return String(roomGet(roomFloorById, bkey, rid) != null ? roomGet(roomFloorById, bkey, rid) : 1);
+    }
+
+    function getFloorDeptList(bkey, floorKey) {
+      var fd = floorDepartmentsByBuilding[bkey];
+      if (!fd) return [];
+      var list = fd[floorKey];
+      return list && list.length ? list.slice() : [];
+    }
+
+    function setFloorDeptList(bkey, floorKey, arr) {
+      if (!floorDepartmentsByBuilding[bkey]) floorDepartmentsByBuilding[bkey] = {};
+      floorDepartmentsByBuilding[bkey][floorKey] = arr.slice();
+    }
+
+    function isCollegeAllowedOnFloor(bkey, floorNum, collegeId) {
+      if (!collegeId) return true;
+      var only = buildingDeptOnly[bkey];
+      if (only) return only === collegeId;
+      var fk = buildingUsesFloors[bkey] ? String(floorNum != null && floorNum !== '' ? floorNum : 1) : '_flat';
+      var allowed = getFloorDeptList(bkey, fk);
+      if (!allowed.length) return true;
+      return allowed.indexOf(collegeId) >= 0;
+    }
+
+    function isCollegeAllowedForRoom(bkey, rid, collegeId) {
+      var floorNum = buildingUsesFloors[bkey]
+        ? roomGet(roomFloorById, bkey, rid) != null
+          ? roomGet(roomFloorById, bkey, rid)
+          : 1
+        : null;
+      return isCollegeAllowedOnFloor(bkey, floorNum, collegeId);
+    }
+
+    function collegeIdIsValid(id) {
+      return COLLEGE_OPTIONS.some(function (c) {
+        return c.id === id;
+      });
+    }
+
+    function normalizeRoomAllocForEdit(base) {
+      base = base || {};
+      var type = base.type != null && base.type !== '' ? base.type : base.purpose || '';
+      var college = '';
+      if (!base.multiCollege) {
+        if (base.college && collegeIdIsValid(base.college)) college = base.college;
+        else if (base.department && collegeIdIsValid(base.department)) college = base.department;
+      }
+      return { type: type, college: college };
+    }
+
+    function syncRoomCollegeUI(bkey, alloc) {
+      alloc = alloc || {};
+      var norm = normalizeRoomAllocForEdit(alloc);
+      var only = buildingDeptOnly[bkey];
+      var sel = document.getElementById('flowCollege');
+      if (only) {
+        fillCollegeSelect(sel, only, true, true);
+      } else {
+        fillCollegeSelect(sel, norm.college || '', false, true);
+      }
+    }
+
+    function fillProximitySelect(sel, bkeyExclude, selectedVal) {
+      sel.innerHTML = '';
+      var o0 = document.createElement('option');
+      o0.value = '';
+      o0.textContent = '— None —';
+      sel.appendChild(o0);
+      buildingOrder.forEach(function (bk) {
+        if (bk === bkeyExclude) return;
+        var o = document.createElement('option');
+        o.value = bk;
+        o.textContent = buildingNames[bk] != null ? buildingNames[bk] : bk;
+        if (selectedVal && selectedVal === bk) o.selected = true;
+        sel.appendChild(o);
+      });
+    }
+
+    function fillCollegeSelect(sel, selectedId, disabled, omitMulti) {
+      omitMulti = !!omitMulti;
+      sel.innerHTML = '';
+      var ph = document.createElement('option');
+      ph.value = '';
+      ph.textContent = 'General use (any college)';
+      sel.appendChild(ph);
+      COLLEGE_OPTIONS.forEach(function (d) {
+        var o = document.createElement('option');
+        o.value = d.id;
+        o.textContent = d.label;
+        if (selectedId && selectedId === d.id) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.disabled = !!disabled;
+    }
+
+    function removeProximityReferencesTo(removedBkey) {
+      Object.keys(buildingProximity).forEach(function (bk) {
+        var arr = buildingProximity[bk] || [];
+        buildingProximity[bk] = arr.filter(function (x) {
+          return x && x !== removedBkey;
+        });
+      });
+      delete buildingProximity[removedBkey];
+    }
+
+    function getFloorsSortedForBuilding(bkey) {
+      if (!buildingUsesFloors[bkey]) return [];
+      var floors = {};
+      (roomsByBuilding[bkey] || []).forEach(function (rid) {
+        var f = roomGet(roomFloorById, bkey, rid) != null ? roomGet(roomFloorById, bkey, rid) : 1;
+        floors[f] = true;
+      });
+      (extraFloorsByBuilding[bkey] || []).forEach(function (f) {
+        floors[f] = true;
+      });
+      return Object.keys(floors)
+        .map(function (k) {
+          return parseInt(k, 10);
+        })
+        .sort(function (a, b) {
+          return a - b;
+        });
+    }
+
+    function computeMaxFloors(bkey) {
+      if (!buildingUsesFloors[bkey]) return 1;
+      var floors = getFloorsSortedForBuilding(bkey);
+      if (!floors.length) return 1;
+      var m = floors[0];
+      for (var i = 1; i < floors.length; i++) {
+        if (floors[i] > m) m = floors[i];
+      }
+      return m;
+    }
+
+    function getNextFloorNumber(bkey) {
+      var floors = getFloorsSortedForBuilding(bkey);
+      if (!floors.length) return 1;
+      var m = floors[0];
+      for (var i = 1; i < floors.length; i++) {
+        if (floors[i] > m) m = floors[i];
+      }
+      return m + 1;
+    }
+
+    function getRoomsGroupedByFloor(bkey) {
+      var rids = roomsByBuilding[bkey] || [];
+      if (!buildingUsesFloors[bkey]) {
+        var sortedFlat = rids.slice().sort(function (a, b) {
+          return parseInt(a, 10) - parseInt(b, 10);
+        });
+        return [{ floor: null, rooms: sortedFlat, flat: true }];
+      }
+      var floorNums = getFloorsSortedForBuilding(bkey);
+      if (!floorNums.length) {
+        return [{ floor: 1, rooms: [], flat: false }];
+      }
+      return floorNums.map(function (f) {
+        var roomsOnFloor = rids
+          .filter(function (rid) {
+            return Number(roomGet(roomFloorById, bkey, rid) != null ? roomGet(roomFloorById, bkey, rid) : 1) === Number(f);
+          })
+          .sort(function (a, b) {
+            return parseInt(a, 10) - parseInt(b, 10);
+          });
+        return { floor: f, rooms: roomsOnFloor, flat: false };
+      });
+    }
+    function collectFacilitiesSnapshot() {
+      return {
+        buildingOrder: buildingOrder,
+        buildingNames: buildingNames,
+        roomsByBuilding: roomsByBuilding,
+        roomFloorById: roomFloorById,
+        roomStatus: roomStatus,
+        buildingUsesFloors: buildingUsesFloors,
+        extraFloorsByBuilding: extraFloorsByBuilding,
+        roomAllocation: roomAllocation,
+        roomTimetables: roomTimetables,
+        buildingProximity: buildingProximity,
+        floorDepartmentsByBuilding: floorDepartmentsByBuilding,
+        buildingDeptOnly: buildingDeptOnly,
+        buildingAvailable: buildingAvailable
+      };
+    }
+    function persistSchedData() {
+      if (!window.FacilitiesStore) return Promise.resolve({ ok: true });
+      return FacilitiesStore.save(collectFacilitiesSnapshot()).then(function (res) {
+        if (res && res.ok === false && res.error) {
+          alert(res.error);
+          return res;
+        }
+        if (res && res.snapshot) applyPersisted(res.snapshot);
+        var impact = res && res.scheduleImpact ? res.scheduleImpact : null;
+        var cleared = impact && Number(impact.clearedClasses) ? Number(impact.clearedClasses) : 0;
+        if (cleared > 0) {
+          alert(
+            cleared +
+              (cleared === 1 ? ' class was' : ' classes were') +
+              ' unscheduled on My schedule because a room went under maintenance or a building became unavailable for scheduling.'
+          );
+        }
+        return res;
+      }).catch(function (err) {
+        var message = err && err.message ? err.message : String(err);
+        alert(message);
+        return { ok: false, error: message };
+      });
+    }
+
+    function applyPersisted(p) {
+      if (!p || typeof p !== 'object') return;
+      if (p.buildingOrder) buildingOrder = p.buildingOrder;
+      if (p.buildingNames) buildingNames = p.buildingNames;
+      if (p.roomsByBuilding) roomsByBuilding = p.roomsByBuilding;
+      if (p.roomFloorById) roomFloorById = p.roomFloorById;
+      if (p.roomStatus) roomStatus = p.roomStatus;
+      if (p.buildingUsesFloors) buildingUsesFloors = p.buildingUsesFloors;
+      if (p.extraFloorsByBuilding) extraFloorsByBuilding = p.extraFloorsByBuilding;
+      if (p.roomAllocation) roomAllocation = p.roomAllocation;
+      if (p.roomTimetables) roomTimetables = p.roomTimetables;
+      if (p.buildingProximity) buildingProximity = p.buildingProximity;
+      if (p.floorDepartmentsByBuilding) floorDepartmentsByBuilding = p.floorDepartmentsByBuilding;
+      if (p.buildingDeptOnly) buildingDeptOnly = p.buildingDeptOnly;
+      if (p.buildingAvailable) buildingAvailable = p.buildingAvailable;
+    }
+
+    function isBuildingAvailable(bkey) {
+      return buildingAvailable[bkey] !== false;
+    }
+
+    function refreshCollegeOptions() {
+      COLLEGE_OPTIONS = window.FacilitiesStore ? FacilitiesStore.collegeOptions() : [];
+    }
+
+    var roomStatus = {};
+
+    var flowState = { building: null, fromBuildingEditor: false, creating: false, addFloor: null, editingRoomId: null };
+
+    function formatStatus(st) {
+      return st === 'under_maintenance' ? 'Under maintenance' : 'Active';
+    }
+
+    function statusClass(st) {
+      return st === 'under_maintenance' ? 'status-under_maintenance' : 'status-active';
+    }
+
+    function formStatus(st) {
+      return st === 'under_maintenance' ? 'under_maintenance' : 'active';
+    }
+
+    function isRoomIdFreeInBuilding(bkey, id) {
+      return (roomsByBuilding[bkey] || []).indexOf(id) < 0;
+    }
+
+    function refreshRoomsViews(bkey) {
+      renderBuildings();
+      if (buildingEditState.bkey === bkey) renderBuildingEditPanel(bkey);
+      if (flowState.building === bkey && !document.getElementById('flowRooms').hidden) {
+        openBuildingRooms(bkey, { keepBuildingEditorOpen: true });
+      }
+    }
+
+    function addRoomToBuilding(bkey, floorNum, rawId, extras) {
+      extras = extras || {};
+      var id = String(rawId == null ? '' : rawId).trim();
+      if (!id) {
+        alert('Enter a room ID.');
+        return false;
+      }
+      if (id.length > 30) {
+        alert('Keep the room ID under 30 characters.');
+        return false;
+      }
+      if (!isRoomIdFreeInBuilding(bkey, id)) {
+        alert('That room ID is already used in this building.');
+        return false;
+      }
+      if (!roomsByBuilding[bkey]) roomsByBuilding[bkey] = [];
+      roomsByBuilding[bkey].push(id);
+      if (buildingUsesFloors[bkey]) {
+        var floor = floorNum != null && floorNum !== '' ? parseInt(floorNum, 10) : 1;
+        if (!floor || floor < 1) floor = 1;
+        roomSet(roomFloorById, bkey, id, floor);
+        removeFloorFromExtraIfPresent(bkey, floor);
+      }
+      roomSet(roomStatus, bkey, id, extras.status || 'active');
+      if (extras.allocation) roomSet(roomAllocation, bkey, id, extras.allocation);
+      persistSchedData();
+      refreshRoomsViews(bkey);
+      return true;
+    }
+
+    function setRoomFormMode(creating) {
+      var newWrap = document.getElementById('flowRoomNewWrap');
+      if (newWrap) newWrap.hidden = !creating;
+      var newInput = document.getElementById('flowRoomNew');
+      if (newInput) newInput.required = !!creating;
+      var panelTitle = document.getElementById('roomEditPanelTitle');
+      if (panelTitle) panelTitle.textContent = creating ? 'Add room' : 'Edit room';
+      var submitBtn = document.getElementById('scheduleFormSubmitBtn');
+      if (submitBtn) submitBtn.textContent = creating ? 'Add room' : 'Save';
+      var clearBtn = document.querySelector('#scheduleFormFlow button[type="reset"]');
+      if (clearBtn) clearBtn.hidden = !!creating;
+    }
+
+    function openAddRoomModal(bkey, floorNum) {
+      flowState.building = bkey;
+      openRoomEditModal(null, { create: true, fromBuildingEditor: true, floor: floorNum });
+    }
+
+    function removeFloorFromExtraIfPresent(bkey, floorNum) {
+      var arr = extraFloorsByBuilding[bkey];
+      if (!arr) return;
+      var n = Number(floorNum);
+      extraFloorsByBuilding[bkey] = arr.filter(function (f) {
+        return Number(f) !== n;
+      });
+    }
+
+    function pruneRoomEverywhere(bkey, rid) {
+      roomDel(roomFloorById, bkey, rid);
+      roomDel(roomStatus, bkey, rid);
+      roomDel(roomAllocation, bkey, rid);
+      roomDel(roomTimetables, bkey, rid);
+    }
+
+    function removeRoomFromBuilding(bkey, rid) {
+      var arr = roomsByBuilding[bkey] || [];
+      var ix = arr.indexOf(rid);
+      if (ix >= 0) arr.splice(ix, 1);
+      pruneRoomEverywhere(bkey, rid);
+      return true;
+    }
+
+    function removeBuildingByKey(bkey) {
+      var name = buildingNames[bkey] != null ? buildingNames[bkey] : bkey;
+      var rids = (roomsByBuilding[bkey] || []).slice();
+      if (
+        !confirm(
+          'Remove building "' +
+            name +
+            '"? This will permanently delete all ' +
+            rids.length +
+            ' room(s) in this building. This cannot be undone.'
+        )
+      ) {
+        return;
+      }
+      rids.forEach(function (rid) {
+        pruneRoomEverywhere(bkey, rid);
+      });
+      delete roomsByBuilding[bkey];
+      delete buildingNames[bkey];
+      delete buildingUsesFloors[bkey];
+      if (extraFloorsByBuilding[bkey]) delete extraFloorsByBuilding[bkey];
+      if (floorDepartmentsByBuilding[bkey]) delete floorDepartmentsByBuilding[bkey];
+      if (buildingDeptOnly[bkey] !== undefined) delete buildingDeptOnly[bkey];
+      if (buildingAvailable[bkey] !== undefined) delete buildingAvailable[bkey];
+      removeProximityReferencesTo(bkey);
+      buildingOrder = buildingOrder.filter(function (k) {
+        return k !== bkey;
+      });
+      persistSchedData();
+      closeBuildingEditModal();
+      renderBuildings();
+      if (flowState.building === bkey) {
+        backToBuildings();
+      }
+    }
+
+    function maybeRefreshBuildingEditPanel() {
+      var modal = document.getElementById('buildingEditModal');
+      if (modal && modal.classList.contains('open') && buildingEditState.bkey) {
+        renderBuildingEditPanel(buildingEditState.bkey);
+      }
+    }
+
+    function handleRemoveFloor(bkey, floorStr) {
+      var f = parseInt(floorStr, 10);
+      var rids = (roomsByBuilding[bkey] || []).filter(function (rid) {
+        return (roomGet(roomFloorById, bkey, rid) != null ? roomGet(roomFloorById, bkey, rid) : 1) === f;
+      });
+      if (rids.length === 0) {
+        if (!confirm('Remove empty floor ' + f + '?')) return;
+        removeFloorFromExtraIfPresent(bkey, f);
+        persistSchedData();
+        renderBuildingEditPanel(bkey);
+        renderBuildings();
+        return;
+      }
+      if (
+        !confirm(
+          'Remove floor ' +
+            f +
+            ' and delete all ' +
+            rids.length +
+            ' room(s) on it? This cannot be undone.'
+        )
+      ) {
+        return;
+      }
+      for (var j = 0; j < rids.length; j++) {
+        removeRoomFromBuilding(bkey, rids[j], true);
+      }
+      removeFloorFromExtraIfPresent(bkey, f);
+      persistSchedData();
+      renderBuildingEditPanel(bkey);
+      renderBuildings();
+      if (flowState.building === bkey && !document.getElementById('flowRooms').hidden) {
+        openBuildingRooms(bkey, { keepBuildingEditorOpen: true });
+      }
+    }
+
+    function renderBuildingEditPanel(bkey) {
+      var container = document.getElementById('buildingEditContent');
+      var hint = document.getElementById('buildingEditHint');
+      if (!container) return;
+      var isLocked = false;
+      if (hint) {
+        hint.textContent = isLocked
+          ? 'This building uses a single room list (no floors). Add or remove rooms here.'
+          : buildingUsesFloors[bkey]
+            ? 'Use floors to group rooms. Add floors, or remove a floor to delete the rooms on it.'
+            : 'Floors are off — one list of rooms. Turn floors on to add or remove floor levels.';
+      }
+      container.innerHTML = '';
+
+      var groups = getRoomsGroupedByFloor(bkey);
+
+      var wrapDetails = document.createElement('details');
+      wrapDetails.className = 'building-edit-wrap-details';
+      var wrapSummary = document.createElement('summary');
+      wrapSummary.textContent = 'Proximity & colleges';
+      wrapSummary.setAttribute('aria-label', 'Show or hide proximity and college settings');
+      var wrapInner = document.createElement('div');
+      wrapInner.className = 'building-edit-wrap-inner';
+
+      (function proximitySection() {
+        var proxBox = document.createElement('div');
+        proxBox.className = 'building-edit-section';
+        var pt = document.createElement('div');
+        pt.className = 'building-edit-section-title';
+        pt.textContent = 'Proximity';
+        var pd = document.createElement('p');
+        pd.className = 'building-edit-section-desc';
+        pd.textContent =
+          'When you change schedules, rooms in these nearby buildings are recommended first. Choose up to two.';
+        var row = document.createElement('div');
+        row.className = 'building-edit-proximity-row';
+        var s1 = document.createElement('select');
+        s1.className = 'form-control';
+        var s2 = document.createElement('select');
+        s2.className = 'form-control';
+        var pv = buildingProximity[bkey] || [];
+        fillProximitySelect(s1, bkey, pv[0] || '');
+        fillProximitySelect(s2, bkey, pv[1] || '');
+        function saveProx() {
+          var a = s1.value || '';
+          var b = s2.value || '';
+          if (a && b && a === b) b = '';
+          buildingProximity[bkey] = [a, b].filter(Boolean);
+          persistSchedData();
+          renderBuildings();
+        }
+        s1.addEventListener('change', saveProx);
+        s2.addEventListener('change', saveProx);
+        row.appendChild(s1);
+        row.appendChild(s2);
+        proxBox.appendChild(pt);
+        proxBox.appendChild(pd);
+        proxBox.appendChild(row);
+        wrapInner.appendChild(proxBox);
+      })();
+
+      (function buildingDeptSection() {
+        var deptBox = document.createElement('div');
+        deptBox.className = 'building-edit-section';
+        var dt = document.createElement('div');
+        dt.className = 'building-edit-section-title';
+        dt.textContent = 'College (whole building)';
+        var dd = document.createElement('p');
+        dd.className = 'building-edit-section-desc';
+        dd.textContent =
+          'If this building serves only one college, enable it and choose the college. Only that college may use rooms here.';
+        var lab = document.createElement('label');
+        lab.className = 'building-edit-checkbox-label';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        var hasOnly = !!buildingDeptOnly[bkey];
+        cb.checked = hasOnly;
+        var sel = document.createElement('select');
+        sel.className = 'form-control';
+        fillCollegeSelect(sel, buildingDeptOnly[bkey] || '', !hasOnly, true);
+        cb.addEventListener('change', function () {
+          if (!cb.checked) {
+            delete buildingDeptOnly[bkey];
+            fillCollegeSelect(sel, '', true, true);
+            sel.disabled = true;
+          } else {
+            sel.disabled = false;
+            var first = COLLEGE_OPTIONS[0] ? COLLEGE_OPTIONS[0].id : '';
+            fillCollegeSelect(sel, buildingDeptOnly[bkey] || first, false, true);
+            buildingDeptOnly[bkey] = sel.value;
+          }
+          persistSchedData();
+          renderBuildingEditPanel(bkey);
+        });
+        sel.addEventListener('change', function () {
+          if (cb.checked) {
+            buildingDeptOnly[bkey] = sel.value;
+            persistSchedData();
+            renderBuildingEditPanel(bkey);
+          }
+        });
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(' Single college only'));
+        deptBox.appendChild(dt);
+        deptBox.appendChild(dd);
+        deptBox.appendChild(lab);
+        deptBox.appendChild(sel);
+        wrapInner.appendChild(deptBox);
+      })();
+
+      var onlyDeptGlobal = buildingDeptOnly[bkey];
+      if (onlyDeptGlobal) {
+        var fnoteSingle = document.createElement('div');
+        fnoteSingle.className = 'building-edit-section';
+        var ftSingle = document.createElement('div');
+        ftSingle.className = 'building-edit-section-title';
+        ftSingle.textContent = 'Colleges allowed (floors)';
+        fnoteSingle.appendChild(ftSingle);
+        var fpSingle = document.createElement('p');
+        fpSingle.className = 'building-edit-muted';
+        fpSingle.style.margin = '0';
+        fpSingle.textContent =
+          'Floor college filters are off — building is limited to ' + collegeLabel(onlyDeptGlobal) + ' only.';
+        fnoteSingle.appendChild(fpSingle);
+        wrapInner.appendChild(fnoteSingle);
+      } else {
+        groups.forEach(function (group) {
+          var fdKey = group.flat ? '_flat' : String(group.floor);
+          var fdDiv = document.createElement('div');
+          fdDiv.className = 'building-edit-section building-edit-floor-dept';
+          var sub = document.createElement('div');
+          sub.className = 'building-edit-section-title';
+          sub.textContent = group.flat
+            ? 'Colleges allowed (this list)'
+            : 'Floor ' + group.floor + ' — colleges allowed';
+          var fdNote = document.createElement('div');
+          fdNote.className = 'building-edit-floor-dept-note';
+          fdNote.style.marginBottom = '0.35rem';
+          fdNote.textContent = 'None checked = any college.';
+          var grid = document.createElement('div');
+          grid.className = 'dept-checkbox-grid';
+          var cur = getFloorDeptList(bkey, fdKey);
+          COLLEGE_OPTIONS.forEach(function (d) {
+            var lbl = document.createElement('label');
+            var c = document.createElement('input');
+            c.type = 'checkbox';
+            c.value = d.id;
+            c.checked = cur.indexOf(d.id) >= 0;
+            c.addEventListener('change', function () {
+              var next = [];
+              grid.querySelectorAll('input[type=checkbox]').forEach(function (x) {
+                if (x.checked) next.push(x.value);
+              });
+              setFloorDeptList(bkey, fdKey, next);
+              persistSchedData();
+            });
+            lbl.appendChild(c);
+            lbl.appendChild(document.createTextNode(' ' + d.label));
+            grid.appendChild(lbl);
+          });
+          fdDiv.appendChild(sub);
+          fdDiv.appendChild(fdNote);
+          fdDiv.appendChild(grid);
+          wrapInner.appendChild(fdDiv);
+        });
+      }
+
+      wrapDetails.appendChild(wrapSummary);
+      wrapDetails.appendChild(wrapInner);
+      container.appendChild(wrapDetails);
+
+      if (!isLocked) {
+        var toggRow = document.createElement('div');
+        toggRow.className = 'building-edit-toggle-row';
+        var lab = document.createElement('label');
+        lab.className = 'building-edit-checkbox-label';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !!buildingUsesFloors[bkey];
+        cb.addEventListener('change', function () {
+          buildingUsesFloors[bkey] = cb.checked;
+          if (buildingUsesFloors[bkey]) {
+            (roomsByBuilding[bkey] || []).forEach(function (rid) {
+              if (roomGet(roomFloorById, bkey, rid) == null) roomSet(roomFloorById, bkey, rid, 1);
+            });
+          }
+          persistSchedData();
+          renderBuildingEditPanel(bkey);
+          renderBuildings();
+          if (flowState.building === bkey && !document.getElementById('flowRooms').hidden) {
+            openBuildingRooms(bkey, { keepBuildingEditorOpen: true });
+          }
+        });
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(' Organize rooms by floor'));
+        toggRow.appendChild(lab);
+        container.appendChild(toggRow);
+      }
+
+      var useFloors = buildingUsesFloors[bkey] && !isLocked;
+
+      if (useFloors) {
+        var addFloorBtn = document.createElement('button');
+        addFloorBtn.type = 'button';
+        addFloorBtn.className = 'btn-flow-secondary building-edit-add-floor';
+        addFloorBtn.textContent = '+ Add floor';
+        addFloorBtn.addEventListener('click', function () {
+          var next = getNextFloorNumber(bkey);
+          if (!extraFloorsByBuilding[bkey]) extraFloorsByBuilding[bkey] = [];
+          extraFloorsByBuilding[bkey].push(next);
+          persistSchedData();
+          renderBuildingEditPanel(bkey);
+          renderBuildings();
+        });
+        container.appendChild(addFloorBtn);
+      }
+
+      groups.forEach(function (group) {
+        var floorBlock = document.createElement('div');
+        floorBlock.className = 'building-edit-floor-block';
+
+        var head = document.createElement('div');
+        head.className = 'building-edit-floor-head';
+        var titleEl = document.createElement('div');
+        titleEl.className = 'building-edit-floor-title';
+        titleEl.textContent = group.flat ? 'Rooms' : 'Floor ' + group.floor;
+        head.appendChild(titleEl);
+
+        if (useFloors && !group.flat) {
+          var remFloor = document.createElement('button');
+          remFloor.type = 'button';
+          remFloor.className = 'btn-building-edit-danger';
+          remFloor.textContent = 'Remove floor';
+          remFloor.addEventListener('click', function () {
+            handleRemoveFloor(bkey, String(group.floor));
+          });
+          head.appendChild(remFloor);
+        }
+        floorBlock.appendChild(head);
+
+        var roomWrap = document.createElement('div');
+        roomWrap.className = 'building-edit-room-list';
+
+        group.rooms.forEach(function (rid) {
+          var st = roomGet(roomStatus, bkey, rid) || 'active';
+          var row = document.createElement('div');
+          row.className = 'building-edit-room-row';
+          var span = document.createElement('span');
+          span.textContent = 'Room ' + rid;
+          var badge = document.createElement('span');
+          badge.className = 'badge-room-status ' + statusClass(st);
+          badge.textContent = formatStatus(st);
+          var allocBtn = document.createElement('button');
+          allocBtn.type = 'button';
+          allocBtn.className = 'btn-room-edit';
+          allocBtn.textContent = 'Edit room';
+          allocBtn.addEventListener('click', function () {
+            flowState.building = bkey;
+            openRoomEditModal(rid, { fromBuildingEditor: true });
+          });
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'btn-building-edit-danger';
+          removeBtn.textContent = 'Remove room';
+          removeBtn.title = 'Remove this room';
+          removeBtn.addEventListener('click', function () {
+            if (!confirm('Remove room ' + rid + ' from this building?')) return;
+            if (!removeRoomFromBuilding(bkey, rid)) return;
+            persistSchedData();
+            renderBuildingEditPanel(bkey);
+            renderBuildings();
+            if (flowState.building === bkey && !document.getElementById('flowRooms').hidden) {
+              openBuildingRooms(bkey, { keepBuildingEditorOpen: true });
+            }
+          });
+          row.appendChild(span);
+          row.appendChild(badge);
+          row.appendChild(allocBtn);
+          row.appendChild(removeBtn);
+          roomWrap.appendChild(row);
+        });
+
+        floorBlock.appendChild(roomWrap);
+
+        var addRoomBtn = document.createElement('button');
+        addRoomBtn.type = 'button';
+        addRoomBtn.className = 'btn-flow-secondary';
+        addRoomBtn.textContent = '+ Add room';
+        addRoomBtn.addEventListener('click', function () {
+          openAddRoomModal(bkey, group.flat ? null : group.floor);
+        });
+        floorBlock.appendChild(addRoomBtn);
+        container.appendChild(floorBlock);
+      });
+    }
+
+    function openBuildingEditModal(bkey) {
+      buildingEditState.bkey = bkey;
+      flowState.building = bkey;
+      var modal = document.getElementById('buildingEditModal');
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      renderBuildingEditPanel(bkey);
+    }
+
+    function closeBuildingEditModal() {
+      var modal = document.getElementById('buildingEditModal');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      buildingEditState.bkey = null;
+    }
+
+    function closeRoomEditModal() {
+      var modal = document.getElementById('roomEditModal');
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      flowState.creating = false;
+      flowState.addFloor = null;
+      flowState.editingRoomId = null;
+      setRoomFormMode(false);
+      if (flowState.fromBuildingEditor) {
+        maybeRefreshBuildingEditPanel();
+        flowState.fromBuildingEditor = false;
+      }
+    }
+
+    function openRoomEditModal(rid, options) {
+      options = options || {};
+      flowState.fromBuildingEditor = options.fromBuildingEditor === true;
+      flowState.creating = options.create === true;
+      flowState.addFloor = options.floor != null ? options.floor : null;
+      flowState.editingRoomId = flowState.creating || rid == null ? null : String(rid);
+      var bkey = flowState.building;
+      var bName = buildingNames[bkey] != null ? buildingNames[bkey] : bkey;
+      var creating = flowState.creating;
+      var modal = document.getElementById('roomEditModal');
+      setRoomFormMode(creating);
+
+      var usesFloors = buildingUsesFloors[bkey];
+      var floorNum = creating
+        ? flowState.addFloor
+        : usesFloors
+          ? roomGet(roomFloorById, bkey, rid) != null
+            ? roomGet(roomFloorById, bkey, rid)
+            : 1
+          : null;
+      var floorLine = usesFloors
+        ? '<br><strong>Floor:</strong> ' +
+          (floorNum != null ? floorNum : '—') +
+          ' <span style="color:#9ca3af;font-size:0.85em;">(of ' +
+          computeMaxFloors(bkey) +
+          ')</span>'
+        : '<br><strong>Level:</strong> <span style="color:#9ca3af;font-size:0.85em;">(no floors — single list)</span>';
+
+      document.getElementById('roomEditModalTitle').textContent = creating
+        ? 'Add room · ' + bName
+        : 'Room ' + rid + ' · ' + bName;
+      document.getElementById('roomEditSummary').innerHTML =
+        '<strong>Building:</strong> ' +
+        bName +
+        '<br><strong>Room number:</strong> ' +
+        (creating ? 'new' : rid) +
+        floorLine;
+
+      var form = document.getElementById('scheduleFormFlow');
+      form.reset();
+      var newInput = document.getElementById('flowRoomNew');
+      if (creating) {
+        if (newInput) {
+          newInput.value = '';
+          setTimeout(function () {
+            newInput.focus();
+          }, 0);
+        }
+        document.getElementById('flowStatus').value = 'active';
+        document.getElementById('flowCapacity').value = '40';
+        window.RoomTypes.fillSelect(document.getElementById('flowType'), '', { campusRoomsOnly: true });
+        syncRoomCollegeUI(bkey, {});
+      } else {
+        var st = roomGet(roomStatus, bkey, rid) || 'active';
+        var base = roomGet(roomAllocation, bkey, rid) || {};
+        var pre = Object.assign({}, base, options.prefill || {});
+        if (pre.purpose && !pre.type) pre.type = pre.purpose;
+        var norm = normalizeRoomAllocForEdit(pre);
+        var hasPrefill =
+          (norm.type && String(norm.type).length) ||
+          (base.capacity != null && base.capacity !== '') ||
+          (norm.college && String(norm.college).length);
+
+        if (hasPrefill) {
+          document.getElementById('flowCapacity').value =
+            base.capacity != null && base.capacity !== '' ? String(base.capacity) : '';
+        }
+        window.RoomTypes.fillSelect(document.getElementById('flowType'), norm.type, { campusRoomsOnly: true });
+        document.getElementById('flowStatus').value = formStatus(st);
+        syncRoomCollegeUI(bkey, Object.assign({}, base, norm));
+      }
+
+      var prox = buildingProximity[bkey] || [];
+      var proxLabels = [];
+      for (var pi = 0; pi < prox.length; pi++) {
+        if (prox[pi]) proxLabels.push(buildingNames[prox[pi]] != null ? buildingNames[prox[pi]] : prox[pi]);
+      }
+      var hintText = creating
+        ? 'Enter a room ID for this building and set status, college, type, and capacity. The same ID can be used in another building.'
+        : 'Set status, college, type, and capacity. As Super Admin, changes are saved in this demo (no backend).';
+      if (proxLabels.length) {
+        hintText +=
+          ' If you change schedules, nearby buildings are recommended first: ' + proxLabels.join(', ') + '.';
+      }
+      document.getElementById('roomEditFormHint').textContent = hintText;
+
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function slugifyBuildingKey(name) {
+      var s = String(name)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      return (s || 'building').slice(0, 20);
+    }
+
+    function uniqueBuildingKey(base) {
+      var k = String(base || 'building').slice(0, 20);
+      var i = 0;
+      while (buildingOrder.indexOf(k) >= 0) {
+        i++;
+        k = (String(base).slice(0, 16) + '-' + i).slice(0, 20);
+      }
+      return k;
+    }
+
+    function syncAddBuildingFloorWrapVisibility() {
+      var use = document.getElementById('addBuildingUseFloors').checked;
+      document.getElementById('addBuildingFloorCountWrap').style.display = use ? '' : 'none';
+    }
+
+    function rebuildAddBuildingFloorDeptWrap() {
+      var wrap = document.getElementById('addBuildingFloorDeptWrap');
+      var useFloors = document.getElementById('addBuildingUseFloors').checked;
+      var single = document.getElementById('addBuildingSingleDept').checked;
+      wrap.innerHTML = '';
+      if (single) {
+        var p = document.createElement('p');
+        p.className = 'building-edit-muted';
+        p.textContent =
+          'Floor / building college checkboxes are not used when the whole building is limited to one college.';
+        wrap.appendChild(p);
+        return;
+      }
+      if (useFloors) {
+        var n = parseInt(document.getElementById('addBuildingFloorCount').value, 10) || 1;
+        if (n < 1) n = 1;
+        if (n > 40) n = 40;
+        for (var fl = 1; fl <= n; fl++) {
+          var sec = document.createElement('div');
+          sec.className = 'building-edit-section';
+          var tt = document.createElement('div');
+          tt.className = 'building-edit-section-title';
+          tt.textContent = 'Floor ' + fl + ' — colleges allowed';
+          var grid = document.createElement('div');
+          grid.className = 'dept-checkbox-grid';
+          grid.setAttribute('data-floor', String(fl));
+          COLLEGE_OPTIONS.forEach(function (d) {
+            var lbl = document.createElement('label');
+            var c = document.createElement('input');
+            c.type = 'checkbox';
+            c.value = d.id;
+            lbl.appendChild(c);
+            lbl.appendChild(document.createTextNode(' ' + d.label));
+            grid.appendChild(lbl);
+          });
+          sec.appendChild(tt);
+          sec.appendChild(grid);
+          wrap.appendChild(sec);
+        }
+      } else {
+        var sec = document.createElement('div');
+        sec.className = 'building-edit-section';
+        var tt = document.createElement('div');
+        tt.className = 'building-edit-section-title';
+        tt.textContent = 'Colleges allowed (single-level building)';
+        var grid = document.createElement('div');
+        grid.className = 'dept-checkbox-grid';
+        grid.setAttribute('data-floor', '_flat');
+        COLLEGE_OPTIONS.forEach(function (d) {
+          var lbl = document.createElement('label');
+          var c = document.createElement('input');
+          c.type = 'checkbox';
+          c.value = d.id;
+          lbl.appendChild(c);
+          lbl.appendChild(document.createTextNode(' ' + d.label));
+          grid.appendChild(lbl);
+        });
+        sec.appendChild(tt);
+        sec.appendChild(grid);
+        wrap.appendChild(sec);
+      }
+    }
+
+    function openAddBuildingModal() {
+      var f = document.getElementById('addBuildingForm');
+      if (f) f.reset();
+      document.getElementById('addBuildingUseFloors').checked = true;
+      document.getElementById('addBuildingFloorCount').value = '3';
+      fillProximitySelect(document.getElementById('addProximity1'), null, '');
+      fillProximitySelect(document.getElementById('addProximity2'), null, '');
+      document.getElementById('addBuildingSingleDept').checked = false;
+      var ds = document.getElementById('addBuildingDeptOnly');
+      fillCollegeSelect(ds, '', true, true);
+      ds.disabled = true;
+      syncAddBuildingFloorWrapVisibility();
+      rebuildAddBuildingFloorDeptWrap();
+      var m = document.getElementById('addBuildingModal');
+      m.classList.add('open');
+      m.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeAddBuildingModal() {
+      var m = document.getElementById('addBuildingModal');
+      m.classList.remove('open');
+      m.setAttribute('aria-hidden', 'true');
+    }
+
+    function renderBuildings() {
+      var grid = document.getElementById('buildingGrid');
+      grid.innerHTML = '';
+      if (!buildingOrder.length) {
+        var empty = document.createElement('p');
+        empty.className = 'building-edit-hint';
+        empty.style.gridColumn = '1 / -1';
+        empty.textContent = 'No buildings yet. Add a building to start mapping rooms.';
+        grid.appendChild(empty);
+        return;
+      }
+      buildingOrder.forEach(function (bkey) {
+        var wrap = document.createElement('div');
+        wrap.className = 'building-card-wrap';
+        var card = document.createElement('div');
+        var available = isBuildingAvailable(bkey);
+        card.className = 'building-card' + (available ? '' : ' building-card--unavailable');
+
+        var mainBtn = document.createElement('button');
+        mainBtn.type = 'button';
+        mainBtn.className = 'building-card-main';
+        var n = (roomsByBuilding[bkey] || []).length;
+        var meta = buildingUsesFloors[bkey]
+          ? computeMaxFloors(bkey) + ' floors · ' + n + ' rooms'
+          : 'Single level · ' + n + ' rooms';
+        var displayName = buildingNames[bkey] != null ? buildingNames[bkey] : bkey;
+        mainBtn.innerHTML =
+          '<div class="building-card-name">' +
+          displayName +
+          '</div><div class="building-card-meta">' +
+          meta +
+          '</div>' +
+          (available ? '' : '<span class="badge-building-unavail">Unavailable</span>');
+        mainBtn.addEventListener('click', function () {
+          openBuildingRooms(bkey);
+        });
+
+        var footer = document.createElement('div');
+        footer.className = 'building-card-footer';
+        var toggle = document.createElement('label');
+        toggle.className = 'building-avail-toggle';
+        var check = document.createElement('input');
+        check.type = 'checkbox';
+        check.checked = available;
+        check.setAttribute('aria-label', 'Available for scheduling');
+        var toggleText = document.createElement('span');
+        toggleText.textContent = available ? 'Available for scheduling' : 'Unavailable for scheduling';
+        check.addEventListener('click', function (e) {
+          e.stopPropagation();
+        });
+        check.addEventListener('change', function () {
+          buildingAvailable[bkey] = !!check.checked;
+          persistSchedData();
+          renderBuildings();
+          if (flowState.building === bkey) openBuildingRooms(bkey, { keepBuildingEditorOpen: true });
+        });
+        toggle.appendChild(toggleText);
+        toggle.appendChild(check);
+        footer.appendChild(toggle);
+        var editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'btn-building-edit';
+        editBtn.textContent = 'Edit building';
+        editBtn.setAttribute('aria-label', 'Edit building ' + displayName);
+        editBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openBuildingEditModal(bkey);
+        });
+        footer.appendChild(editBtn);
+
+        card.appendChild(mainBtn);
+        card.appendChild(footer);
+        wrap.appendChild(card);
+        grid.appendChild(wrap);
+      });
+    }
+
+    function openBuildingRooms(bkey, opts) {
+      opts = opts || {};
+      if (!opts.keepBuildingEditorOpen) closeBuildingEditModal();
+      flowState.building = bkey;
+      document.getElementById('flowBuildings').hidden = true;
+      document.getElementById('flowRooms').hidden = false;
+      document.getElementById('roomsPanelTitle').textContent =
+        (buildingNames[bkey] != null ? buildingNames[bkey] : bkey) + ' — rooms';
+      document.getElementById('roomsPanelSub').textContent = buildingUsesFloors[bkey]
+        ? 'Rooms are grouped by floor (' +
+          computeMaxFloors(bkey) +
+          ' floors). Status: Active · Vacant · Under maintenance — open a room to edit it.'
+        : 'Single-level room list (no floors). Status: Active · Vacant · Under maintenance — open a room to edit it.';
+      var unavailBanner = document.getElementById('buildingUnavailBanner');
+      if (unavailBanner) unavailBanner.hidden = isBuildingAvailable(bkey);
+      var ul = document.getElementById('roomStatusList');
+      ul.innerHTML = '';
+      getRoomsGroupedByFloor(bkey).forEach(function (group) {
+        var section = document.createElement('li');
+        section.className = 'room-floor-section';
+        var heading = document.createElement('div');
+        heading.className = 'room-floor-heading';
+        heading.textContent = group.flat ? 'Rooms' : 'Floor ' + group.floor;
+        section.appendChild(heading);
+        var innerUl = document.createElement('ul');
+        innerUl.className = 'room-floor-list';
+        group.rooms.forEach(function (rid) {
+          var st = roomGet(roomStatus, bkey, rid) || 'active';
+          var li = document.createElement('li');
+          li.style.listStyle = 'none';
+          var row = document.createElement('div');
+          row.className = 'room-status-row';
+          var mainBtn = document.createElement('button');
+          mainBtn.type = 'button';
+          mainBtn.className = 'room-status-main';
+          mainBtn.innerHTML =
+            '<span class="room-status-item-left">Room ' +
+            rid +
+            '</span><span class="room-status-badges"><span class="badge-room-status ' +
+            statusClass(st) +
+            '">' +
+            formatStatus(st) +
+            '</span>' +
+            (isBuildingAvailable(bkey)
+              ? ''
+              : '<span class="badge-room-status status-building-off">Building unavailable</span>') +
+            '</span>';
+          mainBtn.addEventListener('click', function () {
+            openRoomEditModal(rid, {});
+          });
+          row.appendChild(mainBtn);
+          li.appendChild(row);
+          innerUl.appendChild(li);
+        });
+        section.appendChild(innerUl);
+        ul.appendChild(section);
+      });
+    }
+
+    function backToBuildings() {
+      closeRoomEditModal();
+      closeBuildingEditModal();
+      flowState.building = null;
+      document.getElementById('flowBuildings').hidden = false;
+      document.getElementById('flowRooms').hidden = true;
+    }
+
+    document.getElementById('btnBackToBuildings').addEventListener('click', backToBuildings);
+
+    (function initRoomEditModal() {
+      var modal = document.getElementById('roomEditModal');
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeRoomEditModal();
+      });
+      document.getElementById('btnCloseRoomEditModal').addEventListener('click', closeRoomEditModal);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeRoomEditModal();
+      });
+      window.RoomTypes.attachSelect(document.getElementById('flowType'), { campusRoomsOnly: true });
+    })();
+
+    (function initBuildingEditModal() {
+      var modal = document.getElementById('buildingEditModal');
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeBuildingEditModal();
+      });
+      document.getElementById('btnCloseBuildingEdit').addEventListener('click', closeBuildingEditModal);
+      document.getElementById('btnRemoveBuilding').addEventListener('click', function () {
+        var bkey = buildingEditState.bkey;
+        if (!bkey) return;
+        removeBuildingByKey(bkey);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var rm = document.getElementById('roomEditModal');
+        if (rm.classList.contains('open')) return;
+        var am = document.getElementById('addBuildingModal');
+        if (am.classList.contains('open')) return;
+        if (modal.classList.contains('open')) closeBuildingEditModal();
+      });
+    })();
+
+    document.getElementById('scheduleFormFlow').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var creating = flowState.creating;
+      var rid = creating
+        ? String(document.getElementById('flowRoomNew').value || '').trim()
+        : flowState.editingRoomId;
+      var bkey = flowState.building;
+      var typeVal = document.getElementById('flowType').value;
+      if (!typeVal || typeVal === window.RoomTypes.ADD_NEW_VALUE) {
+        alert('Please select a room type.');
+        return;
+      }
+      var cid = document.getElementById('flowCollege').value;
+      var collegeOk = creating
+        ? isCollegeAllowedOnFloor(bkey, flowState.addFloor, cid)
+        : isCollegeAllowedForRoom(bkey, rid, cid);
+      if (!collegeOk) {
+        alert(
+          'This college is not allowed for this room. Check college settings in Edit building.'
+        );
+        return;
+      }
+      var allocation = {
+        type: typeVal,
+        capacity: document.getElementById('flowCapacity').value,
+        college: cid
+      };
+      if (creating) {
+        if (
+          !addRoomToBuilding(bkey, flowState.addFloor, rid, {
+            status: document.getElementById('flowStatus').value,
+            allocation: allocation
+          })
+        ) {
+          return;
+        }
+      } else {
+        roomSet(roomStatus, bkey, rid, document.getElementById('flowStatus').value);
+        roomSet(roomAllocation, bkey, rid, allocation);
+      }
+      var form = this;
+      persistSchedData().then(function (res) {
+        if (res && res.ok === false) return;
+        form.reset();
+        closeRoomEditModal();
+        renderBuildings();
+        if (flowState.building && !document.getElementById('flowRooms').hidden) {
+          openBuildingRooms(flowState.building, {
+            keepBuildingEditorOpen: document.getElementById('buildingEditModal').classList.contains('open')
+          });
+        }
+        if (buildingEditState.bkey) {
+          renderBuildingEditPanel(buildingEditState.bkey);
+        }
+      });
+    });
+
+    document.getElementById('btnAddBuilding').addEventListener('click', openAddBuildingModal);
+
+    (function initAddBuildingModal() {
+      var modal = document.getElementById('addBuildingModal');
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeAddBuildingModal();
+      });
+      document.getElementById('btnCancelAddBuilding').addEventListener('click', closeAddBuildingModal);
+      document.getElementById('addBuildingUseFloors').addEventListener('change', function () {
+        syncAddBuildingFloorWrapVisibility();
+        rebuildAddBuildingFloorDeptWrap();
+      });
+      document.getElementById('addBuildingFloorCount').addEventListener('input', function () {
+        rebuildAddBuildingFloorDeptWrap();
+      });
+      document.getElementById('addBuildingSingleDept').addEventListener('change', function () {
+        var on = this.checked;
+        var ds = document.getElementById('addBuildingDeptOnly');
+        ds.disabled = !on;
+        if (on) {
+          fillCollegeSelect(ds, COLLEGE_OPTIONS[0] ? COLLEGE_OPTIONS[0].id : '', false, true);
+        } else {
+          fillCollegeSelect(ds, '', true, true);
+        }
+        rebuildAddBuildingFloorDeptWrap();
+      });
+      document.getElementById('addBuildingForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var name = document.getElementById('addBuildingName').value.trim();
+        if (!name) return;
+        var bkey = uniqueBuildingKey(slugifyBuildingKey(name));
+        var useFloors = document.getElementById('addBuildingUseFloors').checked;
+        var p1 = document.getElementById('addProximity1').value;
+        var p2 = document.getElementById('addProximity2').value;
+        if (p1 && p2 && p1 === p2) p2 = '';
+        buildingOrder.push(bkey);
+        buildingNames[bkey] = name;
+        roomsByBuilding[bkey] = [];
+        buildingUsesFloors[bkey] = useFloors;
+        extraFloorsByBuilding[bkey] = [];
+        buildingProximity[bkey] = [p1, p2].filter(Boolean);
+        buildingAvailable[bkey] = true;
+
+        var singleD = document.getElementById('addBuildingSingleDept').checked;
+        if (singleD) {
+          var dv = document.getElementById('addBuildingDeptOnly').value;
+          if (!dv) {
+            alert('Select a college for single-college building, or turn off that option.');
+            return;
+          }
+          buildingDeptOnly[bkey] = dv;
+        } else {
+          delete buildingDeptOnly[bkey];
+        }
+
+        if (!floorDepartmentsByBuilding[bkey]) floorDepartmentsByBuilding[bkey] = {};
+
+        if (useFloors) {
+          var n = parseInt(document.getElementById('addBuildingFloorCount').value, 10) || 1;
+          if (n < 1) n = 1;
+          if (n > 40) n = 40;
+          for (var fl0 = 1; fl0 <= n; fl0++) {
+            extraFloorsByBuilding[bkey].push(fl0);
+          }
+          if (!singleD) {
+            for (var fl2 = 1; fl2 <= n; fl2++) {
+              var grid = document.querySelector(
+                '#addBuildingFloorDeptWrap [data-floor="' + fl2 + '"]'
+              );
+              var checked = [];
+              if (grid) {
+                grid.querySelectorAll('input[type=checkbox]').forEach(function (x) {
+                  if (x.checked) checked.push(x.value);
+                });
+              }
+              setFloorDeptList(bkey, String(fl2), checked);
+            }
+          }
+        } else if (!singleD) {
+          var gridF = document.querySelector('#addBuildingFloorDeptWrap [data-floor="_flat"]');
+          var checkedF = [];
+          if (gridF) {
+            gridF.querySelectorAll('input[type=checkbox]').forEach(function (x) {
+              if (x.checked) checkedF.push(x.value);
+            });
+          }
+          setFloorDeptList(bkey, '_flat', checkedF);
+        }
+
+        persistSchedData();
+        closeAddBuildingModal();
+        renderBuildings();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var rm = document.getElementById('roomEditModal');
+        if (rm.classList.contains('open')) return;
+        var bm = document.getElementById('buildingEditModal');
+        if (bm.classList.contains('open')) return;
+        if (modal.classList.contains('open')) closeAddBuildingModal();
+      });
+    })();
+
+    renderBuildings();
+
+    (window.MCUNexReady || Promise.resolve()).then(function () {
+      if (window.FacilitiesStore) applyPersisted(FacilitiesStore.snapshot());
+      refreshCollegeOptions();
+      renderBuildings();
+      document.addEventListener('mcu-room-types-changed', function () {
+        if (window.FacilitiesStore) applyPersisted(FacilitiesStore.snapshot());
+        refreshCollegeOptions();
+        renderBuildings();
+        var typesPane = document.getElementById('flowRoomTypes');
+        if (typesPane && !typesPane.hidden) return;
+        if (flowState.building && document.getElementById('flowRooms') && !document.getElementById('flowRooms').hidden) {
+          openBuildingRooms(flowState.building);
+        }
+      });
+    });
+
+    (function initAddBuildingFromHash() {
+      function openIfHash() {
+        if (window.location.hash !== '#add-building') return;
+        openAddBuildingModal();
+        if (history.replaceState) {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+      openIfHash();
+      window.addEventListener('hashchange', openIfHash);
+    })();
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, tOpts) + '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+  <script src="../../js/notifications.js" defer></script>
+</body>
+</html>
+

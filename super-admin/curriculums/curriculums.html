@@ -1,0 +1,3191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curriculums – MCU-NEX Room Allocation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-dark: #2d163f;
+      --purple-soft: #f6f1fc;
+      /* Curriculum view tables (mockup: soft grids + purple year bars) */
+      --curriculum-thead-bg: #f3f4f6;
+      --curriculum-separator-bg: #ede9fe;
+      --cv-border: #d1d5db;
+      --cv-tfoot-bg: #f3f4f6;
+      --gold: #f9b937;
+      --gold-soft: #fff6de;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+      --danger: #e05454;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .topbar-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      background: #f3edf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topbar-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .topbar-brand-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .topbar-brand-link:hover {
+      opacity: 0.92;
+    }
+
+    .topbar-title-main {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .topbar-title-sub {
+      font-size: 0.75rem;
+      color: #e2d4ff;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+    .topbar-link {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .topbar-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .topbar-notify {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topbar-notify-btn {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.16);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .topbar-notify-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+
+    .topbar-user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--purple);
+    }
+
+    .chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      margin-right: 0.75rem;
+    }
+
+    .nav-toggle:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-toggle-line {
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .user-menu,
+    .notify-menu {
+      position: absolute;
+      top: 130%;
+      right: 0;
+      background: #fff;
+      color: var(--text-main);
+      min-width: 160px;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 10;
+    }
+
+    .user-menu a,
+    .notify-menu div {
+      display: block;
+      padding: 0.45rem 0.9rem;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    .user-menu a:hover,
+    .notify-menu div:hover {
+      background: var(--purple-soft);
+      color: var(--purple);
+    }
+
+    .user-menu a.logout {
+      color: var(--danger);
+    }
+
+    .topbar-user.open .user-menu {
+      display: block;
+    }
+
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 50;
+    }
+
+    .tooltip:hover::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tooltip.open::after,
+    .tooltip.open:hover::after {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    .tooltip-left::after {
+      left: 0;
+      right: auto;
+    }
+
+    .topbar-tabs {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.8rem;
+      overflow-x: visible;
+      overflow-y: visible;
+      background: var(--purple-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .topbar-tab {
+      text-decoration: none;
+      color: #e2d4ff;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .topbar-tab:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+
+    .topbar-tab.active {
+      border-bottom-color: var(--gold);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .layout-row {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .nav-bar {
+      background: var(--purple-dark);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      width: 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: fixed;
+      top: 92px;
+      left: 0;
+      height: calc(100vh - 92px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 15;
+    }
+
+    .nav-bar.nav-bar-open {
+      transform: translateX(0);
+    }
+
+    .nav-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c9b8f3;
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      color: #e8ddff;
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background: #fff;
+      color: var(--purple-dark);
+      font-weight: 600;
+    }
+
+    main.page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: min(100%, 1920px);
+      width: 100%;
+      margin: 2rem auto;
+      margin-inline: auto;
+      padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem);
+      box-sizing: border-box;
+    }
+
+    .filters-row {
+      background: #fff;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-soft);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .filters-row label {
+      font-weight: 500;
+      color: var(--text-main);
+      font-size: 0.85rem;
+    }
+
+    .filters-row select {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 0.35rem 0.9rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: var(--purple-soft);
+      color: var(--text-main);
+      min-width: 180px;
+      outline: none;
+    }
+
+    .main-card {
+      background: #fff;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.25rem 1.25rem 1.4rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .main-header-title {
+      font-size: 1.15rem;
+    }
+
+    .main-header-title span {
+      font-weight: 600;
+    }
+
+    .main-header-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+    }
+
+    .toolbar-group {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      overflow: hidden;
+    }
+
+    .toolbar-group button,
+    .toolbar-group span {
+      border: 0;
+      padding: 0.35rem 0.7rem;
+      background: transparent;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .toolbar-group button.primary {
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .toolbar-icon {
+      font-size: 0.9rem;
+    }
+
+    .toolbar-pill {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 0.35rem 0.8rem;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .toolbar-pill-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .toolbar-pill-value {
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .calendar {
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-soft);
+      overflow: hidden;
+    }
+
+    .calendar-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: #fbf9ff;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .calendar-header div {
+      padding: 0.6rem 0.75rem;
+      border-right: 1px solid var(--border-soft);
+    }
+
+    .calendar-header div:last-child {
+      border-right: none;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: #fff;
+      font-size: 0.78rem;
+    }
+
+    .day-cell {
+      min-height: 110px;
+      border-right: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0.5rem 0.6rem;
+      position: relative;
+      background: #fff;
+    }
+
+    .day-cell:last-child {
+      border-right: none;
+    }
+
+    .day-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.1rem;
+    }
+
+    .day-number {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .day-muted {
+      color: #c2b6d2;
+    }
+
+    .day-highlight {
+      background: var(--gold-soft);
+    }
+
+    .shift-card {
+      margin-top: 0.35rem;
+      padding: 0.4rem 0.45rem;
+      background: var(--purple-soft);
+      border-radius: 0.45rem;
+      border: 1px solid var(--border-soft);
+      font-size: 0.75rem;
+      line-height: 1.3;
+      color: var(--text-main);
+    }
+
+    .shift-time {
+      font-weight: 600;
+    }
+
+    .shift-location {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .shift-count {
+      position: absolute;
+      right: 0.45rem;
+      bottom: 0.45rem;
+      font-size: 0.7rem;
+      color: #b2a5c5;
+    }
+
+    @media (max-width: 900px) {
+      .calendar-header,
+      .calendar-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .calendar-header div:nth-child(n+5),
+      .calendar-grid .day-cell:nth-child(n+5) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-bar {
+        width: 75%;
+        max-width: 260px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 1rem;
+      }
+
+      .nav-bar {
+        padding-inline: 1rem;
+      }
+
+      .topbar {
+        padding-inline: 1rem;
+      }
+
+      .calendar-header,
+      .calendar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .calendar-header div:nth-child(n+3),
+      .calendar-grid .day-cell:nth-child(n+3) {
+        display: none;
+      }
+    }
+  
+    /* Page-specific styles for Rooms Available */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      color: var(--purple);
+      margin-bottom: 0;
+    }
+
+    .page-header-with-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.45rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .link-change-filters {
+      font-weight: 600;
+      color: var(--purple);
+      text-decoration: none;
+      white-space: nowrap;
+      font-size: 0.95rem;
+    }
+
+    .link-change-filters:hover {
+      text-decoration: underline;
+    }
+
+    .filters-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 0.65rem clamp(0.5rem, 1.5vw, 1rem) 0.7rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(227, 217, 240, 0.9);
+      margin: 0 auto 1.1rem;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .filters-toolbar-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    .filters-toolbar-table tbody tr {
+      vertical-align: bottom;
+    }
+
+    .filters-toolbar-cell {
+      padding: 0 0.65rem 0 0;
+      vertical-align: bottom;
+    }
+
+    .filters-toolbar-cell:last-child {
+      padding-right: 0;
+    }
+
+    .filters-toolbar-cell--curriculum-year {
+      min-width: min(100%, 12rem);
+      max-width: 19rem;
+    }
+
+    .filters-toolbar-cell--sem {
+      min-width: min(100%, 7.5rem);
+      max-width: 11rem;
+    }
+
+    .filters-toolbar-cell--dept {
+      min-width: min(100%, 9rem);
+      max-width: 18rem;
+    }
+
+    .filters-toolbar-cell--apply {
+      text-align: right;
+      padding-left: 0.35rem;
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 720px) {
+      .filters-toolbar-table,
+      .filters-toolbar-table tbody,
+      .filters-toolbar-table tr,
+      .filters-toolbar-cell {
+        display: block;
+        width: 100%;
+      }
+
+      .filters-toolbar-cell {
+        padding: 0 0 0.65rem 0;
+      }
+
+      .filters-toolbar-cell--apply {
+        text-align: left;
+        white-space: normal;
+      }
+
+      .filters-toolbar-cell--apply .btn-filter {
+        width: 100%;
+      }
+    }
+
+    .filters-toolbar-table .filter-select {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .filter-label-spacer {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      margin-bottom: 0.32rem;
+      line-height: 1.15;
+      min-height: 1.1em;
+      visibility: hidden;
+      user-select: none;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filters-card .filter-group label {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: var(--purple);
+      font-size: 0.8125rem;
+      letter-spacing: 0.01em;
+    }
+
+    .filter-select {
+      padding: 0.5rem 0.65rem;
+      border: 2px solid var(--border-soft);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(92, 38, 126, 0.1);
+    }
+
+    .btn-filter {
+      padding: 0.52rem 1.05rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--purple);
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-filter:hover {
+      background: var(--purple-dark);
+      transform: translateY(-2px);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card.available .stat-number { color: #10b981; }
+    .stat-card.occupied .stat-number { color: #f59e0b; }
+    .stat-card.maintenance .stat-number { color: #ef4444; }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+    }
+
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .curriculum-view-root {
+      margin-bottom: 0.35rem;
+    }
+
+    .curriculum-card {
+      background: #fff;
+      border: 1px solid var(--cv-border);
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(45, 22, 63, 0.08);
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .curriculum-year-level-section {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .curriculum-year-level-section + .curriculum-year-level-section {
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .curriculum-card-year-header {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fff;
+      padding: 0.65rem 1rem;
+      margin: 0;
+      border-bottom: none;
+      background: var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    .curriculum-card-year-header-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .curriculum-card-year-header-pencil {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+
+    .curriculum-card-year-header-pencil svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+
+    button.curriculum-card-year-header-pencil-btn {
+      border: none;
+      background: transparent;
+      padding: 0.2rem;
+      margin: 0;
+      cursor: pointer;
+      color: inherit;
+      border-radius: 0.35rem;
+      line-height: 0;
+    }
+
+    button.curriculum-card-year-header-pencil-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    .curriculum-card-year-header .curriculum-card-year-header-pencil-btn {
+      color: #fff;
+    }
+
+    .curriculum-year-sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 130;
+      padding: 1rem;
+    }
+
+    .curriculum-year-sheet-overlay.open {
+      display: flex;
+    }
+
+    .curriculum-year-sheet-panel {
+      background: #fff;
+      border-radius: 12px;
+      width: min(1400px, calc(100vw - 2rem));
+      max-height: min(92vh, 900px);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--border-soft);
+    }
+
+    .curriculum-year-sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      flex-shrink: 0;
+    }
+
+    .curriculum-year-sheet-head h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--purple);
+    }
+
+    .curriculum-year-sheet-close {
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .curriculum-year-sheet-close:hover {
+      border-color: var(--purple);
+    }
+
+    .curriculum-year-sheet-body {
+      padding: 1rem 1.25rem 1.25rem;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .curriculum-year-sheet-footer {
+      flex-shrink: 0;
+      padding: 0.75rem 1.25rem 1rem;
+      border-top: 1px solid var(--border-soft);
+      background: #faf8fc;
+    }
+
+    #curriculumYearSheetModal .dm-curriculum-table-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin: 0;
+    }
+
+    #curriculumYearSheetModal .dm-curriculum-table-actions__left,
+    #curriculumYearSheetModal .dm-curriculum-table-actions__right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    #curriculumYearSheetModal .dm-btn-curriculum-add {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--purple);
+      background: #fff;
+      border: 1px solid var(--purple);
+      border-radius: 0.5rem;
+    }
+
+    #curriculumYearSheetModal .dm-btn-curriculum-add--ghost {
+      color: var(--text-main);
+      border-color: var(--border-soft);
+      background: #fafafa;
+    }
+
+    #curriculumYearSheetModal .dm-btn-curriculum-add:hover {
+      background: var(--purple-soft);
+    }
+
+    #curriculumYearSheetModal .dm-btn-curriculum-add--ghost:hover {
+      background: var(--purple-soft);
+      border-color: #d4c4e8;
+      color: var(--purple);
+    }
+
+    #curriculumYearSheetModal .dm-btn-curriculum-save {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1.15rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      color: #fff;
+      background: var(--purple);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 0.5rem;
+    }
+
+    #curriculumYearSheetModal .dm-btn-curriculum-save:hover {
+      filter: brightness(1.06);
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__select {
+      flex: 1;
+      min-width: 12rem;
+      max-width: 22rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__remove {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      color: #fff;
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 6px;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__remove:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    #curriculumYearSheetModal .dm-cv-table input[type="text"],
+    #curriculumYearSheetModal .dm-cv-table input[type="number"] {
+      width: 100%;
+      min-width: 0;
+      padding: 0.28rem 0.35rem;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: inherit;
+      color: var(--text-main);
+      text-align: inherit;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table .dm-cv-num input {
+      text-align: center;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table input:focus {
+      outline: 2px solid rgba(92, 38, 126, 0.35);
+      outline-offset: -2px;
+      border-radius: 2px;
+    }
+
+    #curriculumYearSheetModal .dm-cv-add-in-sem {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      border: 2px solid var(--purple);
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    #curriculumYearSheetModal .dm-cv-add-in-sem:hover {
+      background: var(--purple-soft);
+    }
+
+    #curriculumYearSheetModal .btn-curriculum-remove {
+      padding: 0.2rem 0.45rem;
+      font-size: 0.72rem;
+      font-family: inherit;
+      cursor: pointer;
+      color: #b91c1c;
+      background: transparent;
+      border: 1px solid rgba(185, 28, 28, 0.4);
+      border-radius: 0.3rem;
+    }
+
+    #curriculumYearSheetModal .btn-curriculum-remove:hover {
+      background: #fef2f2;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year {
+      border: 1px solid var(--cv-border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(45, 22, 63, 0.08);
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 1rem;
+      background: var(--purple);
+      color: #fff;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__bar > div:first-child {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-right: 0.5rem;
+    }
+
+    #curriculumYearSheetModal .dm-cv-year__semgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid var(--cv-border);
+    }
+
+    @media (max-width: 900px) {
+      #curriculumYearSheetModal .dm-cv-year__semgrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    #curriculumYearSheetModal .dm-cv-sem {
+      padding: 0.75rem 0.65rem 1rem;
+      border-right: 1px solid var(--cv-border);
+      min-width: 0;
+    }
+
+    #curriculumYearSheetModal .dm-cv-sem:last-child {
+      border-right: none;
+    }
+
+    @media (max-width: 900px) {
+      #curriculumYearSheetModal .dm-cv-sem {
+        border-right: none;
+        border-bottom: 1px solid var(--cv-border);
+      }
+
+      #curriculumYearSheetModal .dm-cv-sem:last-child {
+        border-bottom: none;
+      }
+    }
+
+    #curriculumYearSheetModal .dm-cv-sem__title {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      padding: 0.55rem 0.35rem 0.7rem;
+      background: #fff;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table-wrap {
+      overflow-x: auto;
+      margin-bottom: 0.65rem;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      border: 1px solid var(--cv-border);
+    }
+
+    #curriculumYearSheetModal .dm-cv-table th,
+    #curriculumYearSheetModal .dm-cv-table td {
+      border: 1px solid var(--cv-border);
+      padding: 0.4rem 0.45rem;
+      vertical-align: middle;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table thead th {
+      background: var(--curriculum-thead-bg);
+      color: var(--text-main);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.65rem;
+      text-align: center;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table tbody td.dm-cv-cell-title {
+      text-align: left;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table .dm-cv-num {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table tfoot td {
+      background: var(--cv-tfoot-bg);
+      font-weight: 700;
+      text-align: center;
+      border-color: var(--cv-border);
+    }
+
+    #curriculumYearSheetModal .dm-cv-table tfoot td.dm-cv-total-label {
+      text-align: left;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table tbody td {
+      background: #fff;
+    }
+
+    #curriculumYearSheetModal .dm-cv-table tbody tr.dm-cv-row-inactive td {
+      opacity: 0.82;
+    }
+
+    /* Year level (1st year, 2nd year, …): distinct from Curriculum Academic Year purple bar */
+    .curriculum-level-banner {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0.55rem 0.75rem;
+      margin: 0;
+      background: var(--gold-soft);
+      color: var(--purple-dark);
+      border-bottom: 1px solid rgba(249, 185, 55, 0.5);
+    }
+
+    .curriculum-view-sem-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      justify-items: stretch;
+      gap: 0;
+      width: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .curriculum-view-sem-grid--single {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (max-width: 520px) {
+      .curriculum-view-sem-grid:not(.curriculum-view-sem-grid--single) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .curriculum-view-sem-stack {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      min-height: 0;
+      border-right: 1px solid var(--cv-border);
+    }
+
+    .curriculum-view-sem-stack:last-child {
+      border-right: none;
+    }
+
+    .curriculum-view-sem-grid:not(.curriculum-view-sem-grid--single) > .curriculum-view-sem-stack:only-child {
+      border-right: 1px solid var(--cv-border);
+    }
+
+    @media (max-width: 520px) {
+      .curriculum-view-sem-stack {
+        border-right: none;
+        border-bottom: 1px solid var(--cv-border);
+      }
+
+      .curriculum-view-sem-stack:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .curriculum-view-sem-head {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      padding: 0.55rem 0.5rem;
+      background: #fff;
+      border-bottom: 1px solid var(--cv-border);
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .curriculum-view-sem-col {
+      flex: 0 1 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 0.35rem 0.35rem 0.5rem;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      min-height: 0;
+      align-self: stretch;
+    }
+
+    /* No card frame — wrap is layout only; table uses default .curriculum-table border. */
+    .curriculum-view-sem-col .curriculum-table-wrap--compact {
+      flex: 0 1 auto;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      width: 100%;
+      max-width: 100%;
+      align-self: stretch;
+      box-sizing: border-box;
+    }
+
+    .curriculum-table-wrap {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--cv-border);
+      box-shadow: none;
+    }
+
+    /* Compact semester table: no inner card — class list is still curriculum-table-wrap + --compact. */
+    .curriculum-view-sem-col .curriculum-table-wrap.curriculum-table-wrap--compact {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /*
+      Flex/grid children default to min-width:auto (content-sized). Long titles inflated only the left table.
+      min-width:0 lets the table respect the 50% grid column; width:100% + table-layout:fixed fills it.
+    */
+    .curriculum-view-sem-col .curriculum-table.curriculum-table--compact {
+      flex: 0 1 auto;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      table-layout: fixed;
+    }
+
+    .curriculum-table--compact {
+      font-size: 0.7rem;
+    }
+
+    .curriculum-table--compact td:nth-child(2) {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .curriculum-table--compact tbody tr.schedule-data-row td {
+      vertical-align: middle;
+    }
+
+    tr.curriculum-total-align-spacer td {
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      line-height: 0;
+    }
+
+    .curriculum-table--compact thead th {
+      font-size: 0.62rem;
+      white-space: normal;
+      line-height: 1.2;
+      vertical-align: middle;
+      hyphens: auto;
+    }
+
+    .curriculum-table--compact th,
+    .curriculum-table--compact td {
+      padding: 0.32rem 0.42rem;
+    }
+
+    .curriculum-table--compact col.col-cv-code--compact {
+      width: 10%;
+    }
+
+    .curriculum-table--compact col.col-cv-title--compact {
+      width: 22%;
+      min-width: 4.5rem;
+    }
+
+    .curriculum-table--compact col.col-cv-lec--compact,
+    .curriculum-table--compact col.col-cv-lab--compact {
+      width: 7%;
+      min-width: 2rem;
+    }
+
+    .curriculum-table--compact col.col-cv-tunits--compact,
+    .curriculum-table--compact col.col-cv-hrwk--compact,
+    .curriculum-table--compact col.col-cv-hrsem--compact {
+      width: 9%;
+      min-width: 2.5rem;
+    }
+
+    .curriculum-table--compact col.col-cv-prereq--compact {
+      width: 11%;
+      min-width: 2.75rem;
+    }
+
+    .curriculum-table--compact th,
+    .curriculum-table--compact td {
+      text-align: center;
+    }
+
+    .curriculum-table--compact thead tr:first-child th:nth-child(1),
+    .curriculum-table--compact thead tr:first-child th:nth-child(2),
+    .curriculum-table--compact tbody tr.schedule-data-row td:nth-child(1),
+    .curriculum-table--compact tbody tr.schedule-data-row td:nth-child(2) {
+      text-align: left;
+    }
+
+    .curriculum-table--compact tfoot td.total-label {
+      text-align: left;
+    }
+
+    .curriculum-table--compact th.col-edit,
+    .curriculum-table--compact td.col-edit {
+      text-align: center;
+    }
+
+    .curriculum-table--compact .btn-curriculum-row-edit {
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: 0.35rem;
+    }
+
+    .curriculum-table--compact .btn-curriculum-row-edit svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .curriculum-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      border: 1px solid var(--cv-border);
+    }
+
+    .curriculum-table thead tr:first-child th {
+      border-top: 1px solid var(--cv-border);
+    }
+
+    .curriculum-table col.col-code {
+      width: 9%;
+    }
+
+    .curriculum-table col.col-num {
+      width: 6.5%;
+    }
+
+    .curriculum-table col.col-edit-col {
+      width: 2.75rem;
+    }
+
+    .curriculum-table tbody td:nth-child(2) {
+      min-width: 6rem;
+    }
+
+    .curriculum-table thead tr:nth-child(2) th {
+      background: var(--curriculum-thead-bg);
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: center;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .curriculum-table th,
+    .curriculum-table td {
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      border: 1px solid var(--cv-border);
+      vertical-align: middle;
+    }
+
+    .curriculum-table td:nth-child(2) {
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row {
+      background: #fff;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row.schedule-row--stripe {
+      background: #f0f1f4;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row.row-inactive {
+      opacity: 0.92;
+      background: #fafafa;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row.row-inactive.schedule-row--stripe {
+      background: #eceef1;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row:hover {
+      background: rgba(246, 241, 252, 0.85) !important;
+    }
+
+    .curriculum-table tbody tr.curriculum-body-pad-row:hover {
+      background: #fff !important;
+    }
+
+    .curriculum-table tbody tr.curriculum-body-pad-row.schedule-row--stripe:hover {
+      background: #f0f1f4 !important;
+    }
+
+    .curriculum-table thead th {
+      background: var(--curriculum-thead-bg);
+      color: var(--text-main);
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(1),
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(3),
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(4),
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(5),
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(6),
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(7),
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(8) {
+      text-align: center;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row td:nth-child(2) {
+      text-align: left;
+    }
+
+    .curriculum-table tbody tr.schedule-data-row td {
+      color: var(--text-main);
+    }
+
+    .curriculum-table thead th.col-edit {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .col-edit {
+      padding: 0.35rem !important;
+      vertical-align: middle !important;
+    }
+
+    .btn-curriculum-row-edit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.45rem;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      color: var(--purple);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-curriculum-row-edit:hover {
+      background: #fff;
+      border-color: var(--purple);
+      color: var(--purple-dark);
+    }
+
+    .btn-curriculum-row-edit svg {
+      display: block;
+    }
+
+    button.btn-curriculum-row-edit {
+      font: inherit;
+      margin: 0;
+    }
+
+    .curriculum-row-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 120;
+      padding: 1rem;
+    }
+
+    .curriculum-row-modal-overlay.open {
+      display: flex;
+    }
+
+    .curriculum-row-modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 440px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-soft);
+    }
+
+    .curriculum-row-modal h2 {
+      font-size: 1.15rem;
+      color: var(--purple);
+      margin: 0 0 1rem;
+      font-weight: 700;
+    }
+
+    .curriculum-row-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .curriculum-row-form-grid .full-span {
+      grid-column: 1 / -1;
+    }
+
+    .curriculum-row-form-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .curriculum-row-form-grid input {
+      padding: 0.45rem 0.55rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.875rem;
+    }
+
+    .curriculum-row-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-top: 0.25rem;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .curriculum-row-modal-actions-right {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .btn-curriculum-modal-delete {
+      padding: 0.55rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid #c53030;
+      background: #fff5f5;
+      color: #c53030;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-curriculum-modal-delete:hover {
+      background: #fed7d7;
+    }
+
+    .btn-curriculum-modal-cancel {
+      padding: 0.55rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-curriculum-modal-cancel:hover {
+      background: #fff;
+      border-color: var(--purple);
+    }
+
+    .btn-curriculum-modal-save {
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--purple);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-curriculum-modal-save:hover {
+      background: var(--purple-dark);
+    }
+
+    .curriculum-table tfoot tr.sheet-total-row td {
+      font-weight: 700;
+      background: var(--cv-tfoot-bg);
+      text-align: center;
+      border-color: var(--cv-border);
+    }
+
+    .curriculum-table tfoot tr.sheet-total-row td.total-label {
+      text-align: left;
+    }
+
+    .curriculum-table tfoot tr.sheet-total-row td.tfoot-empty {
+      background: var(--cv-tfoot-bg);
+    }
+
+    .curriculum-table .cell-muted {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .schedule-results-meta {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .schedule-dept-heading {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: var(--dept-heading-fg, var(--purple));
+      margin: 1.75rem 0 0.85rem;
+      padding: 0.55rem 0.85rem 0.55rem 0.95rem;
+      border-radius: 0 8px 8px 0;
+      border-left: 5px solid var(--dept-accent, var(--purple));
+      background: linear-gradient(
+        90deg,
+        var(--dept-accent-bg, rgba(92, 38, 126, 0.1)) 0%,
+        rgba(255, 255, 255, 0.4) 55%,
+        transparent 100%
+      );
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+    }
+
+    .schedule-dept--col-as {
+      --dept-accent: #5c267e;
+      --dept-accent-bg: rgba(92, 38, 126, 0.12);
+      --dept-heading-fg: #3d1a55;
+    }
+
+    .schedule-dept--col-opt {
+      --dept-accent: #0d9488;
+      --dept-accent-bg: rgba(13, 148, 136, 0.12);
+      --dept-heading-fg: #115e59;
+    }
+
+    .schedule-dept--col-dent {
+      --dept-accent: #2563eb;
+      --dept-accent-bg: rgba(37, 99, 235, 0.1);
+      --dept-heading-fg: #1e3a8a;
+    }
+
+    .schedule-dept--col-pt {
+      --dept-accent: #ea580c;
+      --dept-accent-bg: rgba(234, 88, 12, 0.1);
+      --dept-heading-fg: #9a3412;
+    }
+
+    .schedule-dept--col-pharm {
+      --dept-accent: #c026d3;
+      --dept-accent-bg: rgba(192, 38, 211, 0.1);
+      --dept-heading-fg: #86198f;
+    }
+
+    .schedule-dept-heading:first-child {
+      margin-top: 0;
+    }
+
+    .schedule-course-heading {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    .schedule-course-block:first-of-type .schedule-course-heading {
+      margin-top: 0;
+    }
+
+    .schedule-dept-block .schedule-course-block:first-child .schedule-course-heading {
+      margin-top: 0;
+    }
+
+    #scheduleTablesRoot {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .schedule-dept-block,
+    .schedule-course-block {
+      width: 100%;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .filter-group.is-disabled label {
+      opacity: 0.55;
+    }
+
+    .filter-select:disabled,
+    .filter-select.is-disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      background: #eef0f4;
+      color: var(--text-muted);
+    }
+
+    .badge-curr-status {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-curr-status.active {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .badge-curr-status.inactive {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .room-card {
+      background: white;
+      border: 2px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .room-card.hidden {
+      display: none;
+    }
+
+    .room-card.available {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    }
+
+    .room-card.occupied {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+    }
+
+    .room-card.maintenance {
+      border-color: #ef4444;
+      background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+    }
+
+    .room-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .room-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-soft);
+    }
+
+    .room-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--purple);
+    }
+
+    .room-status {
+      padding: 0.375rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .status-available {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-occupied {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-maintenance {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .room-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .room-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9375rem;
+    }
+
+    .room-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .room-value {
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .room-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-tag {
+      background: var(--purple-soft);
+      color: var(--purple);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .btn-allocate {
+      width: 100%;
+      padding: 0.875rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      background: var(--purple);
+      color: white;
+    }
+
+    .btn-allocate:hover:not(:disabled) {
+      background: var(--purple-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(92, 38, 126, 0.3);
+    }
+
+    .btn-allocate:disabled {
+      background: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    a.btn-allocate {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .curriculum-page-footer-cta {
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-size: 1.125rem;
+    }
+
+    .room-number.clickable {
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .room-number.clickable:hover {
+      color: var(--purple-dark);
+    }
+
+    .room-schedule-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .room-schedule-modal-overlay.open {
+      display: flex;
+    }
+    .room-schedule-modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      border: 1px solid var(--border-soft);
+    }
+    .room-schedule-modal h2 {
+      font-size: 1.25rem;
+      color: var(--purple);
+      margin-bottom: 1rem;
+    }
+    .modal-day-picker {
+      margin-bottom: 1.25rem;
+    }
+    .modal-day-picker-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .modal-day-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .modal-day-chip {
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 2px solid var(--border-soft);
+      background: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text-main);
+    }
+    .modal-day-chip:hover:not(:disabled) {
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+    .modal-day-chip.is-active {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: #fff;
+    }
+    .modal-day-chip.is-closed {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+    .room-schedule-modal .schedule-table-wrap {
+      margin-bottom: 1.25rem;
+    }
+    .room-schedule-modal .schedule-table-wrap h3 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .room-schedule-modal table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .room-schedule-modal table th,
+    .room-schedule-modal table td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border-soft);
+    }
+    .room-schedule-modal table th {
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 600;
+    }
+    .room-schedule-modal .allocate-form {
+      border-top: 2px solid var(--border-soft);
+      padding-top: 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 1rem;
+      align-items: end;
+    }
+    .room-schedule-modal .allocate-form .full-width {
+      grid-column: 1 / -1;
+    }
+    .room-schedule-modal .allocate-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.35rem;
+    }
+    .room-schedule-modal .allocate-form select,
+    .room-schedule-modal .allocate-form input {
+      width: 100%;
+      padding: 0.5rem 0.6rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .room-schedule-modal .btn-allocate-modal {
+      grid-column: 1 / -1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--purple);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .room-schedule-modal .btn-allocate-modal:hover {
+      background: var(--purple-dark);
+    }
+    .room-schedule-modal .btn-close {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .room-schedule-modal .btn-close:hover {
+      background: var(--purple);
+      color: #fff;
+    }
+    .btn-view {
+      width: 100%;
+      padding: 0.875rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      background: var(--purple);
+      color: white;
+    }
+    .btn-view:hover:not(:disabled) {
+      background: var(--purple-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(92, 38, 126, 0.3);
+    }
+    .btn-view:disabled {
+      background: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+    }
+      .topbar-tabs .topbar-datetime {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.05rem;
+      font-size: 0.72rem;
+      color: #c9b8f3;
+      line-height: 1.2;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-left: auto;
+      order: 99;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .topbar-tabs .topbar-datetime .topbar-datetime-date { opacity: 0.95; }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+</style>
+  <link rel="stylesheet" href="../../css/app-header-sticky.css" />
+</head>
+<body>
+  <div class="app-shell">
+  <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="../home-dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo">
+            <img src="../../Attri/mculogo.jpg" alt="MCU logo" />
+          </div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Super Admin</span>
+        <div class="topbar-notify" aria-label="Notifications">
+          <button class="topbar-notify-btn" type="button">
+            &#128276;
+            <span class="topbar-notify-dot" aria-hidden="true"></span>
+          </button>
+          <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <span>Ryan Registrar</span>
+          <div class="avatar">RR</div>
+          <div class="user-menu" role="menu">
+            <a href="../account.html" role="menuitem">Account</a>
+            <a href="../requests.html" role="menuitem">Requests</a>
+            <a href="../settings.html" role="menuitem">Settings</a>
+            <a href="../../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="topbar-tabs" aria-label="Curriculum navigation">
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <a href="curriculum-filters.html" class="topbar-tab active">Curriculums</a>
+    </div>
+
+    </div>
+
+    <div class="layout-row">
+      <nav class="nav-bar" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="../home-dashboard.html">Dashboard</a>
+        <a class="nav-link" href="../data-management/college-departments.html">Data Management</a>
+        <a class="nav-link" href="../faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="../create-schedule.html">Create Schedule</a>
+        <a class="nav-link active" href="curriculum-filters.html">Curriculums</a>
+        <a class="nav-link" href="../final-report.html">Reports</a>
+        <a class="nav-link" href="../requests.html">Requests</a>
+        <a class="nav-link" href="../account-management.html">Account Management</a>
+        <a class="nav-link" href="../logs.html">Transaction Log</a>
+      </nav>
+<main class="page">
+    <div class="page-header page-header-with-action">
+      <h1>Curriculums</h1>
+      <a href="curriculum-filters.html" class="link-change-filters" id="changeFiltersLink">Change filters</a>
+    </div>
+
+    <div class="filters-card">
+      <table class="filters-toolbar-table" role="toolbar" aria-label="Curriculum filters">
+        <tbody>
+          <tr>
+            <td class="filters-toolbar-cell filters-toolbar-cell--curriculum-year">
+              <div class="filter-group">
+                <label for="curriculumYearFilter">Curriculum Academic Year</label>
+                <select id="curriculumYearFilter" class="filter-select">
+                  <option value="all">All</option>
+                  <option value="2025-2026">2025–2026</option>
+                  <option value="2024-2025">2024–2025</option>
+                  <option value="2023-2024">2023–2024</option>
+                  <option value="2022-2023">2022–2023</option>
+                </select>
+              </div>
+            </td>
+            <td class="filters-toolbar-cell filters-toolbar-cell--sem">
+              <div class="filter-group">
+                <label for="semFilter">Semester</label>
+                <select id="semFilter" class="filter-select">
+                  <option value="all">All</option>
+                  <option value="1">1st semester</option>
+                  <option value="2">2nd semester</option>
+                  <option value="summer">Summer</option>
+                </select>
+              </div>
+            </td>
+            <td class="filters-toolbar-cell filters-toolbar-cell--dept">
+              <div class="filter-group">
+                <label for="deptFilter">College</label>
+                <select id="deptFilter" class="filter-select">
+                  <option value="all">All</option>
+                </select>
+              </div>
+            </td>
+            <td class="filters-toolbar-cell">
+              <div class="filter-group" id="courseFilterGroup">
+                <label for="courseFilter">Program</label>
+                <select id="courseFilter" class="filter-select">
+                  <option value="all">All</option>
+                </select>
+              </div>
+            </td>
+            <td class="filters-toolbar-cell">
+              <div class="filter-group">
+                <label for="statusFilter">Status</label>
+                <select id="statusFilter" class="filter-select">
+                  <option value="active" selected>Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </td>
+            <td class="filters-toolbar-cell filters-toolbar-cell--apply">
+              <span class="filter-label-spacer" aria-hidden="true">&nbsp;</span>
+              <button type="button" class="btn-filter" onclick="applyFilters()">Apply filters</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="schedule-results-meta" id="scheduleResultsMeta"></p>
+
+    <div id="scheduleTablesRoot"></div>
+
+    <div id="noResults" class="no-results" style="display: none;">
+      No curriculum rows match your filters. Upload a curriculum from Data management if this list is empty.
+    </div>
+
+    <div class="curriculum-page-footer-cta">
+      <a href="../data-management/add-curriculum.html" class="btn-allocate">Add curriculum</a>
+    </div>
+  </main>
+    </div>
+
+  <script src="../../js/api-client.js"></script>
+  <script src="../../js/session-boot.js"></script>
+  <script src="../../js/org-store.js"></script>
+  <script src="../../js/curriculum-store.js"></script>
+  <script src="../../js/data-boot.js"></script>
+  <script src="../../js/curriculum-report.js"></script>
+  <script>
+    (function () {
+      const navToggle = document.querySelector('.nav-toggle');
+      const navBar = document.querySelector('.nav-bar');
+      const user = document.querySelector('.topbar-user');
+      const userMenu = document.querySelector('.user-menu');
+
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+
+      if (user && userMenu) {
+        user.addEventListener('click', function (event) {
+          event.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+
+        userMenu.addEventListener('click', function (event) {
+          event.stopPropagation();
+        });
+
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+    })();
+    var DEPT_ORDER = [];
+    var DEPT_LABELS = {};
+    var COURSE_LABELS = {};
+    var COURSE_ORDER = [];
+    var reportLookups = { deptOrder: [], deptLabels: {}, courseLabels: {}, departmentsByCollege: {}, years: [] };
+    /** Every curriculum academic year card always lists 1st–4th year; 5th/6th append when present in data. */
+    const CURRICULUM_STANDARD_YEAR_LEVELS = ['1st year', '2nd year', '3rd year', '4th year'];
+
+    function formatSchoolYearLabel(sy) {
+      if (!sy) return '';
+      var p = sy.split('-');
+      if (p.length !== 2) return sy;
+      return p[0] + '–' + p[1];
+    }
+
+    function inferYearLevel(r) {
+      if (r.yearLevel) return r.yearLevel;
+      var digits = (r.classCode || '').match(/\d{3}/);
+      if (!digits) return '1st year';
+      var h = parseInt(digits[0].charAt(0), 10);
+      if (h <= 1) return '1st year';
+      if (h === 2) return '2nd year';
+      if (h === 3) return '3rd year';
+      if (h === 4) return '4th year';
+      if (h === 5) return '5th year';
+      return '6th year';
+    }
+
+    var curriculumRows = [];
+
+    function applyReportLookups(lookups) {
+      reportLookups = lookups || reportLookups;
+      DEPT_ORDER = reportLookups.deptOrder || [];
+      DEPT_LABELS = reportLookups.deptLabels || {};
+      COURSE_LABELS = reportLookups.courseLabels || {};
+      COURSE_ORDER = [];
+      Object.keys(reportLookups.departmentsByCollege || {}).forEach(function (cid) {
+        (reportLookups.departmentsByCollege[cid] || []).forEach(function (d) {
+          if (COURSE_ORDER.indexOf(d.value) < 0) COURSE_ORDER.push(d.value);
+        });
+      });
+    }
+
+    function loadRowsFromStore() {
+      curriculumRows = window.CurriculumReport ? CurriculumReport.rowsFromStore() : [];
+      curriculumRows.forEach(function (r) {
+        if (!r.yearLevel) r.yearLevel = inferYearLevel(r);
+      });
+      applyReportLookups(window.CurriculumReport ? CurriculumReport.lookupsFromRows(curriculumRows) : reportLookups);
+    }
+
+    function setSelectIfOptionExists(selectId, value) {
+      if (value == null || value === '') return;
+      const el = document.getElementById(selectId);
+      if (!el) return;
+      const opt = Array.prototype.find.call(el.options, function (o) { return o.value === value; });
+      if (opt) el.value = value;
+    }
+
+    function updateChangeFiltersLink() {
+      const a = document.getElementById('changeFiltersLink');
+      if (!a) return;
+      const courseEl = document.getElementById('courseFilter');
+      const courseVal = courseEl.disabled ? 'all' : courseEl.value;
+      const params = new URLSearchParams();
+      params.set('dept', document.getElementById('deptFilter').value);
+      params.set('course', courseVal);
+      params.set('curriculumYear', document.getElementById('curriculumYearFilter').value);
+      params.set('sem', document.getElementById('semFilter').value);
+      params.set('status', document.getElementById('statusFilter').value);
+      a.href = 'curriculum-filters.html?' + params.toString();
+    }
+
+    function courseLabel(key) {
+      return COURSE_LABELS[key] || key;
+    }
+
+    function coursesSortedKeys(courseKeys) {
+      const out = [];
+      COURSE_ORDER.forEach(function (k) {
+        if (courseKeys.indexOf(k) >= 0) out.push(k);
+      });
+      courseKeys.forEach(function (k) {
+        if (out.indexOf(k) < 0) out.push(k);
+      });
+      return out;
+    }
+
+    function syncCourseDropdown() {
+      if (!window.CurriculumReport) return;
+      CurriculumReport.syncDepartmentSelect(
+        document.getElementById('courseFilter'),
+        document.getElementById('courseFilterGroup'),
+        document.getElementById('deptFilter').value,
+        reportLookups,
+        document.getElementById('courseFilter').value
+      );
+    }
+
+    function refreshFilterOptions(selected) {
+      selected = selected || {};
+      if (!window.CurriculumReport) return;
+      CurriculumReport.fillPageFilters(
+        {
+          year: 'curriculumYearFilter',
+          college: 'deptFilter',
+          department: 'courseFilter',
+          departmentGroup: 'courseFilterGroup'
+        },
+        reportLookups,
+        {
+          year: selected.year,
+          college: selected.college,
+          department: selected.department
+        }
+      );
+    }
+
+    function sortRowsForDisplay(rows) {
+      return rows.slice().sort(function (a, b) {
+        var acy = a.curriculumYear || a.schoolYear;
+        var bcy = b.curriculumYear || b.schoolYear;
+        if (acy !== bcy) return bcy.localeCompare(acy);
+        if (a.semester !== b.semester) return a.semester.localeCompare(b.semester);
+        return (a.classCode || '').localeCompare(b.classCode || '');
+      });
+    }
+
+    function escCell(s) {
+      if (s == null) return '';
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
+
+    function escAttr(s) {
+      if (s == null) return '';
+      return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    }
+
+    function lecLabUnits(r) {
+      var u = r.units != null ? Number(r.units) : 0;
+      if (r.lec != null || r.lab != null) {
+        return {
+          lec: r.lec != null ? Number(r.lec) : 0,
+          lab: r.lab != null ? Number(r.lab) : 0,
+          units: u > 0 ? u : Number(r.lec || 0) + Number(r.lab || 0)
+        };
+      }
+      return { lec: u, lab: 0, units: u };
+    }
+
+    function rowHrsWeek(r) {
+      if (r.hrsWeek != null && r.hrsWeek !== '') return Number(r.hrsWeek);
+      return 0;
+    }
+
+    function rowHrsSem(r) {
+      if (r.hrsSem != null && r.hrsSem !== '') return Number(r.hrsSem);
+      return 0;
+    }
+
+    function rowPrereq(r) {
+      if (r.prereq != null && String(r.prereq).trim() !== '') return String(r.prereq);
+      return '—';
+    }
+
+    function sumSem(list) {
+      return list.reduce(
+        function (acc, r) {
+          var ll = lecLabUnits(r);
+          acc.lec += ll.lec;
+          acc.lab += ll.lab;
+          acc.units += ll.units;
+          acc.hrsWeek += rowHrsWeek(r);
+          acc.hrsSem += rowHrsSem(r);
+          return acc;
+        },
+        { lec: 0, lab: 0, units: 0, hrsWeek: 0, hrsSem: 0 }
+      );
+    }
+
+    function yearLevelSortKey(yl) {
+      var order = {
+        '1st year': 1,
+        '2nd year': 2,
+        '3rd year': 3,
+        '4th year': 4,
+        '5th year': 5,
+        '6th year': 6
+      };
+      return order[yl] != null ? order[yl] : 100;
+    }
+
+    function curriculumYearLevelKeys(byYL) {
+      var extra = Object.keys(byYL).filter(function (k) {
+        return CURRICULUM_STANDARD_YEAR_LEVELS.indexOf(k) < 0;
+      });
+      extra.sort(function (a, b) {
+        return yearLevelSortKey(a) - yearLevelSortKey(b);
+      });
+      return CURRICULUM_STANDARD_YEAR_LEVELS.concat(extra);
+    }
+
+    function buildSemesterTable(semRows, opts) {
+      opts = opts || {};
+      var compact = !!opts.compact;
+      var wrap = document.createElement('div');
+      wrap.className = 'curriculum-table-wrap' + (compact ? ' curriculum-table-wrap--compact' : '');
+      var table = document.createElement('table');
+      table.className = 'curriculum-table' + (compact ? ' curriculum-table--compact' : '');
+      var cg = document.createElement('colgroup');
+      cg.innerHTML = compact
+        ? '<col class="col-code col-cv-code--compact" />' +
+          '<col class="col-cv-title--compact" />' +
+          '<col class="col-num col-cv-lec--compact" /><col class="col-num col-cv-lab--compact" />' +
+          '<col class="col-num col-cv-tunits--compact" />' +
+          '<col class="col-num col-cv-hrwk--compact" />' +
+          '<col class="col-num col-cv-hrsem--compact" />' +
+          '<col class="col-cv-prereq--compact" />'
+        : '<col class="col-code" />' +
+          '<col />' +
+          '<col class="col-num" /><col class="col-num" /><col class="col-num" /><col class="col-num" /><col class="col-num" />' +
+          '<col />';
+      table.appendChild(cg);
+      var thead = document.createElement('thead');
+      if (compact) {
+        thead.innerHTML =
+          '<tr>' +
+          '<th rowspan="2">Code</th>' +
+          '<th rowspan="2">Title</th>' +
+          '<th colspan="2">Units</th>' +
+          '<th rowspan="2">T.<br />units</th>' +
+          '<th rowspan="2">Hrs/<br />wk</th>' +
+          '<th rowspan="2">Hrs/<br />sem</th>' +
+          '<th rowspan="2">pre-req</th>' +
+          '</tr>' +
+          '<tr><th>Lec</th><th>Lab</th></tr>';
+      } else {
+        thead.innerHTML =
+          '<tr>' +
+          '<th rowspan="2">Course code</th>' +
+          '<th rowspan="2">Course title</th>' +
+          '<th colspan="2">Units</th>' +
+          '<th rowspan="2">Total units</th>' +
+          '<th rowspan="2">Total<br />hrs/week</th>' +
+          '<th rowspan="2">Total<br />hrs/sem</th>' +
+          '<th rowspan="2">Pre-req</th>' +
+          '</tr>' +
+          '<tr><th>Lec</th><th>Lab</th></tr>';
+      }
+      table.appendChild(thead);
+      var tbody = document.createElement('tbody');
+
+      if (!semRows || semRows.length === 0) {
+        var trEmpty = document.createElement('tr');
+        trEmpty.className = 'schedule-data-row';
+        trEmpty.innerHTML =
+          '<td colspan="8" class="cell-muted" style="text-align:center;padding:0.85rem">No courses for this semester.</td>';
+        tbody.appendChild(trEmpty);
+      } else {
+        semRows.forEach(function (r, idx) {
+          var tr = document.createElement('tr');
+          tr.className = 'schedule-data-row';
+          if (idx % 2 === 1) tr.classList.add('schedule-row--stripe');
+          if (r.status === 'inactive') tr.classList.add('row-inactive');
+          var ll = lecLabUnits(r);
+          tr.innerHTML =
+            '<td>' +
+            escCell(r.classCode) +
+            '</td><td>' +
+            escCell(r.subject) +
+            '</td><td>' +
+            ll.lec +
+            '</td><td>' +
+            ll.lab +
+            '</td><td>' +
+            ll.units +
+            '</td><td>' +
+            rowHrsWeek(r) +
+            '</td><td>' +
+            rowHrsSem(r) +
+            '</td><td>' +
+            escCell(rowPrereq(r)) +
+            '</td>';
+          tbody.appendChild(tr);
+        });
+      }
+
+      var bodyRowCount = !semRows || semRows.length === 0 ? 1 : semRows.length;
+      var alignTarget = opts.bodyRowTarget;
+      if (typeof alignTarget === 'number' && alignTarget > bodyRowCount) {
+        var padCount = alignTarget - bodyRowCount;
+        for (var p = 0; p < padCount; p++) {
+          var trPad = document.createElement('tr');
+          trPad.className = 'schedule-data-row curriculum-body-pad-row';
+          if ((bodyRowCount + p) % 2 === 1) trPad.classList.add('schedule-row--stripe');
+          trPad.innerHTML =
+            '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>';
+          tbody.appendChild(trPad);
+        }
+      }
+
+      table.appendChild(tbody);
+
+      var t = sumSem(semRows || []);
+      var tfoot = document.createElement('tfoot');
+      var trf = document.createElement('tr');
+      trf.className = 'sheet-total-row';
+      trf.innerHTML =
+        '<td colspan="2" class="total-label">Total</td><td>' +
+        t.lec +
+        '</td><td>' +
+        t.lab +
+        '</td><td>' +
+        t.units +
+        '</td><td>' +
+        t.hrsWeek +
+        '</td><td>' +
+        t.hrsSem +
+        '</td><td class="tfoot-empty"></td>';
+      tfoot.appendChild(trf);
+      table.appendChild(tfoot);
+
+      wrap.appendChild(table);
+      return wrap;
+    }
+
+    function appendSemesterStack(grid, title, semRows, bodyRowTarget) {
+      var stack = document.createElement('div');
+      stack.className = 'curriculum-view-sem-stack';
+      var head = document.createElement('div');
+      head.className = 'curriculum-view-sem-head';
+      head.textContent = title;
+      var col = document.createElement('div');
+      col.className = 'curriculum-view-sem-col';
+      var tableOpts = { compact: true };
+      if (bodyRowTarget != null) tableOpts.bodyRowTarget = bodyRowTarget;
+      col.appendChild(buildSemesterTable(semRows, tableOpts));
+      stack.appendChild(head);
+      stack.appendChild(col);
+      grid.appendChild(stack);
+    }
+
+    function buildTable(rows) {
+      const semFilter = document.getElementById('semFilter').value;
+      const sorted = sortRowsForDisplay(rows);
+      const outer = document.createElement('div');
+      outer.className = 'curriculum-view-root';
+
+      if (sorted.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'curriculum-table-wrap';
+        empty.innerHTML = '<p class="cell-muted" style="padding:0.75rem">No rows.</p>';
+        outer.appendChild(empty);
+        return outer;
+      }
+
+      var byYear = [];
+      var curY = null;
+      var bucket = [];
+      sorted.forEach(function (r) {
+        var cy = r.curriculumYear || r.schoolYear;
+        if (curY === null) {
+          curY = cy;
+          bucket = [r];
+        } else if (cy === curY) {
+          bucket.push(r);
+        } else {
+          byYear.push({ year: curY, rows: bucket });
+          curY = cy;
+          bucket = [r];
+        }
+      });
+      if (bucket.length) byYear.push({ year: curY, rows: bucket });
+
+      byYear.forEach(function (yb) {
+        var byYL = {};
+        yb.rows.forEach(function (r) {
+          var yl = r.yearLevel || '—';
+          if (!byYL[yl]) byYL[yl] = [];
+          byYL[yl].push(r);
+        });
+
+        var ylKeys = curriculumYearLevelKeys(byYL);
+
+        var card = document.createElement('div');
+        card.className = 'curriculum-card';
+
+        var yearHeader = document.createElement('div');
+        yearHeader.className = 'curriculum-card-year-header';
+        var yearHeaderInner = document.createElement('span');
+        yearHeaderInner.className = 'curriculum-card-year-header-inner';
+        var yearHeaderTitle = document.createElement('span');
+        yearHeaderTitle.className = 'curriculum-card-year-header-title';
+        yearHeaderTitle.textContent = 'Curriculum Academic Year ' + formatSchoolYearLabel(yb.year);
+        yearHeaderInner.appendChild(yearHeaderTitle);
+        yearHeader.appendChild(yearHeaderInner);
+        card.appendChild(yearHeader);
+
+        ylKeys.forEach(function (yl) {
+          var list = byYL[yl] || [];
+          var sem1 = list
+            .filter(function (r) {
+              return r.semester === '1';
+            })
+            .sort(function (a, b) {
+              return (a.classCode || '').localeCompare(b.classCode || '');
+            });
+          var sem2 = list
+            .filter(function (r) {
+              return r.semester === '2';
+            })
+            .sort(function (a, b) {
+              return (a.classCode || '').localeCompare(b.classCode || '');
+            });
+
+          if (semFilter === '1') sem2 = [];
+          if (semFilter === '2') sem1 = [];
+          if (semFilter === 'summer') {
+            sem1 = [];
+            sem2 = [];
+          }
+
+          var yearLevelBlock = document.createElement('div');
+          yearLevelBlock.className = 'curriculum-year-level-section';
+
+          var levelBanner = document.createElement('div');
+          levelBanner.className = 'curriculum-level-banner';
+          levelBanner.textContent = yl;
+          yearLevelBlock.appendChild(levelBanner);
+
+          var grid = document.createElement('div');
+          grid.className = 'curriculum-view-sem-grid';
+          if (semFilter === '1' || semFilter === '2' || semFilter === 'summer') grid.classList.add('curriculum-view-sem-grid--single');
+
+          var semBodyRowTarget;
+          if (semFilter === 'all') {
+            var nSem1 = sem1.length === 0 ? 1 : sem1.length;
+            var nSem2 = sem2.length === 0 ? 1 : sem2.length;
+            semBodyRowTarget = Math.max(nSem1, nSem2);
+          }
+
+          if (semFilter === 'all' || semFilter === '1') {
+            appendSemesterStack(grid, '1st Semester', sem1, semBodyRowTarget);
+          }
+
+          if (semFilter === 'all' || semFilter === '2') {
+            appendSemesterStack(grid, '2nd Semester', sem2, semBodyRowTarget);
+          }
+
+          if (grid.children.length) yearLevelBlock.appendChild(grid);
+
+          var summer = list
+            .filter(function (r) {
+              return r.semester === 'summer';
+            })
+            .sort(function (a, b) {
+              return (a.classCode || '').localeCompare(b.classCode || '');
+            });
+          if ((semFilter === 'all' && summer.length) || semFilter === 'summer') {
+            var summerGrid = document.createElement('div');
+            summerGrid.className = 'curriculum-view-sem-grid';
+            appendSemesterStack(summerGrid, 'Summer', semFilter === 'summer' || summer.length ? summer : [], null);
+            yearLevelBlock.appendChild(summerGrid);
+          }
+
+          card.appendChild(yearLevelBlock);
+        });
+
+        outer.appendChild(card);
+      });
+
+      return outer;
+    }
+
+    function alignSemesterTotalRows(root) {
+      if (!root) return;
+      root.querySelectorAll('tr.curriculum-total-align-spacer').forEach(function (tr) {
+        tr.remove();
+      });
+      root.querySelectorAll('.curriculum-view-sem-grid:not(.curriculum-view-sem-grid--single)').forEach(function (grid) {
+        var stacks = grid.querySelectorAll(':scope > .curriculum-view-sem-stack');
+        if (stacks.length !== 2) return;
+        var t1 = stacks[0].querySelector('table.curriculum-table--compact');
+        var t2 = stacks[1].querySelector('table.curriculum-table--compact');
+        if (!t1 || !t2) return;
+        var foot1 = t1.querySelector('tfoot tr');
+        var foot2 = t2.querySelector('tfoot tr');
+        if (!foot1 || !foot2) return;
+        var r1 = foot1.getBoundingClientRect();
+        var r2 = foot2.getBoundingClientRect();
+        var d = r1.top - r2.top;
+        if (Math.abs(d) < 2) return;
+        var tbody;
+        var padPx;
+        if (d < 0) {
+          tbody = t1.querySelector('tbody');
+          padPx = -d;
+        } else {
+          tbody = t2.querySelector('tbody');
+          padPx = d;
+        }
+        if (!tbody || padPx < 2) return;
+        var spacer = document.createElement('tr');
+        spacer.className = 'curriculum-total-align-spacer';
+        spacer.setAttribute('aria-hidden', 'true');
+        var td = document.createElement('td');
+        td.colSpan = 8;
+        td.style.height = padPx + 'px';
+        td.innerHTML = '&#160;';
+        spacer.appendChild(td);
+        tbody.appendChild(spacer);
+      });
+    }
+
+    function renderGroupedTables(rows) {
+      const root = document.getElementById('scheduleTablesRoot');
+      const noResults = document.getElementById('noResults');
+      const meta = document.getElementById('scheduleResultsMeta');
+      const st = document.getElementById('statusFilter').value;
+      const stLabel = st === 'inactive' ? 'Inactive (archived)' : 'Active';
+      const deptFilter = document.getElementById('deptFilter').value;
+
+      root.innerHTML = '';
+      if (rows.length === 0) {
+        noResults.style.display = 'block';
+        meta.textContent = '0 rows · ' + stLabel + ' curriculum';
+        return;
+      }
+      noResults.style.display = 'none';
+      meta.textContent = rows.length + ' row' + (rows.length === 1 ? '' : 's') + ' · ' + stLabel + ' curriculum';
+
+      function rowsByDeptCourse(list) {
+        const map = {};
+        list.forEach(function (r) {
+          if (!map[r.dept]) map[r.dept] = {};
+          if (!map[r.dept][r.course]) map[r.dept][r.course] = [];
+          map[r.dept][r.course].push(r);
+        });
+        return map;
+      }
+
+      if (deptFilter === 'all') {
+        const byDc = rowsByDeptCourse(rows);
+        DEPT_ORDER.forEach(function (dkey) {
+          if (!byDc[dkey]) return;
+          const deptBlock = document.createElement('div');
+          deptBlock.className = 'schedule-dept-block';
+          const h2 = document.createElement('h2');
+          h2.className = 'schedule-dept-heading schedule-dept--' + dkey;
+          h2.textContent = DEPT_LABELS[dkey] || dkey;
+          deptBlock.appendChild(h2);
+          const ckeys = coursesSortedKeys(Object.keys(byDc[dkey]));
+          ckeys.forEach(function (ck) {
+            const sub = document.createElement('div');
+            sub.className = 'schedule-course-block';
+            const h3 = document.createElement('h3');
+            h3.className = 'schedule-course-heading';
+            h3.textContent = courseLabel(ck);
+            sub.appendChild(h3);
+            sub.appendChild(buildTable(byDc[dkey][ck]));
+            deptBlock.appendChild(sub);
+          });
+          root.appendChild(deptBlock);
+        });
+      } else {
+        const byCourse = {};
+        rows.forEach(function (r) {
+          if (!byCourse[r.course]) byCourse[r.course] = [];
+          byCourse[r.course].push(r);
+        });
+        coursesSortedKeys(Object.keys(byCourse)).forEach(function (ck) {
+          const sub = document.createElement('div');
+          sub.className = 'schedule-course-block';
+          const h3 = document.createElement('h3');
+          h3.className = 'schedule-course-heading';
+          h3.textContent = courseLabel(ck);
+          sub.appendChild(h3);
+          sub.appendChild(buildTable(byCourse[ck]));
+          root.appendChild(sub);
+        });
+      }
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          alignSemesterTotalRows(root);
+        });
+      });
+    }
+
+    function applyFilters() {
+      const dept = document.getElementById('deptFilter').value;
+      const courseEl = document.getElementById('courseFilter');
+      const course = courseEl.disabled ? 'all' : courseEl.value;
+      const curriculumYear = document.getElementById('curriculumYearFilter').value;
+      const sem = document.getElementById('semFilter').value;
+      const status = document.getElementById('statusFilter').value;
+
+      const filtered = curriculumRows.filter(function (r) {
+        if (r.status !== status) return false;
+        if (dept !== 'all' && r.dept !== dept) return false;
+        if (course !== 'all' && r.course !== course) return false;
+        if (curriculumYear !== 'all' && r.curriculumYear !== curriculumYear) return false;
+        if (sem !== 'all' && r.semester !== sem) return false;
+        return true;
+      });
+
+      renderGroupedTables(filtered);
+      updateChangeFiltersLink();
+    }
+
+    function applyFiltersFromQueryString() {
+      const p = new URLSearchParams(window.location.search);
+      refreshFilterOptions({
+        year: p.get('curriculumYear'),
+        college: p.get('dept'),
+        department: p.get('course')
+      });
+      setSelectIfOptionExists('semFilter', p.get('sem'));
+      setSelectIfOptionExists('statusFilter', p.get('status'));
+    }
+
+    document.getElementById('deptFilter').addEventListener('change', function () {
+      syncCourseDropdown();
+      document.getElementById('courseFilter').value = 'all';
+      applyFilters();
+    });
+    (window.MCUNexReady || Promise.resolve()).then(function () {
+      loadRowsFromStore();
+      applyFiltersFromQueryString();
+      applyFilters();
+      if (window.CurriculumStore && typeof CurriculumStore.onChange === 'function') {
+        CurriculumStore.onChange(function () {
+          loadRowsFromStore();
+          applyFilters();
+        });
+      }
+    });
+    document.querySelectorAll('.filters-card select.filter-select').forEach(function (sel) {
+      if (sel.id === 'deptFilter') return;
+      sel.addEventListener('change', applyFilters);
+    });
+    var alignSemesterTotalsDebounce = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(alignSemesterTotalsDebounce);
+      alignSemesterTotalsDebounce = setTimeout(function () {
+        alignSemesterTotalRows(document.getElementById('scheduleTablesRoot'));
+      }, 150);
+    });
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, tOpts) + '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+  <script src="../../js/notifications.js" defer></script>
+</body>
+</html>

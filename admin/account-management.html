@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | Account management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-soft: #f6f1fc;
+      --gold: #f9b937;
+      --purple-dark: #2d163f;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+      --success: #0d9668;
+      --danger: #e05454;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-brand-link { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; cursor: pointer; }
+    .topbar-brand-link:hover { opacity: 0.92; }
+    .topbar-logo {
+      width: 32px; height: 32px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      background: #f3edf8;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .topbar-title-main { font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .topbar-title-sub { font-size: 0.75rem; color: #e2d4ff; letter-spacing: 0.16em; text-transform: uppercase; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; }
+    .chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .topbar-notify { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .topbar-notify-btn {
+      position: relative;
+      width: 30px; height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.16);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    .topbar-notify-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+    .topbar-user { position: relative; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--purple);
+    }
+    .user-menu,
+    .notify-menu {
+      position: absolute;
+      top: 130%; right: 0;
+      background: #fff;
+      color: var(--text-main);
+      min-width: 160px;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 10;
+    }
+    .user-menu a,
+    .notify-menu div {
+      display: block;
+      padding: 0.45rem 0.9rem;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+    .user-menu a:hover,
+    .notify-menu div:hover { background: var(--purple-soft); color: var(--purple); }
+    .user-menu a.logout { color: #e05454; }
+    .topbar-user.open .user-menu { display: block; }
+    .tooltip { position: relative; }
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 10px); right: 0;
+      background: #fff; color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none; white-space: nowrap; z-index: 50;
+    }
+    .tooltip:hover::after { opacity: 1; transform: translateY(0); }
+    .tooltip.open::after, .tooltip.open:hover::after { opacity: 0; transform: translateY(-4px); }
+    .tooltip-left::after { left: 0; right: auto; }
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      margin-right: 0.75rem;
+    }
+    .nav-toggle:hover { background: rgba(0, 0, 0, 0.2); }
+    .nav-toggle-line { width: 18px; height: 2px; border-radius: 999px; background: #fff; }
+    .topbar-tabs {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.8rem;
+      overflow-x: visible;
+      overflow-y: visible;
+      background: var(--purple-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+    .topbar-tab {
+      text-decoration: none;
+      color: #e2d4ff;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+      font-size: 0.8rem;
+    }
+    .topbar-tab:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+    .topbar-tab.active {
+      border-bottom-color: var(--gold);
+      color: #fff;
+      font-weight: 600;
+    }
+    .am-panel-hidden {
+      display: none !important;
+    }
+    #account-panel-create form {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    #account-panel-create label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    #account-panel-create input,
+    #account-panel-create select {
+      width: 100%;
+      padding: 0.55rem 0.8rem;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    #account-panel-create .hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    #account-panel-create .actions {
+      margin-top: 0.8rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    #account-panel-create .btn-primary {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.55rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--gold);
+      color: var(--purple);
+      box-shadow: 0 12px 24px rgba(249, 185, 55, 0.4);
+    }
+    #account-panel-create .btn-secondary {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      padding: 0.55rem 1.15rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .layout-row { display: flex; flex: 1; min-height: 0; }
+    .nav-bar {
+      background: var(--purple-dark);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      width: 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: fixed;
+      top: 88px;
+      left: 0;
+      height: calc(100vh - 88px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 15;
+    }
+    .nav-bar.nav-bar-open { transform: translateX(0); }
+    .nav-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c9b8f3;
+      margin-bottom: 0.25rem;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      color: #e8ddff;
+      text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-link.active { background: #fff; color: var(--purple-dark); font-weight: 600; }
+    .shell { max-width: 980px; margin: 2rem auto; padding: 0 1.25rem; flex: 1; }
+    @media (max-width: 768px) { .nav-bar { width: 75%; max-width: 260px; } }
+    .page-header { margin-bottom: 1.25rem; }
+    .page-title { font-size: 1.35rem; font-weight: 600; }
+    .page-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .card {
+      background: #fff;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.25rem 1.4rem 1.4rem;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+    }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 0.5rem; }
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .users-table th,
+    .users-table td {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .users-table th {
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+    }
+    .users-table tbody tr:hover { background: var(--purple-soft); }
+    .user-status {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .user-status.active {
+      background: #d1fae5;
+      color: var(--success);
+    }
+    .user-status.inactive {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .users-table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .am-inactive-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      font-size: 0.82rem;
+      font-family: inherit;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .am-inactive-filter:hover {
+      border-color: var(--purple);
+      background: var(--purple-soft);
+    }
+    .am-inactive-filter.am-inactive-filter--active {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    }
+    .am-inactive-filter .am-inactive-count {
+      font-weight: 700;
+      color: var(--purple-dark);
+    }
+    .am-inactive-filter.am-inactive-filter--active .am-inactive-count {
+      color: #92400e;
+    }
+    .user-edit-btn {
+      border: 0;
+      background: transparent;
+      color: var(--purple-dark);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 0.15rem;
+    }
+    .user-edit-btn:hover {
+      color: var(--purple);
+    }
+    .user-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .user-modal-overlay.open {
+      display: flex;
+    }
+    .user-modal {
+      background: #fff;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.25rem 1.4rem 1.4rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+    }
+    .user-modal h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--purple-dark);
+    }
+    .user-modal form {
+      display: grid;
+      gap: 0.75rem;
+    }
+    .user-modal label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+    .user-modal input,
+    .user-modal select {
+      width: 100%;
+      padding: 0.45rem 0.7rem;
+      border-radius: 0.55rem;
+      border: 1px solid var(--border-soft);
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-top: 0.4rem;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e5e7eb;
+      transition: 0.2s;
+      border-radius: 999px;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.2s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background-color: #22c55e;
+    }
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+    .user-modal-actions {
+      margin-top: 0.9rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+    .user-modal-btn-primary {
+      border-radius: 999px;
+      border: 0;
+      padding: 0.45rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--purple);
+      color: #fff;
+    }
+    .user-modal-btn-secondary {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      background: #fff;
+      color: var(--text-muted);
+    }
+      .topbar-tabs .topbar-datetime {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.05rem;
+      font-size: 0.72rem;
+      color: #c9b8f3;
+      line-height: 1.2;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-left: auto;
+      order: 99;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .topbar-tabs .topbar-datetime .topbar-datetime-date { opacity: 0.95; }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+    }
+</style>
+  <link rel="stylesheet" href="../css/app-header-sticky.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="home-dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo">
+            <img src="../Attri/mculogo.jpg" alt="MCU logo" />
+          </div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Admin</span>
+        <div class="topbar-notify" aria-label="Notifications">
+          <button class="topbar-notify-btn" type="button">
+            &#128276;
+            <span class="topbar-notify-dot" aria-hidden="true"></span>
+          </button>
+          <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <span>Ryan Registrar</span>
+          <div class="avatar">RR</div>
+          <div class="user-menu" role="menu">
+            <a href="account.html" role="menuitem">Account</a>
+            <a href="requests.html" role="menuitem">Requests</a>
+            <a href="settings.html" role="menuitem">Settings</a>
+            <a href="../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="topbar-tabs" aria-label="Account management">
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <a href="account-management.html" class="topbar-tab active" id="am-tab-users" data-am-tab="users">Users</a>
+      <a href="account-management.html?tab=create" class="topbar-tab" id="am-tab-create" data-am-tab="create">Account creation</a>
+    </div>
+
+    </div>
+
+    <div class="layout-row">
+      <nav class="nav-bar" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="home-dashboard.html">Dashboard</a>
+        <a class="nav-link" href="data-management/college-departments.html">Data Management</a>
+        <a class="nav-link" href="faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="create-schedule.html">Create Schedule</a>
+        <a class="nav-link" href="curriculums/curriculum-filters.html">Curriculums</a>
+        <a class="nav-link" href="final-report.html">Reports</a>
+        <a class="nav-link" href="requests.html">Requests</a>
+        <a class="nav-link active" href="account-management.html">Account Management</a>
+        <a class="nav-link" href="logs.html">Transaction Log</a>
+      </nav>
+
+      <main class="shell">
+        <header class="page-header">
+          <h1 class="page-title">Account management</h1>
+          <p class="page-sub">View users or create new accounts. Data is static until connected to a backend.</p>
+        </header>
+
+        <div id="account-panel-users">
+        <section class="card">
+          <header class="page-header" style="margin-bottom: 0.75rem;">
+            <h2 class="page-title" style="font-size: 1.1rem;">Users</h2>
+            <p class="page-sub">Active and archived users below. Use the inactive filter to see inactive accounts.</p>
+          </header>
+          <div class="users-table-toolbar">
+            <button type="button" class="am-inactive-filter" id="am-inactive-filter" aria-pressed="false" aria-label="Show inactive users only" title="Click to list inactive users only">
+              Inactive users: <span class="am-inactive-count" id="inactiveUsersCount">0</span>
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table class="users-table" aria-label="System users">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ryan Registrar</td>
+                  <td>admin@gmail.com</td>
+                  <td>Admin / Registrar</td>
+                  <td><span class="user-status active">Active</span></td>
+                  <td><button type="button" class="user-edit-btn" data-user-index="0">Edit</button></td>
+                </tr>
+                <tr>
+                  <td>Viewer User (CAS)</td>
+                  <td>viewing@gmail.com</td>
+                  <td>Viewer (CAS)</td>
+                  <td><span class="user-status active">Active</span></td>
+                  <td><button type="button" class="user-edit-btn" data-user-index="1">Edit</button></td>
+                </tr>
+                <tr>
+                  <td>Maria Santos</td>
+                  <td>msantos@example.edu</td>
+                  <td>Viewer (BSN)</td>
+                  <td><span class="user-status inactive">Inactive</span></td>
+                  <td><button type="button" class="user-edit-btn" data-user-index="2">Edit</button></td>
+                </tr>
+                <tr>
+                  <td>Juan Dela Cruz</td>
+                  <td>jdelacruz@example.edu</td>
+                  <td>Viewer (BSCS)</td>
+                  <td><span class="user-status active">Active</span></td>
+                  <td><button type="button" class="user-edit-btn" data-user-index="3">Edit</button></td>
+                </tr>
+                <tr>
+                  <td>Ana Reyes</td>
+                  <td>areyes@example.edu</td>
+                  <td>Viewer (CAS)</td>
+                  <td><span class="user-status active">Active</span></td>
+                  <td><button type="button" class="user-edit-btn" data-user-index="4">Edit</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        </div>
+
+        <div id="account-panel-create" class="am-panel-hidden">
+        <section class="card">
+          <header class="page-header" style="margin-bottom: 0.75rem;">
+            <h2 class="page-title" style="font-size: 1.1rem;">Account creation</h2>
+            <p class="page-sub">Create MCU‑NEX user accounts for staff and faculty. Only the Super Admin should use this.</p>
+          </header>
+          <form id="account-create-form" onsubmit="return false;">
+            <div>
+              <label for="user-name">Name</label>
+              <input id="user-name" type="text" placeholder="Juan Dela Cruz" />
+            </div>
+            <div>
+              <label for="user-email">Email</label>
+              <input id="user-email" type="email" placeholder="name@example.edu" autocomplete="email" />
+            </div>
+            <div>
+              <label for="user-password">Password</label>
+              <input id="user-password" type="password" placeholder="••••••••" />
+            </div>
+            <div>
+              <label for="user-password-confirm">Confirm password</label>
+              <input id="user-password-confirm" type="password" placeholder="Repeat password" />
+            </div>
+            <div>
+              <label for="user-role">Role</label>
+              <select id="user-role">
+                <option value="">Select role</option>
+                <option value="view-request">View with request (Dean/Department head)</option>
+                <option value="view-approval">View with approval (VPAA)</option>
+                <option value="admin">Admin (Records officer)</option>
+                <option value="super-admin">Super admin (University Registrar)</option>
+              </select>
+              <p class="hint">Choose what level of access this account should have.</p>
+            </div>
+            <div id="college-wrapper" style="display:none;">
+              <label for="user-college">College (for view-with-request)</label>
+              <select id="user-college">
+                <option value="">Select college</option>
+                <option value="cas">College of Arts and Sciences</option>
+                <option value="optometry">College of Optometry</option>
+                <option value="nursing">College of Nursing</option>
+                <option value="pharmacy">College of Pharmacy</option>
+                <option value="pt">College of Physical Therapy</option>
+                <option value="dentistry">College of Dentistry</option>
+              </select>
+              <p class="hint">Only required for “view with request” (Dean/Department head) accounts.</p>
+            </div>
+            <div id="cas-department-wrapper" style="display:none;">
+              <label for="user-cas-department">Department (College of Arts and Sciences)</label>
+              <select id="user-cas-department">
+                <option value="">Select department</option>
+                <option value="dean">Dean</option>
+                <option value="cs-it-emc">CS / IT / EMC</option>
+                <option value="psych">Psych</option>
+                <option value="bio">Bio</option>
+              </select>
+              <p class="hint">Shown when College of Arts and Sciences is selected.</p>
+            </div>
+            <div class="actions">
+              <button type="button" class="btn-primary">Create account</button>
+              <button type="button" class="btn-secondary">Clear</button>
+            </div>
+            <p class="hint">All fields are currently static (no backend). This is a UI placeholder for future account creation logic.</p>
+          </form>
+        </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <div id="userEditModal" class="user-modal-overlay" aria-hidden="true">
+    <div class="user-modal" role="dialog" aria-labelledby="userEditTitle">
+      <h2 id="userEditTitle">Edit user</h2>
+      <form id="userEditForm" onsubmit="return false;">
+        <div>
+          <label>Name</label>
+          <input id="edit-name" type="text" readonly />
+        </div>
+        <div>
+          <label>Email</label>
+          <input id="edit-email" type="email" readonly />
+        </div>
+        <div>
+          <label for="edit-role">Role</label>
+          <select id="edit-role">
+            <option value="">Select role</option>
+            <option value="view-request">View with request (Dean/Department head)</option>
+            <option value="view-approval">View with approval (VPAA)</option>
+            <option value="admin">Admin (Records officer)</option>
+            <option value="super-admin">Super admin (University Registrar)</option>
+          </select>
+        </div>
+        <div id="edit-college-wrapper" style="display:none;">
+          <label for="edit-college">College (for view-with-request)</label>
+          <select id="edit-college">
+            <option value="">Select college</option>
+            <option value="cas">College of Arts and Sciences</option>
+            <option value="optometry">College of Optometry</option>
+            <option value="nursing">College of Nursing</option>
+            <option value="pharmacy">College of Pharmacy</option>
+            <option value="pt">College of Physical Therapy</option>
+            <option value="dentistry">College of Dentistry</option>
+          </select>
+        </div>
+        <div>
+          <label for="edit-password">Change password (optional)</label>
+          <input id="edit-password" type="password" placeholder="New password" />
+        </div>
+        <div>
+          <label for="edit-password-confirm">Confirm new password</label>
+          <input id="edit-password-confirm" type="password" placeholder="Repeat new password" />
+        </div>
+        <div class="toggle-row">
+          <div>
+            <label>Active status</label>
+            <p class="page-sub" style="margin:0;font-size:0.78rem;">Toggle to set this user as Active or Inactive.</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="edit-active-toggle" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div>
+          <label for="edit-current-password">Confirm with current password</label>
+          <input id="edit-current-password" type="password" placeholder="Enter your password to apply changes" />
+        </div>
+        <div class="user-modal-actions">
+          <button type="button" class="user-modal-btn-secondary" onclick="closeUserEditModal()">Cancel</button>
+          <button type="button" class="user-modal-btn-primary" onclick="saveUserEdit()">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var navBar = document.querySelector('.nav-bar');
+      var user = document.querySelector('.topbar-user');
+      var userMenu = document.querySelector('.user-menu');
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+      if (user && userMenu) {
+        user.addEventListener('click', function (e) {
+          e.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+        userMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+      var inactiveCountEl = document.getElementById('inactiveUsersCount');
+      if (inactiveCountEl) {
+        inactiveCountEl.textContent = document.querySelectorAll('.user-status.inactive').length;
+      }
+      var editButtons = document.querySelectorAll('.user-edit-btn');
+      editButtons.forEach(function(btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(btn.getAttribute('data-user-index'), 10);
+          openUserEditModal(idx);
+        });
+      });
+    })();
+
+    (function () {
+      var tabUsers = document.getElementById('am-tab-users');
+      var tabCreate = document.getElementById('am-tab-create');
+      var panelUsers = document.getElementById('account-panel-users');
+      var panelCreate = document.getElementById('account-panel-create');
+      function setTab(tab) {
+        var isCreate = tab === 'create';
+        if (panelUsers) panelUsers.classList.toggle('am-panel-hidden', isCreate);
+        if (panelCreate) panelCreate.classList.toggle('am-panel-hidden', !isCreate);
+        if (tabUsers) tabUsers.classList.toggle('active', !isCreate);
+        if (tabCreate) tabCreate.classList.toggle('active', isCreate);
+      }
+
+      function readTabFromUrl() {
+        var p = new URLSearchParams(window.location.search);
+        return p.get('tab') === 'create' ? 'create' : 'users';
+      }
+
+      setTab(readTabFromUrl());
+
+      var roleSelect = document.getElementById('user-role');
+      var collegeWrapper = document.getElementById('college-wrapper');
+      var collegeSelect = document.getElementById('user-college');
+      var casDeptWrapper = document.getElementById('cas-department-wrapper');
+      var casDeptSelect = document.getElementById('user-cas-department');
+
+      function syncCasDepartmentVisibility() {
+        if (!collegeSelect || !casDeptWrapper || !casDeptSelect) return;
+        if (collegeSelect.value === 'cas') {
+          casDeptWrapper.style.display = '';
+        } else {
+          casDeptWrapper.style.display = 'none';
+          casDeptSelect.value = '';
+        }
+      }
+
+      if (roleSelect && collegeWrapper) {
+        roleSelect.addEventListener('change', function () {
+          if (this.value === 'view-request') {
+            collegeWrapper.style.display = '';
+          } else {
+            collegeWrapper.style.display = 'none';
+            if (collegeSelect) collegeSelect.value = '';
+            if (casDeptWrapper) casDeptWrapper.style.display = 'none';
+            if (casDeptSelect) casDeptSelect.value = '';
+          }
+        });
+      }
+      if (collegeSelect) {
+        collegeSelect.addEventListener('change', syncCasDepartmentVisibility);
+      }
+
+      var inactiveFilterBtn = document.getElementById('am-inactive-filter');
+      if (inactiveFilterBtn) {
+        inactiveFilterBtn.addEventListener('click', function () {
+          var on = inactiveFilterBtn.getAttribute('aria-pressed') === 'true';
+          var next = !on;
+          inactiveFilterBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
+          inactiveFilterBtn.classList.toggle('am-inactive-filter--active', next);
+          inactiveFilterBtn.setAttribute('aria-label', next ? 'Showing inactive users only. Click to return to the main list.' : 'Show inactive users only');
+          inactiveFilterBtn.title = next ? 'Click to return to the main user list' : 'Click to list inactive users only';
+          syncAmInactiveUserFilter();
+        });
+      }
+    })();
+
+    function syncAmInactiveUserFilter() {
+      var btn = document.getElementById('am-inactive-filter');
+      var tbody = document.querySelector('#account-panel-users .users-table tbody');
+      if (!btn || !tbody) return;
+      var inactiveOnly = btn.getAttribute('aria-pressed') === 'true';
+      tbody.querySelectorAll('tr').forEach(function (tr) {
+        var statusSpan = tr.querySelector('.user-status');
+        var isInactive = statusSpan && statusSpan.classList.contains('inactive');
+        if (inactiveOnly) {
+          tr.style.display = isInactive ? '' : 'none';
+        } else {
+          tr.style.display = isInactive ? 'none' : '';
+        }
+      });
+    }
+
+    syncAmInactiveUserFilter();
+
+    function closeUserEditModal() {
+      var overlay = document.getElementById('userEditModal');
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+    function openUserEditModal(index) {
+      var rows = document.querySelectorAll('.users-table tbody tr');
+      if (!rows[index]) return;
+      var row = rows[index];
+      var cells = row.querySelectorAll('td');
+      var name = cells[0].textContent.trim();
+      var email = cells[1].textContent.trim();
+      document.getElementById('edit-name').value = name;
+      document.getElementById('edit-email').value = email;
+      document.getElementById('edit-role').value = '';
+      document.getElementById('edit-college').value = '';
+      document.getElementById('edit-password').value = '';
+      document.getElementById('edit-password-confirm').value = '';
+      document.getElementById('edit-current-password').value = '';
+      document.getElementById('edit-college-wrapper').style.display = 'none';
+      var statusSpan = row.querySelector('.user-status');
+      var activeToggle = document.getElementById('edit-active-toggle');
+      activeToggle.checked = statusSpan && statusSpan.classList.contains('active');
+      document.getElementById('userEditModal').classList.add('open');
+      document.getElementById('userEditModal').setAttribute('aria-hidden', 'false');
+      document.getElementById('userEditTitle').textContent = 'Edit user – ' + name;
+      var roleSelect = document.getElementById('edit-role');
+      roleSelect.addEventListener('change', function onChange() {
+        document.getElementById('edit-college-wrapper').style.display = (roleSelect.value === 'view-request') ? '' : 'none';
+        roleSelect.removeEventListener('change', onChange);
+      });
+      document.getElementById('userEditModal').dataset.rowIndex = index;
+    }
+    function saveUserEdit() {
+      var currentPw = document.getElementById('edit-current-password').value.trim();
+      if (!currentPw) {
+        alert('Please enter your password to confirm changes.');
+        return;
+      }
+      var idx = parseInt(document.getElementById('userEditModal').dataset.rowIndex || '-1', 10);
+      var rows = document.querySelectorAll('.users-table tbody tr');
+      if (!rows[idx]) {
+        closeUserEditModal();
+        return;
+      }
+      var row = rows[idx];
+      var statusSpan = row.querySelector('.user-status');
+      var activeToggle = document.getElementById('edit-active-toggle');
+      if (statusSpan) {
+        statusSpan.classList.remove('active','inactive');
+        if (activeToggle.checked) {
+          statusSpan.classList.add('active');
+          statusSpan.textContent = 'Active';
+        } else {
+          statusSpan.classList.add('inactive');
+          statusSpan.textContent = 'Inactive';
+        }
+      }
+      var roleVal = document.getElementById('edit-role').value;
+      if (roleVal) {
+        var roleText = '';
+        if (roleVal === 'view-request') roleText = 'View with request (Dean/Department head)';
+        else if (roleVal === 'view-approval') roleText = 'View with approval (VPAA)';
+        else if (roleVal === 'admin') roleText = 'Admin (Records officer)';
+        else if (roleVal === 'super-admin') roleText = 'Super admin (University Registrar)';
+        var collegeVal = document.getElementById('edit-college').value;
+        if (collegeVal) {
+          var collegeLabel = document.querySelector('#edit-college option[value=\"' + collegeVal + '\"]').textContent;
+          roleText += ' – ' + collegeLabel;
+        }
+        row.querySelectorAll('td')[2].textContent = roleText;
+      }
+      var inactiveCountEl = document.getElementById('inactiveUsersCount');
+      if (inactiveCountEl) {
+        inactiveCountEl.textContent = document.querySelectorAll('.user-status.inactive').length;
+      }
+      syncAmInactiveUserFilter();
+      closeUserEditModal();
+    }
+    document.getElementById('userEditModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUserEditModal();
+    });
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, tOpts) + '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+    <script src="../js/api-client.js"></script>
+  <script src="../js/session-boot.js"></script>
+  <script src="../js/notifications.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | Room schedule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-dark: #2d163f;
+      --purple-soft: #f6f1fc;
+      --gold: #f9b937;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+      --danger: #e05454;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-logo {
+      width: 32px; height: 32px; border-radius: 999px; overflow: hidden;
+      border: 2px solid var(--gold); background: #f3edf8;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .topbar-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .topbar-brand-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      text-decoration: none; color: inherit; cursor: pointer;
+    }
+    .topbar-title-main {
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .topbar-title-sub {
+      font-size: 0.75rem; color: #e2d4ff; letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; }
+    .chip {
+      padding: 0.25rem 0.6rem; border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em;
+    }
+    .topbar-notify { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .topbar-notify-btn {
+      position: relative; width: 30px; height: 30px; border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+      background: rgba(0, 0, 0, 0.16); color: #fff; font-size: 0.9rem;
+    }
+    .topbar-notify-dot {
+      position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 999px;
+      background: var(--gold); box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+    .topbar-user { position: relative; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 999px; background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--purple);
+    }
+    .user-menu {
+      position: absolute; top: 130%; right: 0; background: #fff; color: var(--text-main);
+      min-width: 160px; border-radius: 0.6rem; border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16); padding: 0.35rem 0; font-size: 0.85rem;
+      display: none; z-index: 10;
+    }
+    .user-menu a {
+      display: block; padding: 0.45rem 0.9rem; text-decoration: none; color: inherit; white-space: nowrap;
+    }
+    .user-menu a:hover { background: var(--purple-soft); color: var(--purple); }
+    .user-menu a.logout { color: var(--danger); }
+    .topbar-user.open .user-menu { display: block; }
+    .nav-toggle {
+      display: inline-flex; flex-direction: column; justify-content: center; gap: 3px; cursor: pointer;
+      padding: 0.25rem 0.4rem; border-radius: 0.35rem; border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent; margin-right: 0.75rem;
+    }
+    .nav-toggle-line { width: 18px; height: 2px; border-radius: 999px; background: #fff; }
+    .topbar-tabs {
+      display: flex; align-items: center; gap: 1.75rem; padding: 0.4rem 1.5rem; font-size: 0.8rem;
+      background: var(--purple-dark); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+    .topbar-tab {
+      text-decoration: none; color: #e2d4ff; padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap;
+    }
+    .topbar-tab:hover { border-bottom-color: rgba(255, 255, 255, 0.6); color: #fff; }
+    .topbar-tab.active { border-bottom-color: var(--gold); color: #fff; font-weight: 600; }
+    .layout-row { display: flex; flex: 1; min-height: 0; }
+    .nav-bar {
+      background: var(--purple-dark); color: #fff; padding: 1.5rem 1rem; width: 210px;
+      display: flex; flex-direction: column; gap: 0.75rem; position: fixed; top: 88px; left: 0;
+      height: calc(100vh - 88px); transform: translateX(-100%); transition: transform 0.25s ease; z-index: 15;
+    }
+    .nav-bar.nav-bar-open { transform: translateX(0); }
+    .nav-section-title {
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.14em; color: #c9b8f3; margin-bottom: 0.25rem;
+    }
+    .nav-link {
+      display: block; padding: 0.45rem 0.75rem; border-radius: 0.6rem; font-size: 0.85rem;
+      color: #e8ddff; text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-link.active { background: #fff; color: var(--purple-dark); font-weight: 600; }
+    .page {
+      flex: 1; padding: 1.75rem 1.5rem 2.5rem; display: flex; flex-direction: column; gap: 1.25rem;
+      margin-left: auto; margin-right: auto; max-width: 1400px; width: 100%; align-items: center; box-sizing: border-box;
+    }
+    .page > .schedule-room-main { width: 100%; max-width: 1200px; }
+    .filters-row {
+      background: #fff; border-radius: 0.75rem; border: 1px solid var(--border-soft);
+      padding: 0.75rem 1rem; display: flex; align-items: flex-end; gap: 0.75rem 1rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04); flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted);
+    }
+    .filters-row .filter-field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+    .filters-row label { font-weight: 500; color: var(--text-main); font-size: 0.85rem; }
+    .filters-row select {
+      border-radius: 999px; border: 1px solid var(--border-soft); padding: 0.35rem 0.9rem;
+      font-family: inherit; font-size: 0.85rem; background: var(--purple-soft); color: var(--text-main);
+      min-width: 160px; max-width: 100%; outline: none;
+    }
+    .main-card {
+      background: #fff; border-radius: 1rem; border: 1px solid var(--border-soft);
+      padding: 1.5rem 1.5rem 1.65rem; box-shadow: 0 12px 40px rgba(45, 22, 63, 0.07);
+      display: flex; flex-direction: column; gap: 1.1rem;
+    }
+    .flow-panel-title { font-size: 1.35rem; font-weight: 700; color: var(--purple); letter-spacing: -0.02em; }
+    .flow-panel-sub { font-size: 0.92rem; color: var(--text-muted); line-height: 1.45; }
+    .btn-flow-back {
+      display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;
+      padding: 0.45rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-soft);
+      background: #fff; color: var(--purple); font-weight: 600; font-size: 0.85rem;
+      text-decoration: none; font-family: inherit; width: fit-content;
+    }
+    .btn-flow-back:hover { background: var(--purple-soft); }
+    .room-edit-summary {
+      font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; padding: 0.65rem 0.85rem;
+      background: var(--purple-soft); border-radius: 8px; line-height: 1.45;
+    }
+    .room-edit-summary strong { color: var(--text-main); }
+    .edit-schedule-panel .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .room-readonly-meta {
+      font-size: 0.88rem; line-height: 1.5; padding: 0.75rem 0.9rem; background: var(--purple-soft);
+      border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-soft);
+    }
+    .room-readonly-meta dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 1rem; }
+    .room-readonly-meta dt { font-weight: 600; color: var(--text-muted); margin: 0; }
+    .room-readonly-meta dd { margin: 0; color: var(--text-main); }
+    .room-timetable-heading { font-size: 0.95rem; color: var(--purple); margin: 0 0 0.5rem; font-weight: 700; }
+    .timetable-chart-hint { font-size: 0.78rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem; }
+    .weekly-schedule-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin: 0.35rem 0 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .weekly-schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      table-layout: fixed;
+    }
+    .weekly-schedule-table th,
+    .weekly-schedule-table td {
+      border: 1px solid #d1d5db;
+      padding: 0.2rem 0.35rem;
+      vertical-align: top;
+    }
+    .weekly-schedule-table thead th {
+      background: #f3f4f6;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-main);
+    }
+    .weekly-schedule-time-col {
+      width: 4.75rem;
+      white-space: nowrap;
+      background: #fafafa;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .weekly-schedule-empty { background: #fff; min-height: 1.35rem; }
+    .weekly-schedule-block {
+      background: var(--purple-soft);
+      color: var(--text-main);
+      position: relative;
+    }
+    .weekly-schedule-block.weekly-schedule-invalid { background: #fee2e2; color: #991b1b; font-size: 0.72rem; }
+    .weekly-schedule-block .wb-time { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.15rem; }
+    .weekly-schedule-block .wb-subj { font-weight: 600; color: var(--purple); line-height: 1.25; }
+    .weekly-schedule-block .wb-code { font-size: 0.65rem; margin-top: 0.15rem; color: var(--text-muted); font-weight: 600; }
+    .weekly-schedule-block .wb-section { font-size: 0.62rem; margin-top: 0.1rem; color: #7a6992; font-weight: 600; }
+    .ws-slot-inner {
+      position: relative;
+      min-height: 2rem;
+      cursor: grab;
+      touch-action: none;
+      border-radius: 4px;
+      padding: 0.15rem 0.1rem 1.5rem;
+    }
+    .ws-slot-inner:active { cursor: grabbing; }
+    .ws-slot-inner.is-ws-dragging { opacity: 0.45; }
+    .ws-slot-actions {
+      position: absolute;
+      bottom: 0.1rem;
+      left: 0.15rem;
+      right: 0.15rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.2rem;
+    }
+    .ws-slot-move {
+      font-size: 0.62rem;
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid rgba(92, 38, 126, 0.35);
+      background: #fff;
+      color: var(--purple);
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .ws-slot-move:hover { background: var(--purple-soft); }
+    #moveSlotDialog {
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 0;
+      max-width: 22rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+    }
+    #moveSlotDialog::backdrop { background: rgba(30, 15, 45, 0.45); }
+    .move-slot-dialog-inner { padding: 1.1rem 1.25rem; }
+    .move-slot-dialog-inner h4 { margin: 0 0 0.75rem; font-size: 1rem; color: var(--purple); }
+    .move-slot-dialog-inner label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-main); }
+    .move-slot-dialog-inner select {
+      width: 100%; margin-bottom: 0.75rem; padding: 0.4rem 0.5rem; border-radius: 8px;
+      border: 1px solid var(--border-soft); font-family: inherit; font-size: 0.85rem;
+    }
+    .move-slot-dialog-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem; }
+    .move-slot-dialog-actions button {
+      padding: 0.45rem 0.85rem; border-radius: 8px; font-family: inherit; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    }
+    .btn-move-slot-cancel { border: 1px solid var(--border-soft); background: #fff; color: var(--text-main); }
+    .btn-move-slot-ok { border: none; background: var(--purple); color: #fff; }
+    .timetable-periods-subhead { font-size: 0.88rem; margin: 0.75rem 0 0.35rem; color: var(--purple); font-weight: 700; }
+    .period-conflict-banner {
+      font-size: 0.82rem;
+      line-height: 1.45;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.65rem;
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .period-conflict-banner strong { color: #7f1d1d; }
+    .timetable-slot-card {
+      margin-bottom: 0.55rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .timetable-slot-card.has-time-conflict {
+      border-color: #ef4444;
+      background: #fef2f2;
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25);
+    }
+    .timetable-slot-card.has-time-order-invalid {
+      border-color: #ea580c;
+      background: #fff7ed;
+      box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.2);
+    }
+    .timetable-slot-conflict-msg {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #b91c1c;
+      margin: 0.35rem 0 0;
+      padding: 0.25rem 0;
+      min-height: 1em;
+    }
+    .timetable-slot-card.has-time-order-invalid .timetable-slot-conflict-msg { color: #c2410c; }
+    .timetable-rows-wrap {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+    .timetable-slot-row {
+      display: grid;
+      grid-template-columns: 5.25rem minmax(5.5rem,1fr) minmax(5.5rem,1fr) minmax(0,1.05fr) minmax(0,0.75fr) minmax(0,4.25rem) auto;
+      gap: 0.4rem; align-items: center;
+      min-width: 44rem;
+    }
+    .timetable-day-select,
+    .timetable-time-select,
+    .timetable-section-select {
+      padding: 0.45rem 0.4rem; border-radius: 8px; border: 1px solid var(--border-soft);
+      font-family: inherit; font-size: 0.82rem; background: #fff; color: var(--text-main);
+      min-width: 0;
+    }
+    .timetable-slot-row input {
+      padding: 0.45rem 0.5rem; border-radius: 8px; border: 1px solid var(--border-soft);
+      font-family: inherit; font-size: 0.82rem;
+    }
+    .timetable-slot-row .btn-remove-slot {
+      padding: 0.4rem 0.55rem; border-radius: 8px; border: 1px solid var(--danger);
+      background: #fff; color: var(--danger); font-weight: 600; font-size: 0.75rem; cursor: pointer; font-family: inherit;
+    }
+    .form-actions-flow { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .btn-flow-primary {
+      padding: 0.55rem 1.1rem; border: none; border-radius: 8px; background: var(--purple); color: #fff;
+      font-weight: 600; font-size: 0.88rem; cursor: pointer; font-family: inherit;
+    }
+    .btn-flow-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn-flow-secondary {
+      padding: 0.55rem 1rem; border-radius: 8px; border: 1px solid var(--border-soft);
+      background: var(--purple-soft); color: var(--purple); font-weight: 600; font-size: 0.88rem;
+      cursor: pointer; font-family: inherit;
+    }
+    .facilities-actions-bar {
+      display: flex; justify-content: flex-end; align-items: center; width: 100%; padding: 0.5rem 1.5rem;
+      background: var(--purple-soft); border-bottom: 1px solid var(--border-soft); box-sizing: border-box;
+    }
+    .btn-rooms-available-bar {
+      display: inline-flex; align-items: center; justify-content: center; padding: 0.45rem 1rem; border-radius: 10px;
+      border: 1px solid rgba(92, 38, 126, 0.35); background: #fff; color: var(--purple); font-weight: 600;
+      font-size: 0.85rem; text-decoration: none; font-family: inherit;
+    }
+    .btn-rooms-available-bar:hover { border-color: var(--purple); box-shadow: 0 2px 8px rgba(92, 38, 126, 0.12); }
+    .topbar-tabs .topbar-datetime {
+      display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 0.05rem;
+      font-size: 0.72rem; color: #c9b8f3; line-height: 1.2; text-align: right; font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em; flex-shrink: 0; margin-left: auto; order: 99; padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time { font-size: 0.78rem; font-weight: 600; color: #fff; }
+    @media (max-width: 768px) { .nav-bar { width: 75%; max-width: 260px; } }
+    @media (max-width: 640px) {
+      .page { padding: 1rem; }
+      .nav-bar { padding-inline: 1rem; }
+      .topbar { padding-inline: 1rem; }
+    }
+
+    body.report-readonly .ws-slot-actions,
+    body.report-readonly .ws-slot-move,
+    body.report-readonly #timetableRowsContainer,
+    body.report-readonly #btnAddTimetableSlot,
+    body.report-readonly .form-actions-flow,
+    body.report-readonly #moveSlotDialog,
+    body.report-readonly .timetable-periods-subhead,
+    body.report-readonly #periodConflictBanner {
+      display: none !important;
+    }
+    body.report-readonly .ws-slot-inner { cursor: default; padding-bottom: 0.15rem; }
+    .tooltip { position: relative; }
+  </style>
+  <link rel="stylesheet" href="../css/app-header-sticky.css" />
+</head>
+<body class="report-readonly">
+  <div class="app-shell">
+    <div class="app-header-sticky">
+      <header class="topbar">
+        <div class="topbar-left">
+          <a href="home-dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+            <div class="topbar-logo">
+              <img src="../Attri/mculogo.jpg" alt="MCU logo" />
+            </div>
+            <div>
+              <div class="topbar-title-main">MCU-NEX</div>
+              <div class="topbar-title-sub">Registrar Room Allocation</div>
+            </div>
+          </a>
+        </div>
+        <div class="topbar-right">
+          <span class="chip">Super Admin</span>
+          <div class="topbar-notify" aria-label="Notifications">
+            <button class="topbar-notify-btn" type="button" aria-label="Open notifications">
+              &#128276;
+              <span class="topbar-notify-dot" aria-hidden="true"></span>
+            </button>
+            <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+          </div>
+          <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+            <span>Ryan Registrar</span>
+            <div class="avatar">RR</div>
+            <div class="user-menu" role="menu">
+              <a href="account.html" role="menuitem">Account</a>
+              <a href="requests.html" role="menuitem">Requests</a>
+              <a href="settings.html" role="menuitem">Settings</a>
+              <a href="../index.html" role="menuitem" class="logout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="topbar-tabs" aria-label="Report and schedules">
+        <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+        </button>
+        <a href="final-report.html?ws=final" class="topbar-tab">Final report</a>
+        <a href="final-report.html?ws=awaiting" class="topbar-tab">Awaiting the VPAA’s approval</a>
+        <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="facilities-actions-bar" aria-label="Schedules quick links">
+      <a href="rooms-available-filters.html" class="btn-rooms-available-bar">Rooms available</a>
+    </div>
+    <div class="layout-row">
+      <nav class="nav-bar" id="main-nav" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="home-dashboard.html">Dashboard</a>
+        <a class="nav-link" href="data-management/college-departments.html">Data Management</a>
+        <a class="nav-link" href="faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="create-schedule.html">Create Schedule</a>
+        <a class="nav-link" href="curriculums/curriculum-filters.html">Curriculums</a>
+        <a class="nav-link active" href="report-schedules.html">Reports</a>
+        <a class="nav-link" href="requests.html">Requests</a>
+        <a class="nav-link" href="account-management.html">Account Management</a>
+        <a class="nav-link" href="logs.html">Transaction Log</a>
+      </nav>
+      <main class="page">
+        <div class="schedule-room-main">
+          <a href="report-schedules.html" class="btn-flow-back">← Back to building list</a>
+          <div class="filters-row" role="search" aria-label="Room filters">
+            <div class="filter-field">
+              <label for="filterBuilding">Building</label>
+              <select id="filterBuilding"></select>
+            </div>
+            <div class="filter-field">
+              <label for="filterRoomType">Room type</label>
+              <select id="filterRoomType"></select>
+            </div>
+            <div class="filter-field">
+              <label for="filterRoomCode">Room code</label>
+              <select id="filterRoomCode"></select>
+            </div>
+          </div>
+          <section class="main-card" aria-labelledby="roomEditorTitle">
+            <h2 class="flow-panel-title" id="roomEditorTitle">Room schedule</h2>
+            <p class="flow-panel-sub" id="scheduleEditorEmpty">
+              Select a building and room above to view its weekly timetable. Editing belongs on Create schedule.
+            </p>
+            <div id="scheduleEditorPanel" class="edit-schedule-panel" style="margin-top:0; box-shadow:none; border:none; padding:0;" hidden>
+              <div id="roomEditSummary" class="room-edit-summary"></div>
+              <p class="hint" id="roomEditFormHint"></p>
+              <div id="roomReadonlyMeta" class="room-readonly-meta"></div>
+              <h3 class="room-timetable-heading">Weekly timetable</h3>
+              <p class="timetable-chart-hint">
+                Monday–Saturday · 7:00am – 7:00pm. This report is browse-only.
+              </p>
+              <div id="weeklyScheduleTableWrap" class="weekly-schedule-wrap" aria-label="Weekly schedule grid"></div>
+              <h4 class="timetable-periods-subhead">Periods</h4>
+              <p id="periodConflictBanner" class="period-conflict-banner" role="status" hidden></p>
+              <div id="timetableRowsContainer" class="timetable-rows-wrap"></div>
+              <button type="button" class="btn-flow-secondary" id="btnAddTimetableSlot" style="margin-top:0.5rem;">+ Add period</button>
+              <div class="form-actions-flow">
+                <button type="button" class="btn-flow-primary" id="btnSaveRoomTimetable">Save timetable</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <dialog id="moveSlotDialog" aria-labelledby="moveSlotDialogTitle">
+    <div class="move-slot-dialog-inner">
+      <h4 id="moveSlotDialogTitle">Move subject to another room</h4>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 0.75rem;line-height:1.4;">
+        Keeps the same day and times. The period is removed from this room and added to the room you pick.
+      </p>
+      <label for="moveSlotBuilding">Building</label>
+      <select id="moveSlotBuilding"></select>
+      <label for="moveSlotRoom">Room</label>
+      <select id="moveSlotRoom"></select>
+      <div class="move-slot-dialog-actions">
+        <button type="button" class="btn-move-slot-cancel" id="moveSlotCancel">Cancel</button>
+        <button type="button" class="btn-move-slot-ok" id="moveSlotConfirm">Move</button>
+      </div>
+    </div>
+  </dialog>
+  <script src="../js/api-client.js"></script>
+  <script src="../js/session-boot.js"></script>
+  <script src="../js/org-store.js"></script>
+  <script src="../js/room-types.js"></script>
+  <script src="../js/facilities-store.js"></script>
+  <script src="../js/data-boot.js"></script>
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var navBar = document.querySelector('.nav-bar');
+      var user = document.querySelector('.topbar-user');
+      var userMenu = document.querySelector('.user-menu');
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+      if (user && userMenu) {
+        user.addEventListener('click', function (event) {
+          event.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+        userMenu.addEventListener('click', function (event) { event.stopPropagation(); });
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+    })();
+
+    var buildingOrder = [];
+    var buildingNames = {};
+    var roomsByBuilding = {};
+    var roomFloorById = {};
+    var buildingUsesFloors = {};
+    var extraFloorsByBuilding = {};
+    var roomAllocation = {};
+    var roomTimetables = {};
+    var COLLEGE_OPTIONS = [];
+    var buildingProximity = {};
+    var floorDepartmentsByBuilding = {};
+    var buildingDeptOnly = {};
+    var roomStatus = {};
+
+    function floorOfRoom(bkey, rid) {
+      var f =
+        window.FacilitiesStore && FacilitiesStore.roomGet
+          ? FacilitiesStore.roomGet(roomFloorById, bkey, rid)
+          : roomFloorById[rid];
+      return f != null ? f : 1;
+    }
+    function statusOfRoom(bkey, rid) {
+      var st =
+        window.FacilitiesStore && FacilitiesStore.roomGet
+          ? FacilitiesStore.roomGet(roomStatus, bkey, rid)
+          : roomStatus[rid];
+      return st || 'active';
+    }
+    function allocOfRoom(bkey, rid) {
+      return (
+        (window.FacilitiesStore && FacilitiesStore.roomGet
+          ? FacilitiesStore.roomGet(roomAllocation, bkey, rid)
+          : roomAllocation[rid]) || {}
+      );
+    }
+
+    function collegeLabel(collegeId) {
+      for (var i = 0; i < COLLEGE_OPTIONS.length; i++) {
+        if (COLLEGE_OPTIONS[i].id === collegeId) return COLLEGE_OPTIONS[i].label;
+      }
+      if (window.OrgStore && typeof OrgStore.collegeName === 'function') {
+        var fromOrg = OrgStore.collegeName(collegeId);
+        if (fromOrg) return fromOrg;
+      }
+      return collegeId || '—';
+    }
+    function collegeIdIsValid(id) {
+      return COLLEGE_OPTIONS.some(function (c) { return c.id === id; });
+    }
+    function normalizeRoomAllocForEdit(base) {
+      base = base || {};
+      var type = base.type != null && base.type !== '' ? base.type : base.purpose || '';
+      var multi = !!base.multiCollege;
+      var colleges = [];
+      if (Array.isArray(base.colleges) && base.colleges.length) {
+        colleges = base.colleges.filter(collegeIdIsValid);
+        multi = true;
+      } else if (base.college && collegeIdIsValid(base.college)) {
+        colleges = [base.college];
+      } else if (base.department && collegeIdIsValid(base.department)) {
+        colleges = [base.department];
+      }
+      var college = '';
+      if (base.college && collegeIdIsValid(base.college)) college = base.college;
+      else if (!multi && colleges.length === 1) college = colleges[0];
+      if (multi) {
+        return { type: type, multiCollege: true, college: '', colleges: colleges };
+      }
+      return { type: type, multiCollege: false, college: college, colleges: [] };
+    }
+    function getFloorsSortedForBuilding(bkey) {
+      if (!buildingUsesFloors[bkey]) return [];
+      var floors = {};
+      (roomsByBuilding[bkey] || []).forEach(function (rid) {
+        var f = floorOfRoom(bkey, rid);
+        floors[f] = true;
+      });
+      (extraFloorsByBuilding[bkey] || []).forEach(function (f) { floors[f] = true; });
+      return Object.keys(floors).map(function (k) { return parseInt(k, 10); }).sort(function (a, b) { return a - b; });
+    }
+    function computeMaxFloors(bkey) {
+      if (!buildingUsesFloors[bkey]) return 1;
+      var floors = getFloorsSortedForBuilding(bkey);
+      if (!floors.length) return 1;
+      var m = floors[0];
+      for (var i = 1; i < floors.length; i++) {
+        if (floors[i] > m) m = floors[i];
+      }
+      return m;
+    }
+    function persistSchedData() {
+      if (window.FacilitiesStore) {
+        FacilitiesStore.save({
+          buildingOrder: buildingOrder,
+          buildingNames: buildingNames,
+          roomsByBuilding: roomsByBuilding,
+          roomFloorById: roomFloorById,
+          roomStatus: roomStatus,
+          buildingUsesFloors: buildingUsesFloors,
+          extraFloorsByBuilding: extraFloorsByBuilding,
+          roomAllocation: roomAllocation,
+          roomTimetables: roomTimetables,
+          buildingProximity: buildingProximity,
+          floorDepartmentsByBuilding: floorDepartmentsByBuilding,
+          buildingDeptOnly: buildingDeptOnly
+        }).then(function (res) {
+          if (res && res.ok === false && res.error) alert(res.error);
+        });
+      }
+    }
+    function applyPersisted(p) {
+      if (!p || typeof p !== 'object') return;
+      if (p.buildingOrder) buildingOrder = p.buildingOrder;
+      if (p.buildingNames) buildingNames = p.buildingNames;
+      if (p.roomsByBuilding) roomsByBuilding = p.roomsByBuilding;
+      if (p.roomFloorById) roomFloorById = p.roomFloorById;
+      if (p.roomStatus) roomStatus = p.roomStatus;
+      if (p.buildingUsesFloors) buildingUsesFloors = p.buildingUsesFloors;
+      if (p.extraFloorsByBuilding) extraFloorsByBuilding = p.extraFloorsByBuilding;
+      if (p.roomAllocation) roomAllocation = p.roomAllocation;
+      if (p.roomTimetables) roomTimetables = p.roomTimetables;
+      if (p.buildingProximity) buildingProximity = p.buildingProximity;
+      if (p.floorDepartmentsByBuilding) floorDepartmentsByBuilding = p.floorDepartmentsByBuilding;
+      if (p.buildingDeptOnly) buildingDeptOnly = p.buildingDeptOnly;
+    }
+    var persistedScheduleByDayRoom = null;
+
+    var TIMETABLE_DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    var TIMETABLE_DAY_LABELS = {
+      mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun'
+    };
+    var REPORT_READONLY = true;
+    var timetableUi = { rid: null };
+    var flowState = { building: null };
+    /** Visible day window: 7:00am – 7:00pm */
+    var SCHED_DAY_START_MIN = 7 * 60;
+    var SCHED_DAY_END_MIN = 19 * 60;
+    /** One row per 30 min from 7:00am through 7:00pm (inclusive). */
+    var GRID_ROW_COUNT = Math.floor((SCHED_DAY_END_MIN - SCHED_DAY_START_MIN) / 30) + 1;
+    /** Mon–Sat columns in the weekly grid (matches typical class week). */
+    var WEEK_GRID_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    var WEEK_GRID_HEADER_LABELS = {
+      mon: 'Monday',
+      tue: 'Tuesday',
+      wed: 'Wednesday',
+      thu: 'Thursday',
+      fri: 'Friday',
+      sat: 'Saturday'
+    };
+
+    var WS_SLOT_COLORS = ['#ede9fe', '#dcfce7', '#fef3c7', '#fee2e2', '#dbeafe', '#ffedd5'];
+    function slotBlockBg(slot) {
+      var h = 0;
+      var s =
+        String((slot && slot.label) || '') +
+        String((slot && slot.code) || '') +
+        String((slot && slot.section) || '');
+      for (var i = 0; i < s.length; i++) h = (h + s.charCodeAt(i) * 13) % 997;
+      return WS_SLOT_COLORS[h % WS_SLOT_COLORS.length];
+    }
+
+    var wsDrag = null;
+    var pendingMoveSlot = null;
+
+    /** Types actually recorded on rooms, so older spellings stay filterable. */
+    function observedRoomTypes() {
+      var out = [];
+      Object.keys(roomAllocation || {}).forEach(function (rid) {
+        var norm = normalizeRoomAllocForEdit(roomAllocation[rid] || {});
+        var t = norm.type && String(norm.type).trim();
+        if (t) out.push(t);
+      });
+      return out;
+    }
+
+    function formatStatus(st) {
+      if (st === 'vacant') return 'Vacant';
+      if (st === 'under_maintenance') return 'Under maintenance';
+      return 'Active';
+    }
+    function parseFlexibleTime(s) {
+      if (s == null) return null;
+      var str = String(s).trim();
+      if (!str) return null;
+      var lo = str.toLowerCase();
+      var hasPm = lo.indexOf('pm') !== -1;
+      var hasAm = lo.indexOf('am') !== -1 && !hasPm;
+      var core = lo.replace(/(am|pm)/gi, '').replace(/\s+/g, ' ').trim();
+      var hourOnly = core.match(/^(\d{1,2})$/);
+      if (hourOnly && (hasAm || hasPm)) {
+        var hx = parseInt(hourOnly[1], 10);
+        if (isNaN(hx)) return null;
+        if (hasPm) {
+          if (hx < 12) hx += 12;
+        } else if (hasAm && hx === 12) {
+          hx = 0;
+        }
+        return hx * 60;
+      }
+      var m = core.match(/^(\d{1,2})\s*:\s*(\d{2})$/);
+      if (!m) return null;
+      var h = parseInt(m[1], 10);
+      var min = parseInt(m[2], 10);
+      if (isNaN(h) || isNaN(min) || min < 0 || min > 59) return null;
+      if (!hasAm && !hasPm && h >= 13 && h <= 23) {
+        return h * 60 + min;
+      }
+      if (hasPm) {
+        if (h !== 12) h += 12;
+      } else if (hasAm) {
+        if (h === 12) h = 0;
+      } else {
+        if (h >= 1 && h <= 6) h += 12;
+      }
+      return h * 60 + min;
+    }
+
+    function formatMinutesAmPm(totalMin) {
+      var tm = Math.round(totalMin);
+      var h24 = Math.floor(tm / 60) % 24;
+      var mins = tm % 60;
+      var isPm = h24 >= 12;
+      var h12 = h24 % 12;
+      if (h12 === 0) h12 = 12;
+      var mm = mins < 10 ? '0' + mins : String(mins);
+      return h12 + ':' + mm + (isPm ? 'pm' : 'am');
+    }
+
+    function eachScheduleGridMinute(fn) {
+      for (var m = SCHED_DAY_START_MIN; m <= SCHED_DAY_END_MIN; m += 30) {
+        fn(m);
+      }
+    }
+
+    function snapMinutesToScheduleGrid(m) {
+      if (m == null || isNaN(m)) return null;
+      var rel = m - SCHED_DAY_START_MIN;
+      var steps = Math.round(rel / 30);
+      var nm = SCHED_DAY_START_MIN + steps * 30;
+      if (nm < SCHED_DAY_START_MIN) nm = SCHED_DAY_START_MIN;
+      if (nm > SCHED_DAY_END_MIN) nm = SCHED_DAY_END_MIN;
+      return nm;
+    }
+
+    function fillStartSelect(selectEl, selectedMin) {
+      selectEl.innerHTML = '';
+      selectEl.className = 'timetable-time-select timetable-start-select';
+      selectEl.setAttribute('aria-label', 'Start time');
+      var o0 = document.createElement('option');
+      o0.value = '';
+      o0.textContent = 'Start';
+      selectEl.appendChild(o0);
+      eachScheduleGridMinute(function (mm) {
+        var o = document.createElement('option');
+        o.value = String(mm);
+        o.textContent = formatMinutesAmPm(mm);
+        if (selectedMin != null && mm === selectedMin) o.selected = true;
+        selectEl.appendChild(o);
+      });
+    }
+
+    function fillEndSelect(selectEl, startMin, selectedEndMin) {
+      selectEl.innerHTML = '';
+      selectEl.className = 'timetable-time-select timetable-end-select';
+      selectEl.setAttribute('aria-label', 'End time');
+      var o0 = document.createElement('option');
+      o0.value = '';
+      o0.textContent = 'End';
+      selectEl.appendChild(o0);
+      if (startMin == null || isNaN(startMin)) return;
+      for (var em = startMin + 30; em <= SCHED_DAY_END_MIN; em += 30) {
+        var o = document.createElement('option');
+        o.value = String(em);
+        o.textContent = formatMinutesAmPm(em);
+        if (selectedEndMin != null && em === selectedEndMin) o.selected = true;
+        selectEl.appendChild(o);
+      }
+    }
+
+    /** Map stored section to 1–3 for the section dropdown; legacy "Sec A"…"Sec C" → 1–3. */
+    function normalizeSectionSlotValue(raw) {
+      var t = raw == null ? '' : String(raw).trim();
+      if (t === '1' || t === '2' || t === '3') return t;
+      var m = /^Sec\s+([A-Za-z])$/i.exec(t);
+      if (m) {
+        var code = m[1].toUpperCase().charCodeAt(0) - 65;
+        if (code >= 0 && code <= 2) return String(code + 1);
+      }
+      return '';
+    }
+
+    function fillSectionSelect(selectEl, value) {
+      selectEl.innerHTML = '';
+      selectEl.className = 'timetable-section-select';
+      selectEl.setAttribute('aria-label', 'Section');
+      var v = normalizeSectionSlotValue(value);
+      var o0 = document.createElement('option');
+      o0.value = '';
+      o0.textContent = 'Section';
+      if (v === '') o0.selected = true;
+      selectEl.appendChild(o0);
+      for (var n = 1; n <= 3; n++) {
+        var o = document.createElement('option');
+        o.value = String(n);
+        o.textContent = String(n);
+        if (v === String(n)) o.selected = true;
+        selectEl.appendChild(o);
+      }
+    }
+
+    function validatePeriodRowConflicts() {
+      var cards = document.querySelectorAll('#timetableRowsContainer .timetable-slot-card');
+      var banner = document.getElementById('periodConflictBanner');
+      cards.forEach(function (c) {
+        c.classList.remove('has-time-conflict', 'has-time-order-invalid');
+        var msg = c.querySelector('.timetable-slot-conflict-msg');
+        if (msg) msg.textContent = '';
+      });
+      var intervals = [];
+      cards.forEach(function (card) {
+        var dayEl = card.querySelector('.timetable-day-select');
+        var day = dayEl && dayEl.value ? dayEl.value : 'mon';
+        var sv = card.querySelector('.timetable-start-select');
+        var ev = card.querySelector('.timetable-end-select');
+        var sm = sv && sv.value !== '' ? parseInt(sv.value, 10) : null;
+        var em = ev && ev.value !== '' ? parseInt(ev.value, 10) : null;
+        intervals.push({ day: day, sm: sm, em: em, card: card });
+      });
+      intervals.forEach(function (o) {
+        if (o.sm != null && o.em != null && o.em <= o.sm) {
+          o.card.classList.add('has-time-order-invalid');
+          var msg = o.card.querySelector('.timetable-slot-conflict-msg');
+          if (msg) msg.textContent = 'End must be after start.';
+        }
+      });
+      var byDay = {};
+      intervals.forEach(function (o) {
+        if (o.sm == null || o.em == null || o.em <= o.sm) return;
+        if (!byDay[o.day]) byDay[o.day] = [];
+        byDay[o.day].push(o);
+      });
+      var hasOverlap = false;
+      Object.keys(byDay).forEach(function (day) {
+        var list = byDay[day];
+        for (var i = 0; i < list.length; i++) {
+          for (var j = i + 1; j < list.length; j++) {
+            var a = list[i];
+            var b = list[j];
+            if (!(a.em <= b.sm || a.sm >= b.em)) {
+              hasOverlap = true;
+              a.card.classList.add('has-time-conflict');
+              b.card.classList.add('has-time-conflict');
+              var txt = 'Overlaps another period on this day.';
+              var ma = a.card.querySelector('.timetable-slot-conflict-msg');
+              var mb = b.card.querySelector('.timetable-slot-conflict-msg');
+              if (ma) ma.textContent = txt;
+              if (mb) mb.textContent = txt;
+            }
+          }
+        }
+      });
+      var hasOrderBad = document.querySelector('#timetableRowsContainer .timetable-slot-card.has-time-order-invalid');
+      var saveBtn = document.getElementById('btnSaveRoomTimetable');
+      if (saveBtn) {
+        saveBtn.disabled = !!(hasOverlap || hasOrderBad);
+      }
+      if (banner) {
+        if (hasOverlap || hasOrderBad) {
+          banner.hidden = false;
+          banner.innerHTML = hasOverlap
+            ? '<strong>Schedule conflict.</strong> Two or more periods on the same day overlap. Change start/end times so ranges do not intersect (e.g. if 10:30am–12:00pm is taken, pick times outside that range).'
+            : '<strong>Invalid range.</strong> End time must be later than start time on each row.';
+        } else {
+          banner.hidden = true;
+          banner.innerHTML = '';
+        }
+      }
+    }
+
+    function normalizeSlot(s) {
+      if (!s || typeof s !== 'object') {
+        return { start: '', end: '', label: '', code: '', section: '' };
+      }
+      var lab = s.label != null && String(s.label) !== '' ? String(s.label) : s.subject != null ? String(s.subject) : '';
+      var cod = s.code != null && String(s.code) !== '' ? String(s.code) : s.classCode != null ? String(s.classCode) : '';
+      var sec = s.section != null && String(s.section) !== '' ? String(s.section) : '';
+      return {
+        start: s.start != null ? String(s.start) : '',
+        end: s.end != null ? String(s.end) : '',
+        label: lab,
+        code: cod,
+        section: sec
+      };
+    }
+
+    /** Same schedule grid as the dashboard / reports (home-dashboard scheduleByDayRoom). Used to seed room timetables for active rooms. */
+    var reportScheduleByDayRoom = {
+      mon: {
+        '101': [{ start: '08:00', end: '10:00', subject: 'Math 101', classCode: 'MATH101' }, { start: '14:00', end: '16:00', subject: 'Physics', classCode: 'PHY101' }],
+        '102': [{ start: '09:00', end: '12:00', subject: 'Lab – Chemistry', classCode: 'CHEM-LAB' }],
+        '103': [],
+        '104': [{ start: '10:00', end: '11:30', subject: 'Seminar', classCode: 'SEM-104' }],
+        '201': [{ start: '08:00', end: '09:00', subject: 'Assembly', classCode: 'ASSM-01' }],
+        '202': [{ start: '13:00', end: '15:00', subject: 'Tutorial', classCode: 'TUT-202' }],
+        '203': [{ start: '11:00', end: '12:30', subject: 'Lecture', classCode: 'LEC-203' }],
+        '204': [],
+        '301': [{ start: '15:00', end: '17:00', subject: 'IT Lab', classCode: 'IT301' }],
+        '302': [{ start: '08:00', end: '17:00', subject: 'Full day reserved', classCode: 'FULL-302' }],
+        '303': [],
+        '304': [{ start: '09:00', end: '10:30', subject: 'Workshop', classCode: 'WS-304' }],
+        '401': [],
+        '402': [{ start: '14:00', end: '16:00', subject: 'Lecture', classCode: 'LEC-402' }],
+        '403': [],
+        '404': [{ start: '10:00', end: '12:00', subject: 'Lab', classCode: 'LAB-404' }],
+        '405': [{ start: '08:00', end: '09:30', subject: 'Meeting', classCode: 'MTG-405' }],
+        '501': [{ start: '13:00', end: '15:00', subject: 'Lecture', classCode: 'LEC-501' }],
+        '502': [],
+        '601': [{ start: '10:00', end: '12:00', subject: 'Review session', classCode: 'REV-601' }],
+        '602': [],
+        '701': [{ start: '09:00', end: '11:00', subject: 'Gym – Session A', classCode: 'CGYM-1' }],
+        '702': [],
+        '703': [],
+        '704': [],
+        '705': [],
+        '801': [{ start: '08:00', end: '10:00', subject: 'Pool – Lane 1', classCode: 'POOL-1' }],
+        '802': [],
+        '803': [],
+        '804': [],
+        '805': []
+      },
+      tue: {
+        '101': [{ start: '21:00', end: '06:00', subject: 'Building A – Lab 204', classCode: 'LAB-A' }],
+        '102': [{ start: '08:00', end: '12:00', subject: 'Lab', classCode: 'LAB-102' }],
+        '103': [{ start: '09:00', end: '12:00', subject: 'Computer Class', classCode: 'CS103' }],
+        '104': [],
+        '201': [{ start: '14:00', end: '17:00', subject: 'Event', classCode: 'EVT-201' }],
+        '202': [],
+        '203': [],
+        '204': [{ start: '08:00', end: '17:00', subject: 'Open lab', classCode: 'OPEN-204' }],
+        '301': [],
+        '302': [{ start: '09:00', end: '11:00', subject: 'Lecture', classCode: 'LEC-302' }],
+        '303': [{ start: '13:00', end: '15:00', subject: 'Lab', classCode: 'LAB-303' }],
+        '304': [],
+        '401': [{ start: '10:00', end: '12:00', subject: 'Assembly', classCode: 'ASSM-401' }],
+        '402': [],
+        '403': [{ start: '08:00', end: '12:00', subject: 'IT', classCode: 'IT-403' }],
+        '404': [],
+        '405': [],
+        '501': [{ start: '14:00', end: '16:00', subject: 'Lecture', classCode: 'LEC-501' }],
+        '502': [],
+        '601': [],
+        '602': [],
+        '701': [],
+        '702': [],
+        '703': [],
+        '704': [],
+        '705': [],
+        '801': [],
+        '802': [],
+        '803': [],
+        '804': [],
+        '805': []
+      },
+      wed: {
+        '101': [{ start: '08:00', end: '12:00', subject: 'Main Hall – Lecture 1', classCode: 'LEC-MH1' }],
+        '102': [],
+        '103': [],
+        '104': [],
+        '201': [],
+        '202': [{ start: '09:00', end: '11:00', subject: 'Seminar', classCode: 'SEM-202' }],
+        '203': [{ start: '14:00', end: '16:00', subject: 'Lecture', classCode: 'LEC-203' }],
+        '204': [],
+        '301': [],
+        '302': [],
+        '303': [],
+        '304': [{ start: '10:00', end: '12:00', subject: 'Tutorial', classCode: 'TUT-304' }],
+        '401': [],
+        '402': [],
+        '403': [],
+        '404': [],
+        '405': [],
+        '501': [],
+        '502': [],
+        '601': [],
+        '602': [],
+        '701': [],
+        '702': [],
+        '703': [],
+        '704': [],
+        '705': [],
+        '801': [],
+        '802': [],
+        '803': [],
+        '804': [],
+        '805': []
+      },
+      thu: { '101': [], '102': [], '103': [], '104': [], '201': [{ start: '21:00', end: '06:00', subject: 'Building B – Rooms 301–305', classCode: 'BLD-B' }], '202': [], '203': [], '204': [], '301': [], '302': [], '303': [], '304': [], '401': [], '402': [], '403': [], '404': [], '405': [], '501': [], '502': [], '601': [], '602': [] },
+      fri: { '101': [], '102': [], '103': [], '104': [], '201': [], '202': [], '203': [], '204': [], '301': [], '302': [], '303': [], '304': [], '401': [], '402': [], '403': [], '404': [], '405': [], '501': [], '502': [{ start: '21:00', end: '06:00', subject: 'Building C – Exams', classCode: 'EXAM-C' }], '601': [], '602': [] },
+      sat: { '101': [], '102': [], '103': [], '104': [], '201': [], '202': [], '203': [], '204': [], '301': [], '302': [], '303': [], '304': [], '401': [{ start: '21:00', end: '06:00', subject: 'Building D – Events', classCode: 'EVT-D' }], '402': [], '403': [], '404': [], '405': [], '501': [], '502': [], '601': [], '602': [] }
+    };
+
+    /** Fills room timetables from report data for rooms with status active; skips vacant / under maintenance. Respects onlyIfEmpty per day. */
+    function applyReportSchedulesToActiveRooms(onlyIfEmpty) {
+      if (!reportScheduleByDayRoom || typeof reportScheduleByDayRoom !== 'object') return;
+      TIMETABLE_DAY_KEYS.forEach(function (day) {
+        var dayMap = reportScheduleByDayRoom[day];
+        if (!dayMap || typeof dayMap !== 'object') return;
+        Object.keys(dayMap).forEach(function (rid) {
+          if ((roomStatus[rid] || 'active') !== 'active') return;
+          var slots = dayMap[rid];
+          if (!Array.isArray(slots) || !slots.length) return;
+          ensureTimetableShape(rid);
+          if (onlyIfEmpty && roomTimetables[rid][day] && roomTimetables[rid][day].length) return;
+          roomTimetables[rid][day] = slots.map(function (s, slotIdx) {
+            var n = normalizeSlot(s);
+            if (!n.section) n.section = String((slotIdx % 3) + 1);
+            return n;
+          });
+        });
+      });
+    }
+
+    function collegeLineFromNorm(norm) {
+      if (norm.college) return collegeLabel(norm.college);
+      return 'General use (any college)';
+    }
+    function renderRoomReadonlyMeta(bkey, rid) {
+      var base = allocOfRoom(bkey, rid);
+      var norm = normalizeRoomAllocForEdit(base);
+      var wrap = document.getElementById('roomReadonlyMeta');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      var dl = document.createElement('dl');
+      function addRow(label, value) {
+        var dt = document.createElement('dt');
+        dt.textContent = label;
+        var dd = document.createElement('dd');
+        dd.textContent = value;
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+      }
+      addRow('Status', formatStatus(statusOfRoom(bkey, rid)));
+      addRow('College(s)', collegeLineFromNorm(norm));
+      addRow('Type', norm.type && String(norm.type).length ? norm.type : '—');
+      addRow('Capacity', base.capacity != null && base.capacity !== '' ? String(base.capacity) : '—');
+      wrap.appendChild(dl);
+    }
+    function ensureTimetableShape(rid) {
+      if (!roomTimetables[rid]) roomTimetables[rid] = {};
+      var o = roomTimetables[rid];
+      TIMETABLE_DAY_KEYS.forEach(function (k) {
+        if (!Array.isArray(o[k])) o[k] = [];
+        o[k] = o[k].map(function (s) {
+          return normalizeSlot(s);
+        });
+      });
+    }
+    /** Map MMREC-style scheduleByDayRoom into roomTimetables; only writes days that are still empty when onlyIfEmpty is true. */
+    function mergeScheduleByDayRoomIntoRoomTimetables(ref, onlyIfEmpty) {
+      if (!ref || typeof ref !== 'object') return;
+      TIMETABLE_DAY_KEYS.forEach(function (day) {
+        var dayMap = ref[day];
+        if (!dayMap || typeof dayMap !== 'object') return;
+        Object.keys(dayMap).forEach(function (rid) {
+          var slots = dayMap[rid];
+          if (!Array.isArray(slots) || !slots.length) return;
+          ensureTimetableShape(rid);
+          var target = roomTimetables[rid][day];
+          if (onlyIfEmpty && target && target.length) return;
+          roomTimetables[rid][day] = slots.map(function (s) {
+            return normalizeSlot(s);
+          });
+        });
+      });
+    }
+    function buildColumnRowMetaForDay(rid, day) {
+      var numRows = GRID_ROW_COUNT;
+      var meta = new Array(numRows);
+      for (var i = 0; i < numRows; i++) meta[i] = null;
+      var slots = roomTimetables[rid][day] || [];
+      slots.forEach(function (slot, slotIndex) {
+        var sm = parseFlexibleTime(slot.start);
+        var em = parseFlexibleTime(slot.end);
+        if (sm == null || em == null || em <= sm) return;
+        sm = Math.max(sm, SCHED_DAY_START_MIN);
+        em = Math.min(em, SCHED_DAY_END_MIN);
+        if (em <= sm) return;
+        var r0 = Math.floor((sm - SCHED_DAY_START_MIN) / 30);
+        var r1 = Math.ceil((em - SCHED_DAY_START_MIN) / 30);
+        r0 = Math.max(0, Math.min(numRows - 1, r0));
+        r1 = Math.max(r0 + 1, Math.min(numRows, r1));
+        var rs = r1 - r0;
+        var ok = true;
+        for (var r = r0; r < r1; r++) {
+          if (meta[r] !== null) {
+            ok = false;
+            break;
+          }
+        }
+        if (!ok) return;
+        meta[r0] = { slot: slot, rowspan: rs, slotIndex: slotIndex };
+        for (var r = r0 + 1; r < r1; r++) {
+          meta[r] = 'skip';
+        }
+      });
+      return meta;
+    }
+
+    function hasOverlapRoomDay(rid, day, sm, em, ignoreIndex) {
+      var list = roomTimetables[rid][day] || [];
+      for (var i = 0; i < list.length; i++) {
+        if (ignoreIndex !== null && ignoreIndex !== undefined && i === ignoreIndex) continue;
+        var a = parseFlexibleTime(list[i].start);
+        var b = parseFlexibleTime(list[i].end);
+        if (a == null || b == null || b <= a) continue;
+        a = Math.max(a, SCHED_DAY_START_MIN);
+        b = Math.min(b, SCHED_DAY_END_MIN);
+        if (b <= a) continue;
+        if (!(em <= a || sm >= b)) return true;
+      }
+      return false;
+    }
+
+    function hitTestWeeklyGrid(clientX, clientY) {
+      var wrap = document.getElementById('weeklyScheduleTableWrap');
+      if (!wrap) return null;
+      var table = wrap.querySelector('table');
+      if (!table || !table.tHead || !table.tHead.rows[0]) return null;
+      var hcells = table.tHead.rows[0].cells;
+      if (hcells.length < 2) return null;
+      var dayIdx = -1;
+      for (var c = 1; c < hcells.length; c++) {
+        var rct = hcells[c].getBoundingClientRect();
+        if (clientX >= rct.left && clientX <= rct.right) {
+          dayIdx = c - 1;
+          break;
+        }
+      }
+      if (dayIdx < 0 || dayIdx >= WEEK_GRID_DAYS.length) return null;
+      var day = WEEK_GRID_DAYS[dayIdx];
+      var tbody = table.tBodies[0];
+      if (!tbody) return null;
+      for (var r = 0; r < tbody.rows.length; r++) {
+        var tr = tbody.rows[r];
+        var rect = tr.getBoundingClientRect();
+        if (clientY >= rect.top && clientY <= rect.bottom) {
+          var gr = tr.getAttribute('data-grid-row');
+          var row = gr != null ? parseInt(gr, 10) : r;
+          if (row >= 0 && row < GRID_ROW_COUNT) return { day: day, row: row };
+          return null;
+        }
+      }
+      return null;
+    }
+
+    function tryApplyGridSlotMove(rid, fromDay, slotRef, toDay, rowIndex) {
+      collectTimetableFromUI();
+      ensureTimetableShape(rid);
+      var arr = roomTimetables[rid][fromDay];
+      if (!arr || !slotRef) return false;
+      var slotIndex = -1;
+      for (var si = 0; si < arr.length; si++) {
+        if (arr[si] === slotRef) {
+          slotIndex = si;
+          break;
+        }
+      }
+      if (slotIndex < 0) return false;
+      var slot = slotRef;
+      var sm = parseFlexibleTime(slot.start);
+      var em = parseFlexibleTime(slot.end);
+      if (sm == null || em == null || em <= sm) return false;
+      var dur = em - sm;
+      var newSm = SCHED_DAY_START_MIN + rowIndex * 30;
+      var newEm = newSm + dur;
+      if (newEm > SCHED_DAY_END_MIN) {
+        newEm = SCHED_DAY_END_MIN;
+        newSm = Math.max(SCHED_DAY_START_MIN, newEm - dur);
+      }
+      var ignore = fromDay === toDay ? slotIndex : null;
+      if (hasOverlapRoomDay(rid, toDay, newSm, newEm, ignore)) {
+        alert('That time overlaps another period in this room.');
+        return false;
+      }
+      arr.splice(slotIndex, 1);
+      slot.start = formatMinutesAmPm(newSm);
+      slot.end = formatMinutesAmPm(newEm);
+      if (!roomTimetables[rid][toDay]) roomTimetables[rid][toDay] = [];
+      roomTimetables[rid][toDay].push(slot);
+      return true;
+    }
+
+    function renderWeeklyScheduleTable() {
+      var wrap = document.getElementById('weeklyScheduleTableWrap');
+      if (!wrap) return;
+      if (!timetableUi.rid) {
+        wrap.innerHTML = '';
+        return;
+      }
+      ensureTimetableShape(timetableUi.rid);
+      var rid = timetableUi.rid;
+      var table = document.createElement('table');
+      table.className = 'weekly-schedule-table';
+      var thead = document.createElement('thead');
+      var trh = document.createElement('tr');
+      var th0 = document.createElement('th');
+      th0.className = 'weekly-schedule-time-col';
+      th0.textContent = 'Time';
+      trh.appendChild(th0);
+      WEEK_GRID_DAYS.forEach(function (d) {
+        var th = document.createElement('th');
+        th.textContent = WEEK_GRID_HEADER_LABELS[d] || TIMETABLE_DAY_LABELS[d] || d;
+        trh.appendChild(th);
+      });
+      thead.appendChild(trh);
+      table.appendChild(thead);
+      var colMeta = {};
+      WEEK_GRID_DAYS.forEach(function (d) {
+        colMeta[d] = buildColumnRowMetaForDay(rid, d);
+      });
+      var tbody = document.createElement('tbody');
+      for (var r = 0; r < GRID_ROW_COUNT; r++) {
+        var tr = document.createElement('tr');
+        tr.setAttribute('data-grid-row', String(r));
+        var tdT = document.createElement('td');
+        tdT.className = 'weekly-schedule-time-col';
+        tdT.textContent = formatMinutesAmPm(SCHED_DAY_START_MIN + r * 30);
+        tr.appendChild(tdT);
+        WEEK_GRID_DAYS.forEach(function (d) {
+          var m = colMeta[d][r];
+          if (m === 'skip') return;
+          var td = document.createElement('td');
+          td.setAttribute('data-day', d);
+          td.setAttribute('data-grid-row', String(r));
+          if (m && m.slot) {
+            var slot = m.slot;
+            td.rowSpan = m.rowspan;
+            var sm = parseFlexibleTime(slot.start);
+            var em = parseFlexibleTime(slot.end);
+            td.className = 'weekly-schedule-block';
+            if (sm == null || em == null || em <= sm) {
+              td.className = 'weekly-schedule-block weekly-schedule-invalid';
+              td.textContent = 'Invalid time';
+            } else {
+              td.style.background = slotBlockBg(slot);
+              var inner = document.createElement('div');
+              inner.className = 'ws-slot-inner';
+              inner.setAttribute('tabindex', '0');
+              inner.setAttribute('role', 'button');
+              inner.setAttribute(
+                'aria-label',
+                'Drag to move ' + ((slot.label || '').trim() || 'period') + ' to another time or day'
+              );
+              var divT = document.createElement('div');
+              divT.className = 'wb-time';
+              divT.textContent = formatMinutesAmPm(sm) + ' – ' + formatMinutesAmPm(em);
+              var divS = document.createElement('div');
+              divS.className = 'wb-subj';
+              divS.textContent = (slot.label || '').trim() || '—';
+              inner.appendChild(divT);
+              inner.appendChild(divS);
+              if ((slot.section || '').trim()) {
+                var divSec = document.createElement('div');
+                divSec.className = 'wb-section';
+                divSec.textContent = (slot.section || '').trim();
+                inner.appendChild(divSec);
+              }
+              if ((slot.code || '').trim()) {
+                var divC = document.createElement('div');
+                divC.className = 'wb-code';
+                divC.textContent = slot.code;
+                inner.appendChild(divC);
+              }
+              var actions = document.createElement('div');
+              actions.className = 'ws-slot-actions';
+              var btnMove = document.createElement('button');
+              btnMove.type = 'button';
+              btnMove.className = 'ws-slot-move';
+              btnMove.textContent = 'Move…';
+              btnMove.title = 'Move to another building or room';
+              btnMove.addEventListener('click', function (ev) {
+                ev.stopPropagation();
+                ev.preventDefault();
+                pendingMoveSlot = { rid: rid, day: d, slotRef: slot };
+                openMoveSlotDialog();
+              });
+              actions.appendChild(btnMove);
+              inner.appendChild(actions);
+              if (!REPORT_READONLY) inner.addEventListener('pointerdown', function (e) {
+                if (e.button !== 0) return;
+                if (e.target.closest && e.target.closest('.ws-slot-move')) return;
+                e.preventDefault();
+                collectTimetableFromUI();
+                wsDrag = {
+                  rid: rid,
+                  day: d,
+                  slotRef: slot,
+                  el: inner,
+                  ptrId: e.pointerId,
+                  moved: false
+                };
+                inner.classList.add('is-ws-dragging');
+                try {
+                  inner.setPointerCapture(e.pointerId);
+                } catch (err) {}
+              });
+              td.appendChild(inner);
+            }
+          } else {
+            td.className = 'weekly-schedule-empty';
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      wrap.innerHTML = '';
+      wrap.appendChild(table);
+    }
+
+    document.addEventListener('pointermove', function (e) {
+      if (!wsDrag) return;
+      if (e.pointerId !== wsDrag.ptrId) return;
+      wsDrag.moved = true;
+    });
+
+    function endWsDrag(e, d) {
+      wsDrag = null;
+      d.el.classList.remove('is-ws-dragging');
+      try {
+        d.el.releasePointerCapture(e.pointerId);
+      } catch (err) {}
+      if (!d.moved) return;
+      var hit = hitTestWeeklyGrid(e.clientX, e.clientY);
+      if (!hit) return;
+      if (tryApplyGridSlotMove(d.rid, d.day, d.slotRef, hit.day, hit.row)) {
+        renderTimetablePeriodRows();
+        renderWeeklyScheduleTable();
+      }
+    }
+
+    document.addEventListener('pointerup', function (e) {
+      if (!wsDrag || e.pointerId !== wsDrag.ptrId) return;
+      var d = wsDrag;
+      endWsDrag(e, d);
+    });
+
+    document.addEventListener('pointercancel', function (e) {
+      if (!wsDrag || e.pointerId !== wsDrag.ptrId) return;
+      var d = wsDrag;
+      wsDrag = null;
+      d.el.classList.remove('is-ws-dragging');
+      try {
+        d.el.releasePointerCapture(e.pointerId);
+      } catch (err) {}
+    });
+
+    function populateMoveSlotRoomSelect(bkey) {
+      var sel = document.getElementById('moveSlotRoom');
+      if (!sel) return;
+      sel.innerHTML = '';
+      getRoomsInBuilding(bkey)
+        .sort(function (a, b) {
+          return parseInt(a, 10) - parseInt(b, 10);
+        })
+        .forEach(function (roomId) {
+          var opt = document.createElement('option');
+          opt.value = roomId;
+          opt.textContent = 'Room ' + roomId;
+          sel.appendChild(opt);
+        });
+    }
+
+    function openMoveSlotDialog() {
+      var dlg = document.getElementById('moveSlotDialog');
+      var bSel = document.getElementById('moveSlotBuilding');
+      var rSel = document.getElementById('moveSlotRoom');
+      if (!dlg || !bSel || !rSel || !pendingMoveSlot) return;
+      bSel.innerHTML = '';
+      buildingOrder.forEach(function (bkey) {
+        var opt = document.createElement('option');
+        opt.value = bkey;
+        opt.textContent = buildingNames[bkey] != null ? buildingNames[bkey] : bkey;
+        bSel.appendChild(opt);
+      });
+      bSel.value = flowState.building || buildingOrder[0] || '';
+      populateMoveSlotRoomSelect(bSel.value);
+      if (pendingMoveSlot.rid && optionExists(rSel, pendingMoveSlot.rid)) {
+        rSel.value = pendingMoveSlot.rid;
+      } else if (rSel.options.length) rSel.selectedIndex = 0;
+      dlg.showModal();
+    }
+
+    document.getElementById('moveSlotCancel').addEventListener('click', function () {
+      var dlg = document.getElementById('moveSlotDialog');
+      if (dlg) dlg.close();
+      pendingMoveSlot = null;
+    });
+
+    document.getElementById('moveSlotBuilding').addEventListener('change', function () {
+      populateMoveSlotRoomSelect(document.getElementById('moveSlotBuilding').value);
+    });
+
+    document.getElementById('moveSlotConfirm').addEventListener('click', function () {
+      var dlg = document.getElementById('moveSlotDialog');
+      var toB = document.getElementById('moveSlotBuilding').value;
+      var toRid = document.getElementById('moveSlotRoom').value;
+      if (!pendingMoveSlot || !pendingMoveSlot.slotRef || !toRid) {
+        if (dlg) dlg.close();
+        pendingMoveSlot = null;
+        return;
+      }
+      collectTimetableFromUI();
+      var fromRid = pendingMoveSlot.rid;
+      var fromDay = pendingMoveSlot.day;
+      var slot = pendingMoveSlot.slotRef;
+      ensureTimetableShape(fromRid);
+      var arr = roomTimetables[fromRid][fromDay];
+      if (!arr) {
+        if (dlg) dlg.close();
+        pendingMoveSlot = null;
+        return;
+      }
+      var fromIdx = -1;
+      for (var fi = 0; fi < arr.length; fi++) {
+        if (arr[fi] === slot) {
+          fromIdx = fi;
+          break;
+        }
+      }
+      if (fromIdx < 0) {
+        if (dlg) dlg.close();
+        pendingMoveSlot = null;
+        return;
+      }
+      ensureTimetableShape(toRid);
+      var sm = parseFlexibleTime(slot.start);
+      var em = parseFlexibleTime(slot.end);
+      if (sm != null && em != null && em > sm) {
+        sm = Math.max(sm, SCHED_DAY_START_MIN);
+        em = Math.min(em, SCHED_DAY_END_MIN);
+        if (em > sm && hasOverlapRoomDay(toRid, fromDay, sm, em, null)) {
+          alert('That room already has a period overlapping this time.');
+          return;
+        }
+      }
+      arr.splice(fromIdx, 1);
+      roomTimetables[toRid][fromDay].push(slot);
+      pendingMoveSlot = null;
+      if (dlg) dlg.close();
+      persistSchedData();
+      if (toRid === timetableUi.rid && toB === flowState.building) {
+        renderTimetablePeriodRows();
+        renderWeeklyScheduleTable();
+      } else {
+        selBuilding.value = toB;
+        populateRoomSelect(toB);
+        if (optionExists(selRoom, toRid)) selRoom.value = toRid;
+        openRoomEditor(toB, toRid);
+      }
+    });
+
+    function collectTimetableFromUI() {
+      if (!timetableUi.rid) return;
+      ensureTimetableShape(timetableUi.rid);
+      WEEK_GRID_DAYS.forEach(function (d) {
+        roomTimetables[timetableUi.rid][d] = [];
+      });
+      var cards = document.querySelectorAll('#timetableRowsContainer .timetable-slot-card');
+      cards.forEach(function (card) {
+        var sel = card.querySelector('.timetable-day-select');
+        var day = sel && sel.value ? sel.value : 'mon';
+        if (WEEK_GRID_DAYS.indexOf(day) < 0) day = 'mon';
+        var ss = card.querySelector('.timetable-start-select');
+        var es = card.querySelector('.timetable-end-select');
+        var start = '';
+        var end = '';
+        if (ss && ss.value !== '') start = formatMinutesAmPm(parseInt(ss.value, 10));
+        if (es && es.value !== '') end = formatMinutesAmPm(parseInt(es.value, 10));
+        var inpLabel = card.querySelector('.timetable-subject-input');
+        var inpCode = card.querySelector('.timetable-code-input');
+        var selSec = card.querySelector('.timetable-section-select');
+        var label = inpLabel ? inpLabel.value.trim() : '';
+        var code = inpCode ? inpCode.value.trim() : '';
+        var section = selSec ? normalizeSectionSlotValue(selSec.value) : '';
+        if (start || end || label || code || section) {
+          roomTimetables[timetableUi.rid][day].push({
+            start: start,
+            end: end,
+            label: label,
+            code: code,
+            section: section
+          });
+        }
+      });
+    }
+
+    function renderTimetablePeriodRows() {
+      var host = document.getElementById('timetableRowsContainer');
+      if (!host || !timetableUi.rid) return;
+      ensureTimetableShape(timetableUi.rid);
+      host.innerHTML = '';
+      WEEK_GRID_DAYS.forEach(function (day) {
+        var slots = roomTimetables[timetableUi.rid][day] || [];
+        slots.forEach(function (slot) {
+          var card = document.createElement('div');
+          card.className = 'timetable-slot-card';
+          var row = document.createElement('div');
+          row.className = 'timetable-slot-row';
+          var selDay = document.createElement('select');
+          selDay.className = 'timetable-day-select';
+          selDay.setAttribute('aria-label', 'Day');
+          WEEK_GRID_DAYS.forEach(function (d) {
+            var opt = document.createElement('option');
+            opt.value = d;
+            opt.textContent = TIMETABLE_DAY_LABELS[d] || d;
+            if (d === day) opt.selected = true;
+            selDay.appendChild(opt);
+          });
+          var smRaw = parseFlexibleTime(slot.start);
+          var emRaw = parseFlexibleTime(slot.end);
+          var smSel = smRaw != null ? snapMinutesToScheduleGrid(smRaw) : null;
+          var emSel = emRaw != null ? snapMinutesToScheduleGrid(emRaw) : null;
+          if (smSel != null && emSel != null && emSel <= smSel) {
+            emSel = smSel + 30 <= SCHED_DAY_END_MIN ? smSel + 30 : null;
+          }
+          var selStart = document.createElement('select');
+          fillStartSelect(selStart, smSel);
+          var selEnd = document.createElement('select');
+          fillEndSelect(selEnd, smSel, emSel);
+          var inpLabel = document.createElement('input');
+          inpLabel.type = 'text';
+          inpLabel.className = 'timetable-subject-input';
+          inpLabel.placeholder = 'Subject name';
+          inpLabel.value = slot.label || '';
+          inpLabel.setAttribute('aria-label', 'Subject name');
+          var inpCode = document.createElement('input');
+          inpCode.type = 'text';
+          inpCode.className = 'timetable-code-input';
+          inpCode.placeholder = 'Code';
+          inpCode.value = slot.code || '';
+          inpCode.setAttribute('aria-label', 'Subject code');
+          var selSec = document.createElement('select');
+          fillSectionSelect(selSec, slot.section);
+          var btnRm = document.createElement('button');
+          btnRm.type = 'button';
+          btnRm.className = 'btn-remove-slot';
+          btnRm.textContent = 'Remove';
+          btnRm.addEventListener('click', function () {
+            card.remove();
+            collectTimetableFromUI();
+            renderTimetablePeriodRows();
+          });
+          function onPeriodChange() {
+            collectTimetableFromUI();
+            validatePeriodRowConflicts();
+            renderWeeklyScheduleTable();
+          }
+          selDay.addEventListener('change', function () {
+            collectTimetableFromUI();
+            renderTimetablePeriodRows();
+          });
+          selStart.addEventListener('change', function () {
+            var prevEnd = selEnd.value !== '' ? parseInt(selEnd.value, 10) : null;
+            var sm = selStart.value === '' ? null : parseInt(selStart.value, 10);
+            var keepEnd = null;
+            if (sm != null && prevEnd != null && prevEnd > sm && prevEnd <= SCHED_DAY_END_MIN) {
+              keepEnd = prevEnd;
+            }
+            fillEndSelect(selEnd, sm, keepEnd);
+            onPeriodChange();
+          });
+          selEnd.addEventListener('change', onPeriodChange);
+          inpLabel.addEventListener('input', onPeriodChange);
+          inpCode.addEventListener('input', onPeriodChange);
+          selSec.addEventListener('change', onPeriodChange);
+          var msg = document.createElement('p');
+          msg.className = 'timetable-slot-conflict-msg';
+          msg.setAttribute('aria-live', 'polite');
+          row.appendChild(selDay);
+          row.appendChild(selStart);
+          row.appendChild(selEnd);
+          row.appendChild(inpLabel);
+          row.appendChild(inpCode);
+          row.appendChild(selSec);
+          row.appendChild(btnRm);
+          card.appendChild(row);
+          card.appendChild(msg);
+          host.appendChild(card);
+        });
+      });
+      renderWeeklyScheduleTable();
+      validatePeriodRowConflicts();
+    }
+
+    function roomTypeLabel(bkey, rid) {
+      var norm = normalizeRoomAllocForEdit(allocOfRoom(bkey, rid));
+      var t = norm.type && String(norm.type).trim();
+      return t ? t : '—';
+    }
+    function getRoomsInBuilding(bkey) {
+      return (roomsByBuilding[bkey] || []).slice();
+    }
+    function roomMatchesTypeFilter(bkey, rid, tf) {
+      if (tf === '__any__') return true;
+      var lab = roomTypeLabel(bkey, rid);
+      if (tf === '__unspecified__') return !lab || lab === '—';
+      return lab === tf;
+    }
+
+    function pickRoomForTypeFilter(bkey, tf, prevRoom) {
+      var rooms = getRoomsInBuilding(bkey).sort(function (a, b) {
+        return parseInt(a, 10) - parseInt(b, 10);
+      });
+      if (!rooms.length) return null;
+      if (prevRoom && roomMatchesTypeFilter(bkey, prevRoom, tf) && rooms.indexOf(prevRoom) >= 0) {
+        return prevRoom;
+      }
+      for (var i = 0; i < rooms.length; i++) {
+        if (roomMatchesTypeFilter(bkey, rooms[i], tf)) return rooms[i];
+      }
+      return rooms[0];
+    }
+
+    var selBuilding = document.getElementById('filterBuilding');
+    var selType = document.getElementById('filterRoomType');
+    var selRoom = document.getElementById('filterRoomCode');
+
+    function populateBuildingSelect() {
+      selBuilding.innerHTML = '';
+      buildingOrder.forEach(function (bkey) {
+        var opt = document.createElement('option');
+        opt.value = bkey;
+        opt.textContent = buildingNames[bkey] != null ? buildingNames[bkey] : bkey;
+        selBuilding.appendChild(opt);
+      });
+    }
+    function populateTypeSelect() {
+      window.RoomTypes.fillFilterSelect(selType, {
+        allValue: '__any__',
+        allLabel: 'All types',
+        unspecifiedValue: '__unspecified__',
+        unspecifiedLabel: 'Unspecified',
+        extraValues: observedRoomTypes()
+      });
+    }
+    /** All rooms in the building (room type filter does not hide rooms). */
+    function populateRoomSelect(bkey) {
+      selRoom.innerHTML = '';
+      getRoomsInBuilding(bkey)
+        .sort(function (a, b) {
+          return parseInt(a, 10) - parseInt(b, 10);
+        })
+        .forEach(function (rid) {
+          var opt = document.createElement('option');
+          opt.value = rid;
+          opt.textContent = 'Room ' + rid;
+          selRoom.appendChild(opt);
+        });
+    }
+
+    function syncUrl() {
+      if (!flowState.building || !timetableUi.rid) return;
+      var u = new URL(window.location.href);
+      u.searchParams.set('building', flowState.building);
+      u.searchParams.set('room', timetableUi.rid);
+      history.replaceState({}, '', u);
+    }
+
+    function openRoomEditor(bkey, rid) {
+      flowState.building = bkey;
+      var bName = buildingNames[bkey] != null ? buildingNames[bkey] : bkey;
+      document.getElementById('roomEditorTitle').textContent = 'Room ' + rid + ' · ' + bName;
+      var usesFloors = buildingUsesFloors[bkey];
+      var floorLine = usesFloors
+        ? '<br><strong>Floor:</strong> ' +
+          (floorOfRoom(bkey, rid) != null ? floorOfRoom(bkey, rid) : '—') +
+          ' <span style="color:#9ca3af;font-size:0.85em;">(of ' +
+          computeMaxFloors(bkey) +
+          ')</span>'
+        : '<br><strong>Level:</strong> <span style="color:#9ca3af;font-size:0.85em;">(no floors — single list)</span>';
+      document.getElementById('roomEditSummary').innerHTML =
+        '<strong>Building:</strong> ' +
+        bName +
+        '<br><strong>Room number:</strong> ' +
+        rid +
+        floorLine;
+
+      renderRoomReadonlyMeta(bkey, rid);
+
+      timetableUi.rid = rid;
+      ensureTimetableShape(rid);
+      renderTimetablePeriodRows();
+
+      var prox = buildingProximity[bkey] || [];
+      var proxLabels = [];
+      for (var pi = 0; pi < prox.length; pi++) {
+        if (prox[pi]) proxLabels.push(buildingNames[prox[pi]] != null ? buildingNames[prox[pi]] : prox[pi]);
+      }
+      var hintText =
+        'Room details are read-only here — edit them in Data management → Facilities. Use the timetable below to plan class blocks for this room (saved locally in this demo).';
+      if (proxLabels.length) {
+        hintText +=
+          ' If you change schedules, nearby buildings are recommended first: ' + proxLabels.join(', ') + '.';
+      }
+      document.getElementById('roomEditFormHint').textContent = hintText;
+
+      document.getElementById('scheduleEditorPanel').hidden = false;
+      document.getElementById('scheduleEditorEmpty').hidden = true;
+      syncUrl();
+    }
+
+    function optionExists(selectEl, value) {
+      for (var i = 0; i < selectEl.options.length; i++) {
+        if (selectEl.options[i].value === value) return true;
+      }
+      return false;
+    }
+
+    function initFromFiltersAndUrl() {
+      populateBuildingSelect();
+      var params = new URLSearchParams(window.location.search);
+      var bParam = params.get('building');
+      var rParam = params.get('room');
+
+      var bkey =
+        bParam && buildingOrder.indexOf(bParam) >= 0 ? bParam : buildingOrder[0] || '';
+      selBuilding.value = bkey;
+
+      populateTypeSelect();
+      if (rParam && (roomsByBuilding[bkey] || []).indexOf(rParam) >= 0) {
+        selType.value = roomTypeLabel(bkey, rParam);
+        // Anything the picker does not offer, including "—" for an untyped room,
+        // falls back to the Unspecified bucket.
+        if (selType.selectedIndex < 0) selType.value = '__unspecified__';
+      } else {
+        selType.value = '__any__';
+      }
+
+      populateRoomSelect(bkey);
+
+      var ridToOpen = null;
+      if (rParam && (roomsByBuilding[bkey] || []).indexOf(rParam) >= 0) {
+        if (optionExists(selRoom, rParam)) ridToOpen = rParam;
+      }
+      if (!ridToOpen && selRoom.options.length) {
+        ridToOpen = selRoom.options[0].value;
+      }
+
+      if (ridToOpen) {
+        openRoomEditor(bkey, ridToOpen);
+      } else {
+        document.getElementById('scheduleEditorPanel').hidden = true;
+        document.getElementById('scheduleEditorEmpty').hidden = false;
+        document.getElementById('scheduleEditorEmpty').textContent =
+          'No rooms match the current building. Add rooms under Data management → Facilities.';
+      }
+    }
+
+    selBuilding.addEventListener('change', function () {
+      var bkey = selBuilding.value;
+      populateTypeSelect();
+      selType.value = '__any__';
+      populateRoomSelect(bkey);
+      if (selRoom.options.length) {
+        selRoom.selectedIndex = 0;
+        openRoomEditor(bkey, selRoom.value);
+      } else {
+        timetableUi.rid = null;
+        document.getElementById('scheduleEditorPanel').hidden = true;
+        document.getElementById('scheduleEditorEmpty').hidden = false;
+        document.getElementById('scheduleEditorEmpty').textContent =
+          'No rooms in this building.';
+      }
+    });
+
+    selType.addEventListener('change', function () {
+      var bkey = selBuilding.value;
+      var tf = selType.value;
+      var prevRoom = timetableUi.rid;
+      populateRoomSelect(bkey);
+      if (!selRoom.options.length) {
+        timetableUi.rid = null;
+        document.getElementById('scheduleEditorPanel').hidden = true;
+        document.getElementById('scheduleEditorEmpty').hidden = false;
+        document.getElementById('scheduleEditorEmpty').textContent = 'No rooms in this building.';
+        return;
+      }
+      var pick = pickRoomForTypeFilter(bkey, tf, prevRoom);
+      if (pick && optionExists(selRoom, pick)) selRoom.value = pick;
+      else selRoom.selectedIndex = 0;
+      openRoomEditor(bkey, selRoom.value);
+    });
+
+    selRoom.addEventListener('change', function () {
+      openRoomEditor(selBuilding.value, selRoom.value);
+    });
+
+    if (!REPORT_READONLY) document.getElementById('btnSaveRoomTimetable').addEventListener('click', function () {
+      validatePeriodRowConflicts();
+      var saveBtn = document.getElementById('btnSaveRoomTimetable');
+      if (saveBtn && saveBtn.disabled) {
+        alert('Fix schedule conflicts or invalid time ranges before saving.');
+        return;
+      }
+      collectTimetableFromUI();
+      persistSchedData();
+      alert('Timetable saved.');
+    });
+    if (!REPORT_READONLY) document.getElementById('btnAddTimetableSlot').addEventListener('click', function () {
+      if (!timetableUi.rid) return;
+      collectTimetableFromUI();
+      ensureTimetableShape(timetableUi.rid);
+      roomTimetables[timetableUi.rid].mon.push({ start: '', end: '', label: '', code: '', section: '' });
+      renderTimetablePeriodRows();
+    });
+
+    (window.MCUNexReady || Promise.resolve()).then(function () {
+      if (window.FacilitiesStore) applyPersisted(FacilitiesStore.snapshot());
+      COLLEGE_OPTIONS = window.FacilitiesStore ? FacilitiesStore.collegeOptions() : [];
+      if (persistedScheduleByDayRoom) mergeScheduleByDayRoomIntoRoomTimetables(persistedScheduleByDayRoom, true);
+      applyReportSchedulesToActiveRooms(true);
+      initFromFiltersAndUrl();
+    });
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML =
+          '<span class="topbar-datetime-date">' +
+          d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' +
+          d.toLocaleTimeString(undefined, tOpts) +
+          '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+  <script src="../js/notifications.js" defer></script>
+</body>
+</html>

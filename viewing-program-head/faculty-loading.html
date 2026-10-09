@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | Faculty loading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/schedule-page.css" />
+  <link rel="stylesheet" href="../css/app-header-sticky.css" />
+  <link rel="stylesheet" href="../css/faculty-loading.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo"><img src="../Attri/mculogo.jpg" alt="MCU logo" /></div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Admin</span>
+        <div class="topbar-notify">
+          <button class="topbar-notify-btn" type="button">&#128276;<span class="topbar-notify-dot"></span></button>
+          <div class="notify-menu" role="menu"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0">
+          <span>Ryan Registrar</span>
+          <div class="avatar">RR</div>
+          <div class="user-menu" role="menu">
+            <a href="../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="topbar-tabs" aria-label="Faculty loading">
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+    </div>
+    </div>
+    <div class="layout-row">
+      <nav class="nav-bar" id="main-nav" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="final-report.html">Reports</a>
+        <a class="nav-link" href="viewer-requests.html">Requests</a>
+      </nav>
+      <main class="shell">
+        <header class="page-header">
+          <h1 class="page-title">Faculty loading</h1>
+          <p class="page-sub" id="flHint">Faculty loading is prepared for one department, or for the college when it has no departments. It then goes to the Dean, the Registrar, and the VPAA. This page does not change sections or the schedule.</p>
+        </header>
+        <section class="card">
+          <div class="fl-term">
+            <label>Academic year
+              <select id="flYear"></select>
+            </label>
+            <label>Semester
+              <select id="flSemester">
+                <option value="1">1st semester</option>
+                <option value="2">2nd semester</option>
+                <option value="summer">Summer</option>
+              </select>
+            </label>
+          </div>
+          <nav class="fl-crumb" id="flCrumb" aria-label="Folder location"></nav>
+          <div id="flStage"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="fl-overlay" id="flOverlay" hidden>
+    <div class="fl-sheet" id="flSheet" role="dialog" aria-modal="true" aria-label="Faculty loading"></div>
+  </div>
+
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var navBar = document.getElementById('main-nav');
+      var user = document.querySelector('.topbar-user');
+      var userMenu = document.querySelector('.user-menu');
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+      if (user && userMenu) {
+        user.addEventListener('click', function (e) {
+          e.stopPropagation();
+          user.classList.toggle('open');
+        });
+        userMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () { user.classList.remove('open'); });
+      }
+      var el = document.getElementById('topbar-datetime');
+      if (el) {
+        function tick() {
+          var d = new Date();
+          el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) +
+            '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true }) + '</span>';
+        }
+        tick();
+        setInterval(tick, 1000);
+      }
+    })();
+  </script>
+  <script src="../js/api-client.js"></script>
+  <script src="../js/session-boot.js"></script>
+  <script src="../js/org-store.js"></script>
+  <script src="../js/sections-store.js"></script>
+  <script src="../js/data-boot.js"></script>
+  <script src="../js/faculty-loading-store.js"></script>
+  <script src="../js/faculty-loading-page.js"></script>
+  <script src="../js/notifications.js" defer></script>
+</body>
+</html>

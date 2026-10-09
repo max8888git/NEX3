@@ -1,0 +1,13 @@
+/* Keeps the top bar + tab row (hamburger) pinned together while the page scrolls */
+.app-header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Let the sticky wrapper own positioning; avoid double-sticky on the inner topbar */
+.app-header-sticky > .topbar {
+  position: relative;
+  top: auto;
+  z-index: auto;
+}

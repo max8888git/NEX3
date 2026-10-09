@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | Approval</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-dark: #2d163f;
+      --purple-soft: #f6f1fc;
+      --gold: #f9b937;
+      --gold-soft: #fff6de;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+      --danger: #e05454;
+      --success: #0d9668;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-brand-link { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; cursor: pointer; }
+    .topbar-brand-link:hover { opacity: 0.92; }
+    .topbar-logo {
+      width: 32px; height: 32px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      background: #f3edf8;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .topbar-title-main { font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .topbar-title-sub { font-size: 0.75rem; color: #e2d4ff; letter-spacing: 0.16em; text-transform: uppercase; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; }
+    .chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .topbar-notify { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .topbar-notify-btn {
+      position: relative;
+      width: 30px; height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.16);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    .topbar-notify-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+    .topbar-user { position: relative; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--purple);
+    }
+    .user-menu,
+    .notify-menu {
+      position: absolute;
+      top: 130%; right: 0;
+      background: #fff;
+      color: var(--text-main);
+      min-width: 160px;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 10;
+    }
+    .user-menu a,
+    .notify-menu div {
+      display: block;
+      padding: 0.45rem 0.9rem;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+    .user-menu a:hover,
+    .notify-menu div:hover { background: var(--purple-soft); color: var(--purple); }
+    .user-menu a.logout { color: var(--danger); }
+    .topbar-user.open .user-menu { display: block; }
+    .tooltip { position: relative; }
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 10px); right: 0;
+      background: #fff; color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none; white-space: nowrap; z-index: 50;
+    }
+    .tooltip:hover::after { opacity: 1; transform: translateY(0); }
+    .tooltip.open::after, .tooltip.open:hover::after { opacity: 0; transform: translateY(-4px); }
+    .tooltip-left::after { left: 0; right: auto; }
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      margin-right: 0.75rem;
+    }
+    .nav-toggle:hover { background: rgba(0, 0, 0, 0.2); }
+    .nav-toggle-line { width: 18px; height: 2px; border-radius: 999px; background: #fff; }
+    .topbar-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem 1.25rem;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.8rem;
+      overflow-x: visible;
+      overflow-y: visible;
+      background: var(--purple-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+    .topbar-tab {
+      text-decoration: none;
+      color: #e2d4ff;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+    .topbar-tab:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+    .topbar-tab.active {
+      border-bottom-color: var(--gold);
+      color: #fff;
+      font-weight: 600;
+    }
+    .topbar-tabs button.topbar-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font: inherit;
+      cursor: pointer;
+    }
+    .topbar-tabs button.topbar-tab.active {
+      border-bottom-color: var(--gold);
+    }
+    .topbar-tab.topbar-tab--current {
+      color: #fff;
+      font-weight: 600;
+      border-bottom-color: var(--gold);
+      cursor: default;
+      pointer-events: none;
+    }
+    .layout-row { display: flex; flex: 1; min-height: 0; }
+    .nav-bar {
+      background: var(--purple-dark);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      width: 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: fixed;
+      top: 88px;
+      left: 0;
+      height: calc(100vh - 88px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 15;
+    }
+    .nav-bar.nav-bar-open { transform: translateX(0); }
+    .nav-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c9b8f3;
+      margin-bottom: 0.25rem;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      color: #e8ddff;
+      text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-link.active { background: #fff; color: var(--purple-dark); font-weight: 600; }
+    .page {
+      flex: 1;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-left: 0;
+    }
+    .filters-row {
+      background: #fff;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-soft);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .filters-row .course-badge {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: 0.04em;
+    }
+    .main-card {
+      background: #fff;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.25rem 1.25rem 1.4rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .main-header-title { font-size: 1.15rem; }
+    .main-header-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .request-list { display: grid; gap: 0.75rem; font-size: 0.9rem; }
+    .item {
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      padding: 0.75rem 0.9rem;
+      background: #fff;
+    }
+    .item-title { font-weight: 600; }
+    .item-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .item-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; align-items: center; }
+    .tag {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+      color: var(--text-muted);
+    }
+    .tag.tag-approval { background: #fff0f0; border-color: #f0c4c4; color: #a12a2a; }
+    .tag.tag-send { background: #e8f8ef; border-color: #b7e0c8; color: #1a6b3c; }
+    .req-empty { font-size: 0.85rem; color: var(--text-muted); }
+    .request-item-content { flex: 1; min-width: 0; }
+    .request-item-title { font-weight: 600; margin-bottom: 0.2rem; }
+    .request-item-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .ph-request-item {
+      border-radius: 0.65rem;
+      border: 1px solid var(--border-soft);
+      padding: 1rem 1.1rem;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .ph-request-detail {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: 0.35rem;
+    }
+    .ph-request-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--border-soft);
+    }
+    .ph-status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+    }
+    .ph-status-badge.ph-status--pending { background: #fef3c7; color: #92400e; }
+    .ph-status-badge.ph-status--approved { background: #d1fae5; color: var(--success); }
+    .ph-status-badge.ph-status--declined { background: #fee2e2; color: var(--danger); }
+    .ph-status-badge.ph-status--revise { background: #fef3c7; color: #92400e; }
+    .ph-request-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .btn-ph {
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid transparent;
+    }
+    .btn-ph-approve {
+      background: var(--success);
+      color: #fff;
+      border-color: var(--success);
+    }
+    .btn-ph-approve:hover { filter: brightness(0.95); }
+    .btn-ph-revise {
+      background: #fff8e8;
+      color: #5c4a12;
+      border-color: #c9a227;
+    }
+    .btn-ph-revise:hover { background: #fff0cc; border-color: var(--purple); color: var(--purple-dark); }
+    .btn-ph:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .revise-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: min(1.25rem, 3vw);
+      box-sizing: border-box;
+    }
+    .revise-modal[hidden] { display: none !important; }
+    .revise-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(45, 22, 63, 0.45);
+      backdrop-filter: blur(2px);
+    }
+    .revise-modal__dialog {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: min(96vw, 480px);
+      background: #fff;
+      border-radius: 1rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 28px 70px rgba(45, 22, 63, 0.24);
+      padding: 1.35rem 1.5rem 1.5rem;
+    }
+    .revise-modal__dialog h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin: 0 0 0.5rem 0;
+    }
+    .revise-modal__hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0 0 1rem 0;
+      line-height: 1.45;
+    }
+    .revise-modal__dialog label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+    .revise-modal__dialog textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 0.75rem 0.9rem;
+      border-radius: 0.65rem;
+      border: 1px solid var(--border-soft);
+      font-family: inherit;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      resize: vertical;
+      margin-bottom: 0.35rem;
+    }
+    .revise-modal__dialog textarea:focus {
+      outline: 2px solid rgba(92, 38, 126, 0.35);
+      border-color: var(--purple);
+    }
+    .revise-modal__error {
+      font-size: 0.8rem;
+      color: var(--danger);
+      margin-bottom: 0.75rem;
+      min-height: 1.1rem;
+    }
+    .revise-modal__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+    .revise-modal__btn-cancel {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: inherit;
+    }
+    .revise-modal__btn-cancel:hover { background: var(--purple-soft); color: var(--purple); }
+    @media (max-width: 768px) { .nav-bar { width: 75%; max-width: 260px; } }
+    @media (max-width: 640px) { .page { padding: 1rem; } }
+      .topbar-tabs .topbar-datetime {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.05rem;
+      font-size: 0.72rem;
+      color: #c9b8f3;
+      line-height: 1.2;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-left: auto;
+      order: 99;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .topbar-tabs .topbar-datetime .topbar-datetime-date { opacity: 0.95; }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+    }
+</style>
+  <link rel="stylesheet" href="../css/app-header-sticky.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo">
+            <img src="../Attri/mculogo.jpg" alt="MCU logo" />
+          </div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Viewing (approval)</span>
+        <div class="topbar-notify" aria-label="Notifications">
+          <button class="topbar-notify-btn" type="button">
+            &#128276;
+            <span class="topbar-notify-dot" aria-hidden="true"></span>
+          </button>
+          <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <span>Dean Winchester</span>
+          <div class="avatar">DW</div>
+          <div class="user-menu" role="menu">
+            <a href="../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="topbar-tabs" aria-label="Current section">
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <span class="topbar-tab topbar-tab--current" aria-current="page">Approval</span>
+    </div>
+
+    </div>
+    <div class="layout-row">
+      <nav class="nav-bar" id="main-nav" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="final-report.html">Reports</a>
+        <a class="nav-link active" href="viewer-requests.html">Approval</a>
+      </nav>
+
+      <main class="page">
+        <section class="filters-row" aria-label="Approval queue">
+          <span class="course-badge">Timetable</span>
+          <span>Sends and send-backs for campus timetables appear here as records. Approve or send a package back on <strong>Reports</strong>.</span>
+        </section>
+
+        <section class="main-card" aria-label="Timetable send and return records">
+          <header class="main-header">
+            <div>
+              <div class="main-header-title">Timetable records</div>
+              <div class="main-header-sub">Each send and send-back among Admin, Super Admin, and VPAA.</div>
+            </div>
+          </header>
+          <div class="request-list" id="timetableRequestList"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var navBar = document.querySelector('.nav-bar');
+      var user = document.querySelector('.topbar-user');
+      var userMenu = document.querySelector('.user-menu');
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+      if (user && userMenu) {
+        user.addEventListener('click', function (e) {
+          e.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+        userMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, tOpts) + '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+    <script src="../js/api-client.js"></script>
+  <script src="../js/session-boot.js"></script>
+  <script src="../js/request-records.js"></script>
+  <script src="../js/notifications.js" defer></script>
+</body>
+</html>

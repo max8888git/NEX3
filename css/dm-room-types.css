@@ -1,0 +1,216 @@
+/* Facilities subtabs (Buildings / Room types) and the Room types list. */
+
+.sec-subtabs-wrap {
+  background: var(--purple-soft, #f6f1fc);
+  padding: 0.85rem 1.5rem 0;
+  border-bottom: 3px solid var(--purple, #5c267e);
+}
+.sec-subtabs {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.sec-subtab {
+  position: relative;
+  margin: 0 -10px 0 0;
+  padding: 0.72rem 1.85rem 0.58rem;
+  border: 0;
+  background: #fff;
+  color: var(--text-muted, #7a6992);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px var(--border-soft, #e3d9f0);
+  z-index: 1;
+}
+.sec-subtab:hover {
+  color: var(--purple, #5c267e);
+  background: var(--purple-soft, #f6f1fc);
+}
+.sec-subtab.is-active {
+  background: var(--purple, #5c267e);
+  color: #fff;
+  z-index: 3;
+  box-shadow: none;
+}
+.sec-subtab.is-active:hover {
+  background: var(--purple, #5c267e);
+  color: #fff;
+}
+
+.rt-toolbar {
+  width: 100%;
+  margin-top: 0.35rem;
+}
+.rt-toolbar .btn-add-building {
+  max-width: 420px;
+}
+
+.rt-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+}
+.rt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.55rem;
+  border: 1px solid var(--border-soft, #e3d9f0);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff 0%, #faf6ff 70%, var(--purple-soft, #f6f1fc) 160%);
+  box-shadow: 0 4px 16px rgba(92, 38, 126, 0.06);
+}
+.rt-row-main {
+  min-width: 0;
+}
+.rt-name {
+  font-weight: 700;
+  color: var(--text-main, #1f1230);
+}
+.rt-meta {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--text-muted, #7a6992);
+}
+.rt-badge {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: var(--purple-soft, #f6f1fc);
+  color: var(--purple, #5c267e);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.rt-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.4rem;
+}
+.rt-actions button {
+  padding: 0.38rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft, #e3d9f0);
+  background: #fff;
+  color: var(--purple, #5c267e);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rt-actions button:hover {
+  border-color: var(--purple, #5c267e);
+  background: var(--purple-soft, #f6f1fc);
+}
+.rt-actions .rt-btn-delete {
+  color: var(--danger, #e05454);
+}
+.rt-actions .rt-btn-delete:hover {
+  border-color: var(--danger, #e05454);
+  background: #fff5f5;
+}
+.rt-empty {
+  margin: 1rem 0 0;
+  color: var(--text-muted, #7a6992);
+  font-size: 0.9rem;
+}
+
+.rt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(17, 24, 39, 0.55);
+}
+.rt-dialog {
+  width: 100%;
+  max-width: 430px;
+  padding: 1.35rem;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+}
+.rt-dialog h2 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+  color: var(--text-main, #1f1230);
+}
+.rt-dialog p {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted, #7a6992);
+}
+.rt-dialog label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+.rt-dialog select,
+.rt-dialog input[type='text'] {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.92rem;
+  box-sizing: border-box;
+}
+.rt-dialog-error {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 0.85rem;
+}
+.rt-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+.rt-dialog-actions button {
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rt-dialog-cancel {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+}
+.rt-dialog-primary {
+  border: 1px solid transparent;
+  background: var(--purple, #5c267e);
+  color: #fff;
+}
+.rt-dialog-danger {
+  border: 1px solid transparent;
+  background: var(--danger, #e05454);
+  color: #fff;
+}

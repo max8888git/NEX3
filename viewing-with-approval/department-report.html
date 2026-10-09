@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | College report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-dark: #2d163f;
+      --purple-soft: #f6f1fc;
+      --gold: #f9b937;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+      --danger: #e05454;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-brand-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .topbar-brand-link:hover { opacity: 0.92; }
+    .topbar-logo {
+      width: 32px; height: 32px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      background: #f3edf8;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .topbar-title-main { font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .topbar-title-sub { font-size: 0.75rem; color: #e2d4ff; letter-spacing: 0.16em; text-transform: uppercase; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; }
+    .chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .topbar-notify { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .topbar-notify-btn {
+      position: relative;
+      width: 30px; height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.16);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    .topbar-notify-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+    .topbar-user { position: relative; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--purple);
+    }
+    .user-menu,
+    .notify-menu {
+      position: absolute;
+      top: 130%; right: 0;
+      background: #fff;
+      color: var(--text-main);
+      min-width: 160px;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 10;
+    }
+    .user-menu a,
+    .notify-menu div {
+      display: block;
+      padding: 0.45rem 0.9rem;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+    .user-menu a:hover,
+    .notify-menu div:hover { background: var(--purple-soft); color: var(--purple); }
+    .user-menu a.logout { color: var(--danger); }
+    .topbar-user.open .user-menu { display: block; }
+    .tooltip { position: relative; }
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 10px); right: 0;
+      background: #fff; color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 50;
+    }
+    .tooltip:hover::after { opacity: 1; transform: translateY(0); }
+    .tooltip.open::after, .tooltip.open:hover::after { opacity: 0; transform: translateY(-4px); }
+    .tooltip-left::after { left: 0; right: auto; }
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      margin-right: 0.75rem;
+    }
+    .nav-toggle:hover { background: rgba(0, 0, 0, 0.2); }
+    .nav-toggle-line { width: 18px; height: 2px; border-radius: 999px; background: #fff; }
+    .topbar-tabs {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.8rem;
+      overflow-x: visible;
+      overflow-y: visible;
+      background: var(--purple-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+    .topbar-tab {
+      text-decoration: none;
+      color: #e2d4ff;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+    .topbar-tab:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+    .topbar-tab.active {
+      border-bottom-color: var(--gold);
+      color: #fff;
+      font-weight: 600;
+    }
+    .topbar-tab.topbar-tab--current {
+      color: #fff;
+      font-weight: 600;
+      border-bottom-color: var(--gold);
+      cursor: default;
+      pointer-events: none;
+    }
+    .layout-row { display: flex; flex: 1; min-height: 0; }
+    .nav-bar {
+      background: var(--purple-dark);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      width: 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: fixed;
+      top: 88px;
+      left: 0;
+      height: calc(100vh - 88px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 15;
+    }
+    .nav-bar.nav-bar-open { transform: translateX(0); }
+    .nav-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c9b8f3;
+      margin-bottom: 0.25rem;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      color: #e8ddff;
+      text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-link.active { background: #fff; color: var(--purple-dark); font-weight: 600; }
+    .page {
+      flex: 1;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-left: 0;
+      max-width: 1100px;
+      width: 100%;
+      margin-inline: auto;
+    }
+    .dashboard-request-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.85rem 1.65rem;
+      border-radius: 999px;
+      border: 2px solid rgba(92, 38, 126, 0.45);
+      background: #fff;
+      color: var(--purple);
+      font-size: 1.08rem;
+      font-weight: 700;
+      text-decoration: none;
+      font-family: inherit;
+      min-height: 3rem;
+      min-width: 10rem;
+      box-shadow: 0 6px 20px rgba(92, 38, 126, 0.14);
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .dashboard-request-btn:hover {
+      background: var(--purple-soft);
+      border-color: var(--purple);
+      box-shadow: 0 10px 28px rgba(92, 38, 126, 0.2);
+      transform: translateY(-2px);
+    }
+    .page-header {
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+    .card {
+      background: #fff;
+      border-radius: 1rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.25rem 1.4rem 1.4rem;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+      margin-bottom: 1.25rem;
+    }
+    .dept-cards-section {
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(92, 38, 126, 0.14);
+      border-radius: 1rem;
+      box-shadow: 0 12px 36px rgba(45, 22, 63, 0.07);
+      background: linear-gradient(165deg, #fff 0%, #faf8fc 100%);
+      padding: 1.25rem 1.4rem 1.4rem;
+    }
+    .dept-cards-heading {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--purple);
+      margin: 0 0 1rem 0;
+    }
+    .dept-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 480px) {
+      .dept-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 900px) {
+      .dept-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.15rem;
+      }
+    }
+    .dept-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 112px;
+      padding: 1.15rem 1rem;
+      cursor: pointer;
+      border-radius: 0.95rem;
+      border: 1px solid rgba(227, 217, 240, 0.95);
+      background: linear-gradient(168deg, #ffffff 0%, #fcfaff 38%, #f4eefb 100%);
+      box-shadow:
+        0 8px 22px rgba(45, 22, 63, 0.06),
+        0 1px 0 rgba(255, 255, 255, 0.9) inset;
+      font-family: inherit;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+    }
+    .dept-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 0.95rem 0.95rem 0 0;
+      background: linear-gradient(90deg, var(--gold) 0%, #e8a820 40%, var(--purple) 100%);
+      opacity: 0.9;
+    }
+    .dept-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(92, 38, 126, 0.12);
+      border-color: rgba(92, 38, 126, 0.28);
+    }
+    .dept-card:focus {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    .dept-card.is-selected {
+      border-color: rgba(92, 38, 126, 0.45);
+      box-shadow: 0 12px 32px rgba(92, 38, 126, 0.14);
+    }
+    .dept-card__name {
+      font-weight: 700;
+      font-size: 1.02rem;
+      color: var(--purple-dark);
+      line-height: 1.25;
+    }
+    .dept-card__hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.45rem;
+    }
+    .report-page-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .report-page-back {
+      display: inline-flex;
+      align-items: center;
+      min-height: 3rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--purple);
+      text-decoration: none;
+    }
+    .report-page-back:hover {
+      text-decoration: underline;
+      color: var(--purple-dark);
+    }
+    .report-results-panel { margin-top: 0.25rem; }
+    .report-results-panel:not([hidden]) {
+      animation: reportPanelIn 0.4s ease;
+    }
+    @keyframes reportPanelIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .report-export-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--border-soft);
+    }
+    .btn-export {
+      padding: 0.5rem 1.15rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-export:hover {
+      background: var(--purple-soft);
+      border-color: var(--purple);
+      color: var(--purple-dark);
+    }
+    .btn-export--primary {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: #fff;
+    }
+    .btn-export--primary:hover {
+      background: var(--purple-dark);
+      border-color: var(--purple-dark);
+      color: #fff;
+    }
+    .btn-export--approve {
+      background: #1d7a4a;
+      border-color: #1d7a4a;
+      color: #fff;
+    }
+    .btn-export--approve:hover {
+      background: #15633c;
+      border-color: #15633c;
+      color: #fff;
+    }
+    .btn-export--revise {
+      background: #fff8e8;
+      border-color: #c9a227;
+      color: #5c4a12;
+    }
+    .btn-export--revise:hover {
+      background: #fff0cc;
+      border-color: var(--purple);
+      color: var(--purple-dark);
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; }
+      .page {
+        margin: 0 !important;
+        padding: 0.25rem 0.5rem !important;
+        max-width: none !important;
+      }
+      .layout-row { display: block !important; }
+      .report-dept,
+      .report-table,
+      .cy-section { break-inside: avoid; }
+      .report-table { font-size: 0.82rem; }
+    }
+    .report-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .cy-section {
+      margin-bottom: 1.75rem;
+    }
+    .cy-section h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid var(--border-soft);
+    }
+    .report-college-group {
+      margin-bottom: 1.85rem;
+    }
+    .college-heading {
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem 0;
+      padding: 0.45rem 0.75rem;
+      letter-spacing: 0.01em;
+      border-radius: 0.45rem;
+      color: var(--col-accent-strong);
+      background: var(--col-table-head);
+      border-left: 5px solid var(--col-accent);
+    }
+    .report-dept {
+      margin-bottom: 1rem;
+      padding: 0.85rem 1rem 1rem 1rem;
+      border-radius: 0.65rem;
+      border: 1px solid var(--col-border);
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.045);
+      border-left: 5px solid var(--col-accent);
+    }
+    .report-dept:last-child { margin-bottom: 0; }
+    .dept-heading {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--col-accent-strong);
+      margin: 0 0 0.65rem 0;
+      padding: 0.4rem 0.5rem 0.45rem;
+      border-radius: 0.4rem;
+      background: var(--col-table-head);
+    }
+    .year-separator-tr td { border-bottom: none; vertical-align: middle; }
+    .report-table td.year-separator-cell {
+      padding: 0.55rem 1rem !important;
+      background: #f3f4f6;
+      color: #4b5563;
+      border-left: none;
+      border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--border-soft);
+      font-weight: 700;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      text-align: center !important;
+    }
+    .section-separator-tr td { border-bottom: none; vertical-align: middle; }
+    .report-table td.section-separator-cell {
+      padding: 0.4rem 1rem 0.45rem !important;
+      background: #faf5ff;
+      color: #5c267e;
+      border-left: none;
+      border-top: 1px solid #e9d5ff;
+      border-bottom: 1px solid var(--border-soft);
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-align: center !important;
+    }
+    tr.report-repeat-head th {
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .report-dept .report-table th {
+      background: var(--col-table-head);
+      color: var(--col-muted);
+    }
+    .report-dept .report-table tbody tr.report-data-row:hover { background: var(--col-row-hover); }
+    .report-college-group.theme-stone,
+    .report-dept.theme-stone {
+      --col-accent: #78716c;
+      --col-accent-strong: #44403c;
+      --col-muted: #57534e;
+      --col-table-head: #f5f5f4;
+      --col-row-hover: rgba(231, 229, 228, 0.55);
+      --col-border: #e7e5e4;
+    }
+    .report-college-group.theme-slate-blue,
+    .report-dept.theme-slate-blue {
+      --col-accent: #334155;
+      --col-accent-strong: #1e293b;
+      --col-muted: #475569;
+      --col-table-head: #f1f5f9;
+      --col-row-hover: rgba(226, 232, 240, 0.65);
+      --col-border: #e2e8f0;
+    }
+    .report-college-group.theme-teal,
+    .report-dept.theme-teal {
+      --col-accent: #0f766e;
+      --col-accent-strong: #134e4a;
+      --col-muted: #115e59;
+      --col-table-head: #ecfdf5;
+      --col-row-hover: rgba(204, 251, 241, 0.5);
+      --col-border: #ccfbf1;
+    }
+    .report-college-group.theme-emerald,
+    .report-dept.theme-emerald {
+      --col-accent: #047857;
+      --col-accent-strong: #064e3b;
+      --col-muted: #065f46;
+      --col-table-head: #ecfdf5;
+      --col-row-hover: rgba(209, 250, 229, 0.55);
+      --col-border: #d1fae5;
+    }
+    .report-college-group.theme-indigo,
+    .report-dept.theme-indigo {
+      --col-accent: #4338ca;
+      --col-accent-strong: #312e81;
+      --col-muted: #3730a3;
+      --col-table-head: #eef2ff;
+      --col-row-hover: rgba(224, 231, 255, 0.65);
+      --col-border: #e0e7ff;
+    }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .report-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .report-table col.col-w-subject { width: 27%; }
+    .report-table col.col-w-code { width: 10%; }
+    .report-table col.col-w-days { width: 8%; }
+    .report-table col.col-w-time { width: 15%; }
+    .report-table col.col-w-building { width: 22%; }
+    .report-table col.col-w-room { width: 9%; }
+    .report-table col.col-w-section { width: 9%; }
+    .report-table th,
+    .report-table td {
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+    }
+    .report-table th {
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      background: var(--purple-soft);
+    }
+    .report-table tbody tr.report-data-row:hover { background: rgba(246, 241, 252, 0.85); }
+    .report-table th.col-narrow,
+    .report-table td.col-narrow {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .report-table th.col-room,
+    .report-table td.col-room {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .report-table th.col-subject,
+    .report-table td.col-subject {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .empty-state {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-bar { width: 75%; max-width: 260px; }
+    }
+
+    .topbar-tabs .topbar-datetime {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.05rem;
+      font-size: 0.72rem;
+      color: #c9b8f3;
+      line-height: 1.2;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-left: auto;
+      order: 99;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .topbar-tabs .topbar-datetime .topbar-datetime-date { opacity: 0.95; }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+    }
+  </style>
+  <link rel="stylesheet" href="../css/app-header-sticky.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo">
+            <img src="../Attri/mculogo.jpg" alt="MCU logo" />
+          </div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Viewing (approval)</span>
+        <div class="topbar-notify" aria-label="Notifications">
+          <button class="topbar-notify-btn" type="button">
+            &#128276;
+            <span class="topbar-notify-dot" aria-hidden="true"></span>
+          </button>
+          <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <span>Dean Winchester</span>
+          <div class="avatar">DW</div>
+          <div class="user-menu" role="menu">
+            <a href="../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="topbar-tabs" aria-label="Current section">
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <span class="topbar-tab topbar-tab--current" aria-current="page">Dashboard</span>
+    </div>
+
+    </div>
+
+    <div class="layout-row">
+      <nav class="nav-bar" id="main-nav" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="final-report.html">Reports</a>
+        <a class="nav-link" href="viewer-requests.html">Approval</a>
+      </nav>
+
+      <main class="page" id="department-report-main">
+        <div class="report-page-toolbar no-print">
+          <a class="report-page-back" href="dashboard.html">← Dashboard</a>
+          <a class="dashboard-request-btn" href="viewer-requests.html">Go to approval</a>
+        </div>
+
+        <header class="page-header no-print">
+          <h1 class="page-title" id="reportPageHeading">Department report</h1>
+          <p class="report-meta" id="reportPageSub" style="margin-top:0.5rem;margin-bottom:0"></p>
+        </header>
+
+        <div id="reportResultsPanel" class="report-results-panel">
+          <p class="report-meta" id="reportMeta"></p>
+          <div id="reportRoot"></div>
+          <div class="report-export-actions no-print" aria-label="Report actions">
+            <button type="button" class="btn-export" id="btnPrintReport">Print</button>
+            <button
+              type="button"
+              class="btn-export btn-export--primary"
+              id="btnSavePdfReport"
+              title="Opens the print dialog — choose &quot;Save as PDF&quot; or &quot;Microsoft Print to PDF&quot; as the printer"
+            >
+              Save as PDF
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../admin/js/curriculum-data.js"></script>
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var navBar = document.querySelector('.nav-bar');
+      var user = document.querySelector('.topbar-user');
+      var userMenu = document.querySelector('.user-menu');
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+      if (user && userMenu) {
+        user.addEventListener('click', function (e) {
+          e.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+        userMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+    })();
+
+    var PROGRAMS_BY_COLLEGE = {
+      all: [
+        { value: 'all', label: 'All departments / programs' }
+      ],
+      'col-as': [
+        { value: 'all', label: 'All programs' },
+        { value: 'cs', label: 'Computer Science' },
+        { value: 'it', label: 'Information Technology' },
+        { value: 'emc', label: 'Emerging Media' },
+        { value: 'psych', label: 'Psychology' }
+      ],
+      'col-opt': [
+        { value: 'all', label: 'All programs' },
+        { value: 'opt-od', label: 'Doctor of Optometry' },
+        { value: 'opt-clin', label: 'Clinical Optometry' }
+      ],
+      'col-dent': [
+        { value: 'all', label: 'All programs' },
+        { value: 'dent-dmd', label: 'DMD' },
+        { value: 'dent-hygiene', label: 'Dental Hygiene' }
+      ],
+      'col-pt': [
+        { value: 'all', label: 'All programs' },
+        { value: 'pt-dpt', label: 'Doctor of Physical Therapy' },
+        { value: 'pt-sports', label: 'Sports PT' }
+      ],
+      'col-pharm': [
+        { value: 'all', label: 'All programs' },
+        { value: 'pharm-pharmd', label: 'PharmD' },
+        { value: 'pharm-clin', label: 'Clinical Pharmacy' }
+      ]
+    };
+
+    var COLLEGE_LABELS = {
+      'col-as': 'College of Arts and Sciences',
+      'col-opt': 'College of Optometry',
+      'col-dent': 'College of Dentistry',
+      'col-pt': 'College of Physical Therapy',
+      'col-pharm': 'College of Pharmacy'
+    };
+
+    var COLLEGE_THEME_CLASS = {
+      'col-as': 'theme-stone',
+      'col-opt': 'theme-slate-blue',
+      'col-dent': 'theme-teal',
+      'col-pt': 'theme-emerald',
+      'col-pharm': 'theme-indigo'
+    };
+
+    function collegeThemeClass(dept) {
+      return COLLEGE_THEME_CLASS[dept] || 'theme-stone';
+    }
+
+    var BUILDING_LABELS = {
+      lrc: 'Learning Resource Center',
+      fdt: 'FDT Building',
+      pgt: 'PGT Building',
+      gpl: 'GPL Building',
+      bedd: 'BEDD Building',
+      'admin-bldg': 'Administration Building',
+      'c-gymn': 'Center Gymnasium',
+      pool: 'Aquatics / Pool'
+    };
+
+    function inferYearLevel(r) {
+      if (r.yearLevel) return r.yearLevel;
+      var digits = (r.classCode || '').match(/\d{3}/);
+      if (!digits) return '1st year';
+      var h = parseInt(digits[0].charAt(0), 10);
+      if (h <= 1) return '1st year';
+      if (h === 2) return '2nd year';
+      if (h === 3) return '3rd year';
+      if (h === 4) return '4th year';
+      if (h === 5) return '5th year';
+      return '6th year';
+    }
+
+    function cloneRows() {
+      return JSON.parse(JSON.stringify(window.CURRICULUM_ROWS || []));
+    }
+
+    function initCurriculumRows(rows) {
+      rows.forEach(function (r) {
+        if (!r.yearLevel) r.yearLevel = inferYearLevel(r);
+      });
+      rows.forEach(function (r) {
+        if (r.curriculumYear) return;
+        var subj = r.subject || '';
+        if (/\(2023 curriculum\)|prior curriculum|2023 syllabus|2023 offering|\(2023\)/i.test(subj) && !/\(2024 curriculum\)/i.test(subj))
+          r.curriculumYear = '2023-2024';
+        else if (/\(2022 curriculum\)|\(2022\)/i.test(subj))
+          r.curriculumYear = '2022-2023';
+        else
+          r.curriculumYear = r.schoolYear;
+      });
+    }
+
+    function getRunningSchoolYears() {
+      var now = new Date();
+      var y = now.getFullYear();
+      var m = now.getMonth();
+      if (m >= 7) return [y + '-' + (y + 1)];
+      return [(y - 1) + '-' + y];
+    }
+
+    function formatSchoolYearLabel(sy) {
+      if (!sy) return '';
+      var p = sy.split('-');
+      if (p.length !== 2) return sy;
+      return p[0] + '–' + p[1];
+    }
+
+    function buildingLabel(key) {
+      if (!key) return '—';
+      return BUILDING_LABELS[key] || key.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+
+    function getProgramLabel(course) {
+      var c = course || '';
+      for (var coll in PROGRAMS_BY_COLLEGE) {
+        var list = PROGRAMS_BY_COLLEGE[coll];
+        if (!list) continue;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].value === c) return list[i].label;
+        }
+      }
+      return c || '—';
+    }
+
+    function collegeLabel(dept) {
+      return COLLEGE_LABELS[dept] || dept || '—';
+    }
+
+    function yearLevelSortKey(yl) {
+      var s = String(yl || '');
+      var m = s.match(/(\d)/);
+      if (m) return parseInt(m[1], 10);
+      if (/first|1st/i.test(s)) return 1;
+      if (/second|2nd/i.test(s)) return 2;
+      if (/third|3rd/i.test(s)) return 3;
+      if (/fourth|4th/i.test(s)) return 4;
+      if (/fifth|5th/i.test(s)) return 5;
+      if (/sixth|6th/i.test(s)) return 6;
+      return 50;
+    }
+
+    function mockRoom(r) {
+      var s = (r.classCode || '') + (r.section || '') + (r.building || '');
+      var h = 0;
+      for (var i = 0; i < s.length; i++) h += s.charCodeAt(i);
+      return String(100 + (h % 400));
+    }
+
+    function splitSchedule(timeStr) {
+      var t = String(timeStr || '').trim();
+      var m = t.match(/^(MWF|TTh|TTH|Sat|Sun)\s+(.+)$/i);
+      if (m) {
+        var d = m[1];
+        if (d.toUpperCase() === 'TTH') d = 'TTh';
+        return { days: d, timeOnly: m[2] };
+      }
+      if (/^MWF/i.test(t)) return { days: 'MWF', timeOnly: t.replace(/^MWF\s+/i, '').trim() || '—' };
+      if (/^TTh/i.test(t)) return { days: 'TTh', timeOnly: t.replace(/^TTh\s+/i, '').trim() || '—' };
+      return { days: '—', timeOnly: t || '—' };
+    }
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function filterRows(rows, opts) {
+      var running = getRunningSchoolYears();
+      var college = opts.college;
+      var prog = opts.program;
+      var sem = opts.semester;
+      var allSemesters = !!opts.allSemesters;
+      return rows.filter(function (r) {
+        if (r.status !== 'active') return false;
+        if (running.indexOf(r.schoolYear) === -1) return false;
+        if (college !== 'all' && r.dept !== college) return false;
+        if (prog !== 'all' && r.course !== prog) return false;
+        if (!allSemesters && String(r.semester) !== String(sem)) return false;
+        return true;
+      });
+    }
+
+    /** CAS only uses program/department sub-groups; other colleges render as one block per college. */
+    function appendYearLevelTable(deptBlock, pRows, tableAriaLabel) {
+      var byYL = {};
+      pRows.forEach(function (r) {
+        var yl = r.yearLevel || inferYearLevel(r);
+        if (!byYL[yl]) byYL[yl] = [];
+        byYL[yl].push(r);
+      });
+      var ylKeys = Object.keys(byYL).sort(function (a, b) {
+        return yearLevelSortKey(a) - yearLevelSortKey(b);
+      });
+
+      var wrap = document.createElement('div');
+      wrap.className = 'table-wrap';
+      var table = document.createElement('table');
+      table.className = 'report-table';
+      table.setAttribute('aria-label', tableAriaLabel);
+      table.innerHTML =
+        '<colgroup>' +
+        '<col class="col-w-subject" />' +
+        '<col class="col-w-code" />' +
+        '<col class="col-w-days" />' +
+        '<col class="col-w-time" />' +
+        '<col class="col-w-building" />' +
+        '<col class="col-w-room" />' +
+        '<col class="col-w-section" />' +
+        '</colgroup><tbody></tbody>';
+      var tbody = table.querySelector('tbody');
+
+      var REPORT_SECTIONS = [1, 2, 3];
+
+      ylKeys.forEach(function (yl) {
+        var subList = byYL[yl];
+        subList.sort(function (a, b) {
+          return (a.classCode || '').localeCompare(b.classCode || '');
+        });
+
+        var trSep = document.createElement('tr');
+        trSep.className = 'year-separator-tr';
+        var tdSep = document.createElement('td');
+        tdSep.colSpan = 7;
+        tdSep.className = 'year-separator-cell';
+        tdSep.textContent = yl;
+        trSep.appendChild(tdSep);
+        tbody.appendChild(trSep);
+
+        REPORT_SECTIONS.forEach(function (secNum) {
+          var trSecSep = document.createElement('tr');
+          trSecSep.className = 'section-separator-tr';
+          var tdSecSep = document.createElement('td');
+          tdSecSep.colSpan = 7;
+          tdSecSep.className = 'section-separator-cell';
+          tdSecSep.textContent = 'Section ' + secNum;
+          trSecSep.appendChild(tdSecSep);
+          tbody.appendChild(trSecSep);
+
+          var trHead = document.createElement('tr');
+          trHead.className = 'report-repeat-head';
+          trHead.innerHTML =
+            '<th scope="col" class="col-subject">Subject</th>' +
+            '<th scope="col" class="col-narrow">Code</th>' +
+            '<th scope="col" class="col-narrow">Days</th>' +
+            '<th scope="col" class="col-narrow">Time</th>' +
+            '<th scope="col" class="col-building">Building</th>' +
+            '<th scope="col" class="col-room">Room</th>' +
+            '<th scope="col" class="col-narrow">Sec</th>';
+          tbody.appendChild(trHead);
+
+          subList.forEach(function (r) {
+            var sch = splitSchedule(r.time);
+            var rowForRoom = Object.assign({}, r, { section: String(secNum) });
+            var tr = document.createElement('tr');
+            tr.className = 'report-data-row';
+            tr.innerHTML =
+              '<td class="col-subject">' + esc(r.subject) + '</td>' +
+              '<td class="col-narrow">' + esc(r.classCode) + '</td>' +
+              '<td class="col-narrow">' + esc(sch.days) + '</td>' +
+              '<td class="col-narrow">' + esc(sch.timeOnly) + '</td>' +
+              '<td>' + esc(buildingLabel(r.building)) + '</td>' +
+              '<td class="col-room">' + esc(mockRoom(rowForRoom)) + '</td>' +
+              '<td class="col-narrow">' + secNum + '</td>';
+            tbody.appendChild(tr);
+          });
+        });
+      });
+
+      wrap.appendChild(table);
+      deptBlock.appendChild(wrap);
+    }
+
+    function renderReport(collegeId, programId) {
+      var rows = cloneRows();
+      initCurriculumRows(rows);
+      var filtered = filterRows(rows, {
+        college: collegeId,
+        program: programId,
+        semester: '1',
+        allSemesters: true
+      });
+
+      var byYear = {};
+      filtered.forEach(function (r) {
+        var cy = r.curriculumYear || r.schoolYear;
+        if (!byYear[cy]) byYear[cy] = [];
+        byYear[cy].push(r);
+      });
+      var years = Object.keys(byYear).sort(function (a, b) {
+        return b.localeCompare(a);
+      });
+
+      var meta = document.getElementById('reportMeta');
+      var running = getRunningSchoolYears();
+      var scopeLabel =
+        programId === 'all'
+          ? collegeLabel(collegeId) + ' (all programs)'
+          : getProgramLabel(programId);
+      meta.textContent =
+        scopeLabel +
+        ' · ' +
+        filtered.length +
+        ' course(s) · sections 1–3 · all semesters · school year(s): ' +
+        running.map(formatSchoolYearLabel).join(', ') +
+        ' (active curricula only)';
+
+      var root = document.getElementById('reportRoot');
+      root.innerHTML = '';
+
+      if (years.length === 0) {
+        root.innerHTML =
+          '<div class="empty-state card">No courses for this department in the current running school year.</div>';
+        return;
+      }
+
+      years.forEach(function (y) {
+        var list = byYear[y];
+        var byCollege = {};
+        list.forEach(function (r) {
+          var d = r.dept || '';
+          if (!byCollege[d]) byCollege[d] = [];
+          byCollege[d].push(r);
+        });
+        var collegeKeys = Object.keys(byCollege).sort(function (a, b) {
+          return collegeLabel(a).localeCompare(collegeLabel(b));
+        });
+
+        var sec = document.createElement('section');
+        sec.className = 'cy-section';
+        var h2 = document.createElement('h2');
+        h2.textContent = 'Academic School Year ' + formatSchoolYearLabel(y);
+        sec.appendChild(h2);
+
+        collegeKeys.forEach(function (colKey) {
+          var cRows = byCollege[colKey];
+
+          var collegeWrap = document.createElement('div');
+          collegeWrap.className = 'report-college-group ' + collegeThemeClass(colKey);
+
+          var collegeTitle = document.createElement('h3');
+          collegeTitle.className = 'college-heading';
+          collegeTitle.textContent = collegeLabel(colKey);
+          collegeWrap.appendChild(collegeTitle);
+
+          if (colKey === 'col-as') {
+            var byProg = {};
+            cRows.forEach(function (r) {
+              var p = r.course || '';
+              if (!byProg[p]) byProg[p] = [];
+              byProg[p].push(r);
+            });
+            var progKeys = Object.keys(byProg).sort(function (a, b) {
+              return getProgramLabel(a).localeCompare(getProgramLabel(b));
+            });
+
+            progKeys.forEach(function (pk) {
+              var pRows = byProg[pk];
+              var deptBlock = document.createElement('div');
+              deptBlock.className = 'report-dept ' + collegeThemeClass(colKey);
+
+              var dh = document.createElement('div');
+              dh.className = 'dept-heading';
+              dh.textContent = getProgramLabel(pk);
+              deptBlock.appendChild(dh);
+
+              appendYearLevelTable(
+                deptBlock,
+                pRows,
+                'Courses for ' +
+                  formatSchoolYearLabel(y) +
+                  ', ' +
+                  collegeLabel(colKey) +
+                  ', ' +
+                  getProgramLabel(pk)
+              );
+              collegeWrap.appendChild(deptBlock);
+            });
+          } else {
+            var deptBlockFlat = document.createElement('div');
+            deptBlockFlat.className = 'report-dept ' + collegeThemeClass(colKey);
+            appendYearLevelTable(
+              deptBlockFlat,
+              cRows,
+              'Courses for ' + formatSchoolYearLabel(y) + ', ' + collegeLabel(colKey)
+            );
+            collegeWrap.appendChild(deptBlockFlat);
+          }
+
+          sec.appendChild(collegeWrap);
+        });
+
+        root.appendChild(sec);
+      });
+    }
+
+    function getValidCasProgramIds() {
+      var list = PROGRAMS_BY_COLLEGE['col-as'] || [];
+      return list
+        .filter(function (o) {
+          return o.value !== 'all';
+        })
+        .map(function (o) {
+          return o.value;
+        });
+    }
+
+    function getValidCollegeIds() {
+      return Object.keys(COLLEGE_LABELS);
+    }
+
+    (function initDepartmentReportFromQuery() {
+      var params = new URLSearchParams(window.location.search);
+      var collegeParam = params.get('college');
+      var programId = params.get('program');
+      var validColleges = getValidCollegeIds();
+      var validPrograms = getValidCasProgramIds();
+      var heading = document.getElementById('reportPageHeading');
+      var sub = document.getElementById('reportPageSub');
+      var meta = document.getElementById('reportMeta');
+      var root = document.getElementById('reportRoot');
+
+      if (collegeParam && validColleges.indexOf(collegeParam) !== -1) {
+        if (heading) heading.textContent = collegeLabel(collegeParam) + ' — Report';
+        if (sub)
+          sub.textContent =
+            'Curriculum report for this college · same data as admin Reports → Report · sections 1–3 · all semesters';
+        renderReport(collegeParam, 'all');
+        return;
+      }
+
+      if (programId && validPrograms.indexOf(programId) !== -1) {
+        if (heading) heading.textContent = getProgramLabel(programId) + ' — Report';
+        if (sub)
+          sub.textContent =
+            'College of Arts and Sciences · same data as admin Reports → Report · sections 1–3 · all semesters';
+        renderReport('col-as', programId);
+        return;
+      }
+
+      if (heading) heading.textContent = 'Report';
+      if (sub) sub.textContent = 'Choose a college from the dashboard to view its curriculum report.';
+      if (meta) meta.textContent = '';
+      if (root) {
+        root.innerHTML =
+          '<div class="empty-state card"><p>No valid college selected.</p><p><a href="dashboard.html">Back to dashboard</a></p></div>';
+      }
+    })();
+
+    document.getElementById('btnPrintReport').addEventListener('click', function () {
+      window.print();
+    });
+    document.getElementById('btnSavePdfReport').addEventListener('click', function () {
+      window.print();
+    });
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, tOpts) + '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+    <script src="../js/api-client.js"></script>
+  <script src="../js/session-boot.js"></script>
+  <script src="../js/notifications.js" defer></script>
+</body>
+</html>

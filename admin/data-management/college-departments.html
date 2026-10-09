@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCU-NEX | College and departments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #5c267e;
+      --purple-soft: #f6f1fc;
+      --gold: #f9b937;
+      --purple-dark: #2d163f;
+      --bg: #f5f5f9;
+      --text-main: #1f1230;
+      --text-muted: #7a6992;
+      --border-soft: #e3d9f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar {
+      background: var(--purple);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-brand-link { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; cursor: pointer; }
+    .topbar-brand-link:hover { opacity: 0.92; }
+    .topbar-logo {
+      width: 32px; height: 32px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      background: #f3edf8;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .topbar-title-main { font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .topbar-title-sub { font-size: 0.75rem; color: #e2d4ff; letter-spacing: 0.16em; text-transform: uppercase; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; }
+    .chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .topbar-notify { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .topbar-notify-btn {
+      position: relative;
+      width: 30px; height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.16);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    .topbar-notify-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(249, 185, 55, 0.35);
+    }
+    .topbar-user { position: relative; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--purple);
+    }
+    .user-menu,
+    .notify-menu {
+      position: absolute;
+      top: 130%; right: 0;
+      background: #fff;
+      color: var(--text-main);
+      min-width: 160px;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 10;
+    }
+    .user-menu a,
+    .notify-menu div {
+      display: block;
+      padding: 0.45rem 0.9rem;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+    .user-menu a:hover,
+    .notify-menu div:hover { background: var(--purple-soft); color: var(--purple); }
+    .user-menu a.logout { color: #e05454; }
+    .topbar-user.open .user-menu { display: block; }
+    .tooltip { position: relative; }
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 10px); right: 0;
+      background: #fff; color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none; white-space: nowrap; z-index: 50;
+    }
+    .tooltip:hover::after { opacity: 1; transform: translateY(0); }
+    .tooltip.open::after, .tooltip.open:hover::after { opacity: 0; transform: translateY(-4px); }
+    .tooltip-left::after { left: 0; right: auto; }
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      margin-right: 0.75rem;
+    }
+    .nav-toggle:hover { background: rgba(0, 0, 0, 0.2); }
+    .nav-toggle-line { width: 18px; height: 2px; border-radius: 999px; background: #fff; }
+    .topbar-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1.25rem;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.8rem;
+      overflow-x: visible;
+      background: var(--purple-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+    .topbar-tab {
+      text-decoration: none;
+      color: #e2d4ff;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+      font-size: 0.72rem;
+    }
+    .topbar-tab:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+    .topbar-tab.active {
+      border-bottom-color: var(--gold);
+      color: #fff;
+      font-weight: 600;
+    }
+    .layout-row { display: flex; flex: 1; min-height: 0; }
+    .layout-row > main { flex: 1; min-width: 0; }
+    .nav-bar {
+      background: var(--purple-dark);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      width: 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: fixed;
+      top: 88px;
+      left: 0;
+      height: calc(100vh - 88px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 15;
+    }
+    .nav-bar.nav-bar-open { transform: translateX(0); }
+    .nav-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c9b8f3;
+      margin-bottom: 0.25rem;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      color: #e8ddff;
+      text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-link.active { background: #fff; color: var(--purple-dark); font-weight: 600; }
+    .shell { max-width: 980px; margin: 2rem auto; padding: 0 1.25rem; flex: 1; }
+    .shell.dm-main--fullbleed {
+      max-width: none;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      align-self: stretch;
+    }
+    @media (max-width: 768px) { .nav-bar { width: 75%; max-width: 260px; } }
+    .page-header { margin-bottom: 1.25rem; }
+    .page-title { font-size: 1.35rem; font-weight: 600; }
+    .page-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .card {
+      background: #fff;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-soft);
+      padding: 1.25rem 1.4rem 1.4rem;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+    }
+    .dm-panel-hidden { display: none !important; }
+    #dm-panel-facilities,
+    #dm-panel-rooms {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 7.5rem);
+    }
+    .dm-panel-toolbar {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0.55rem 1rem 0.65rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .dm-panel-toolbar-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.45rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: #fff;
+      background: var(--purple);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      letter-spacing: 0.02em;
+    }
+    .dm-panel-toolbar-link:hover {
+      filter: brightness(1.06);
+      color: #fff;
+    }
+    #dm-panel-facilities .dm-facilities-frame,
+    #dm-panel-rooms .dm-facilities-frame {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      border: 0;
+      display: block;
+      vertical-align: top;
+    }
+    .dm-list {
+      margin-top: 0.75rem;
+      padding-left: 1.1rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .dm-list strong { color: var(--text-main); }
+    .dm-ref-callout {
+      background: var(--purple-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.75rem;
+      padding: 0.9rem 1.05rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.35rem;
+      line-height: 1.5;
+    }
+    .dm-ref-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+    .dm-ref-toolbar h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .dm-btn-add {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      color: #fff;
+      background: var(--purple);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 0.5rem;
+    }
+    .dm-btn-add:hover { filter: brightness(1.06); }
+    .dm-college-stack { display: flex; flex-direction: column; gap: 1rem; }
+    .dm-college-card {
+      border: 1px solid var(--border-soft);
+      border-radius: 0.85rem;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(45, 22, 63, 0.05);
+    }
+    .dm-college-card__top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 1rem 1.15rem;
+      background: linear-gradient(180deg, #faf8ff 0%, #fff 55%);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .dm-college-card__headings { min-width: 0; }
+    .dm-college-card__title {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 0.2rem;
+    }
+    .dm-college-card__meta { font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .dm-college-card__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+    .dm-btn-sm {
+      padding: 0.32rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--text-main);
+    }
+    .dm-btn-sm:hover { background: var(--purple-soft); border-color: #d4c4e8; color: var(--purple); }
+    .dm-btn-sm--archive {
+      border-color: #e8d5b0;
+      background: #fffbeb;
+      color: #92400e;
+    }
+    .dm-btn-sm--archive:hover { background: #fef3c7; border-color: #fcd34d; color: #78350f; }
+    .dm-college-card__body { padding: 0.85rem 1rem 1.1rem; }
+    .dm-dept-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+    }
+    .dm-dept-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .dm-dept-table th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .dm-dept-table th:last-child { text-align: right; width: 18rem; }
+    .dm-dept-table td {
+      padding: 0.55rem 0.5rem;
+      border-bottom: 1px solid #f0eaf5;
+      vertical-align: middle;
+    }
+    .dm-dept-table tr:last-child td { border-bottom: none; }
+    .dm-dept-table td:last-child { text-align: right; }
+    .dm-dept-actions { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; justify-content: flex-end; }
+    .dm-add-dept {
+      margin-top: 0.75rem;
+      padding: 0.35rem 0;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--purple);
+      background: none;
+      border: none;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+    .dm-add-dept:hover { color: var(--purple-dark); }
+    .dm-college-viewbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .dm-college-seg {
+      padding: 0.4rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .dm-college-seg:hover { border-color: #c4b3dc; color: var(--text-main); }
+    .dm-college-seg[aria-selected="true"] {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple);
+    }
+    .dm-archive-hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.1rem;
+      line-height: 1.5;
+    }
+    .dm-college-card--archived {
+      border-style: dashed;
+      opacity: 0.97;
+    }
+    .dm-college-card--archived .dm-college-card__meta { color: #a16207; }
+    .dm-btn-sm--unarchive {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .dm-btn-sm--unarchive:hover {
+      background: #dcfce7;
+      border-color: #4ade80;
+      color: #14532d;
+    }
+    .dm-sec-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+      gap: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .dm-sec-field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+    .dm-sec-field label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+    .dm-sec-field input,
+    .dm-sec-field select {
+      font-size: 0.88rem;
+      font-family: inherit;
+      padding: 0.45rem 0.65rem;
+      border-radius: 0.45rem;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--text-main);
+    }
+    .dm-sec-field input:focus,
+    .dm-sec-field select:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 2px rgba(92, 38, 126, 0.15);
+    }
+    .dm-sec-field--wide { grid-column: 1 / -1; }
+    @media (min-width: 640px) {
+      .dm-sec-field--wide { grid-column: span 2; }
+    }
+    .dm-sec-result {
+      margin-top: 1.25rem;
+      padding: 1.1rem 1.15rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-soft);
+      background: var(--purple-soft);
+    }
+    .dm-sec-result[hidden] { display: none !important; }
+    .dm-sec-result-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--purple);
+      margin-bottom: 0.65rem;
+    }
+    .dm-sec-result-line { font-size: 0.92rem; margin-bottom: 0.35rem; line-height: 1.45; }
+    .dm-sec-result-line strong { color: var(--text-main); }
+    .dm-sec-override-wrap {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-soft);
+    }
+    .dm-sec-warning {
+      margin-top: 0.65rem;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.82rem;
+      border-radius: 0.45rem;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    .dm-sec-warning[hidden] { display: none !important; }
+    .dm-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 22, 63, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 1rem;
+    }
+    .dm-modal-overlay[hidden] { display: none !important; }
+    .dm-modal {
+      background: #fff;
+      border-radius: 0.85rem;
+      max-width: 34rem;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+      border: 1px solid var(--border-soft);
+    }
+    .dm-modal--dept { max-width: 26rem; z-index: 210; }
+    .dm-modal__head {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .dm-modal__head h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
+    .dm-modal-close {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      background: var(--purple-soft);
+      color: var(--purple);
+      border-radius: 0.4rem;
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .dm-modal-close:hover { background: #ebe4f7; }
+    .dm-modal__body { padding: 1.1rem 1.2rem 1.2rem; }
+    .dm-modal__foot {
+      padding: 0.85rem 1.2rem;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .dm-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    .dm-toggle-row input { width: 1.05rem; height: 1.05rem; accent-color: var(--purple); }
+    .dm-modal-dept-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0eaf5;
+      font-size: 0.88rem;
+    }
+    .dm-modal-dept-row:last-child { border-bottom: none; }
+    .dm-modal-dept-name { font-weight: 500; color: var(--text-main); min-width: 0; flex: 1; }
+    .dm-modal-dept-actions { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    #dmCollegeModalDeptSection { margin-top: 0.5rem; }
+    #dmCollegeModalAddDept { margin-top: 0.65rem; }
+      .topbar-tabs .topbar-datetime {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.05rem;
+      font-size: 0.72rem;
+      color: #c9b8f3;
+      line-height: 1.2;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-left: auto;
+      order: 99;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .topbar-tabs .topbar-datetime .topbar-datetime-date { opacity: 0.95; }
+    .topbar-tabs .topbar-datetime .topbar-datetime-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+    }
+  </style>
+  <link rel="stylesheet" href="../../css/app-header-sticky.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-header-sticky">
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="../home-dashboard.html" class="topbar-brand-link" aria-label="Go to dashboard">
+          <div class="topbar-logo">
+            <img src="../../Attri/mculogo.jpg" alt="MCU logo" />
+          </div>
+          <div>
+            <div class="topbar-title-main">MCU-NEX</div>
+            <div class="topbar-title-sub">Registrar Room Allocation</div>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="chip">Admin</span>
+        <div class="topbar-notify" aria-label="Notifications">
+          <button class="topbar-notify-btn" type="button">
+            &#128276;
+            <span class="topbar-notify-dot" aria-hidden="true"></span>
+          </button>
+          <div class="notify-menu" role="menu" aria-label="Notification list"></div>
+        </div>
+        <div class="topbar-user tooltip" data-tooltip="Account" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <span>Ryan Registrar</span>
+          <div class="avatar">RR</div>
+          <div class="user-menu" role="menu">
+            <a href="../account.html" role="menuitem">Account</a>
+            <a href="../requests.html" role="menuitem">Requests</a>
+            <a href="../settings.html" role="menuitem">Settings</a>
+            <a href="../../index.html" role="menuitem" class="logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="topbar-tabs" aria-label="Data management sections">
+      <div class="topbar-datetime" id="topbar-datetime" aria-live="polite"></div>
+      <button class="nav-toggle tooltip tooltip-left" data-tooltip="Menu" type="button" aria-label="Toggle navigation">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+      <a href="college-departments.html" class="topbar-tab active" id="dm-tab-college">College and departments</a>
+      <a href="sections.html" class="topbar-tab" id="dm-tab-sections">Sections</a>
+      <a href="add-curriculum.html" class="topbar-tab" id="dm-tab-curriculums">Curriculums</a>
+      <a href="facilities.html" class="topbar-tab" id="dm-tab-facilities">Facilities</a>
+    </div>
+
+    </div>
+
+    <div class="layout-row">
+      <nav class="nav-bar" aria-label="Main navigation">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-link" href="../home-dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="college-departments.html">Data Management</a>
+        <a class="nav-link" href="../faculty-loading.html">Faculty loading</a>
+        <a class="nav-link" href="../create-schedule.html">Create Schedule</a>
+        <a class="nav-link" href="../curriculums/curriculum-filters.html">Curriculums</a>
+        <a class="nav-link" href="../final-report.html">Reports</a>
+        <a class="nav-link" href="../requests.html">Requests</a>
+        <a class="nav-link" href="../account-management.html">Account Management</a>
+        <a class="nav-link" href="../logs.html">Transaction Log</a>
+      </nav>
+
+      <main class="shell dm-main">
+        <div id="dm-panel-college">
+          <header class="page-header">
+            <h1 class="page-title">College and departments</h1>
+            <p class="page-sub">A college has one or more departments. Each department has at least one program, and exactly one Program Chair. Curricula and sections belong to a program.</p>
+          </header>
+
+          <p class="dm-ref-callout">
+            <strong style="color: var(--text-main);">System-wide source.</strong>
+            Values you add, edit, or archive here are what accounts, curricula, scheduling, and reports use.
+          </p>
+
+          <section class="card">
+            <div class="dm-college-viewbar" role="tablist" aria-label="Active or archived records">
+              <button type="button" class="dm-college-seg" role="tab" id="dmCollegeSegActive" aria-selected="true" aria-controls="dm-college-pane-active">Active</button>
+              <button type="button" class="dm-college-seg" role="tab" id="dmCollegeSegArchived" aria-selected="false" aria-controls="dm-college-pane-archived">Archived</button>
+            </div>
+
+            <div id="dm-college-pane-active" class="dm-college-pane" role="tabpanel" aria-labelledby="dmCollegeSegActive">
+            <div class="dm-ref-toolbar">
+              <h2>Colleges</h2>
+              <button type="button" class="dm-btn-add" id="dmCollegeBtnAdd" aria-label="Add college">+ Add college</button>
+            </div>
+
+            <div class="dm-college-stack" id="dmCollegeStackActive"></div>
+            </div>
+
+            <div id="dm-college-pane-archived" class="dm-college-pane" role="tabpanel" aria-labelledby="dmCollegeSegArchived" hidden>
+              <p class="dm-archive-hint">
+                Archived items do not appear in pickers for new accounts, courses, or schedules. Open this list when you need to audit history or <strong style="color: var(--text-main);">unarchive</strong> something to use it again.
+              </p>
+              <div class="dm-college-stack" id="dmCollegeStackArchived"></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="dmCollegeModalOverlay" class="dm-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="dmCollegeModalTitle">
+    <div class="dm-modal">
+      <div class="dm-modal__head">
+        <h2 id="dmCollegeModalTitle">Edit college</h2>
+        <button type="button" class="dm-modal-close" id="dmCollegeModalCloseX" aria-label="Close">×</button>
+      </div>
+      <div class="dm-modal__body">
+        <div class="dm-sec-field">
+          <label for="dmCollegeModalName">College name</label>
+          <input type="text" id="dmCollegeModalName" autocomplete="organization" />
+        </div>
+        <div class="dm-sec-field" style="margin-top: 0.75rem;">
+          <label for="dmCollegeModalCode">Short code</label>
+          <input type="text" id="dmCollegeModalCode" maxlength="12" autocomplete="off" />
+        </div>
+        <div class="dm-toggle-row">
+          <input type="checkbox" id="dmCollegeModalUseDept" />
+          <label for="dmCollegeModalUseDept">This college uses departments</label>
+        </div>
+        <div id="dmCollegeModalDeptSection">
+          <div class="dm-dept-label">Departments</div>
+          <div id="dmCollegeModalDeptList"></div>
+          <button type="button" class="dm-add-dept" id="dmCollegeModalAddDept">+ Add department</button>
+        </div>
+      </div>
+      <div class="dm-modal__foot">
+        <button type="button" class="dm-btn-sm dm-btn-sm--archive" id="dmCollegeModalArchive">Archive college</button>
+        <button type="button" class="dm-btn-sm" id="dmCollegeModalCancel">Cancel</button>
+        <button type="button" class="dm-btn-add" id="dmCollegeModalSave" style="border: none;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dmDeptModalOverlay" class="dm-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="dmDeptModalTitle" style="z-index: 220;">
+    <div class="dm-modal dm-modal--dept">
+      <div class="dm-modal__head">
+        <h2 id="dmDeptModalTitle">Edit department</h2>
+        <button type="button" class="dm-modal-close" id="dmDeptModalCloseX" aria-label="Close">×</button>
+      </div>
+      <div class="dm-modal__body">
+        <div class="dm-sec-field">
+          <label for="dmDeptModalName">Department name</label>
+          <input type="text" id="dmDeptModalName" autocomplete="off" />
+        </div>
+      </div>
+      <div class="dm-modal__foot">
+        <button type="button" class="dm-btn-sm dm-btn-sm--archive" id="dmDeptModalArchive">Archive</button>
+        <button type="button" class="dm-btn-sm" id="dmDeptModalDelete" hidden>Delete</button>
+        <button type="button" class="dm-btn-sm" id="dmDeptModalCancel">Cancel</button>
+        <button type="button" class="dm-btn-add" id="dmDeptModalSave" style="border: none;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dmProgramModalOverlay" class="dm-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="dmProgramModalTitle" style="z-index: 230;">
+    <div class="dm-modal dm-modal--dept">
+      <div class="dm-modal__head">
+        <h2 id="dmProgramModalTitle">Add program</h2>
+        <button type="button" class="dm-modal-close" id="dmProgramModalCloseX" aria-label="Close">×</button>
+      </div>
+      <div class="dm-modal__body">
+        <p class="page-sub" id="dmProgramModalHint" style="margin-top:0;"></p>
+        <div class="dm-sec-field">
+          <label for="dmProgramModalName">Program name</label>
+          <input type="text" id="dmProgramModalName" autocomplete="off" />
+        </div>
+      </div>
+      <div class="dm-modal__foot">
+        <button type="button" class="dm-btn-sm" id="dmProgramModalCancel">Cancel</button>
+        <button type="button" class="dm-btn-add" id="dmProgramModalSave" style="border: none;">Add program</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var navBar = document.querySelector('.nav-bar');
+      var user = document.querySelector('.topbar-user');
+      var userMenu = document.querySelector('.user-menu');
+      if (navToggle && navBar) {
+        navToggle.addEventListener('click', function () {
+          navBar.classList.toggle('nav-bar-open');
+          navToggle.classList.toggle('open', navBar.classList.contains('nav-bar-open'));
+          navToggle.setAttribute('aria-expanded', navBar.classList.contains('nav-bar-open') ? 'true' : 'false');
+        });
+      }
+      if (user && userMenu) {
+        user.addEventListener('click', function (e) {
+          e.stopPropagation();
+          user.classList.toggle('open');
+          user.setAttribute('aria-expanded', user.classList.contains('open') ? 'true' : 'false');
+        });
+        userMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () {
+          user.classList.remove('open');
+          user.setAttribute('aria-expanded', 'false');
+        });
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      var el = document.getElementById('topbar-datetime');
+      if (!el) return;
+      function tick() {
+        var d = new Date();
+        var opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        var tOpts = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        el.innerHTML = '<span class="topbar-datetime-date">' + d.toLocaleDateString(undefined, opts) +
+          '</span><span class="topbar-datetime-time">' + d.toLocaleTimeString(undefined, tOpts) + '</span>';
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+  <script src="../../js/api-client.js"></script>
+  <script src="../../js/session-boot.js"></script>
+  <script src="../../js/org-store.js"></script>
+  <script src="../../js/data-boot.js"></script>
+  <script>
+    (function () {
+      var segA = document.getElementById('dmCollegeSegActive');
+      var segH = document.getElementById('dmCollegeSegArchived');
+      var paneA = document.getElementById('dm-college-pane-active');
+      var paneH = document.getElementById('dm-college-pane-archived');
+      var stackA = document.getElementById('dmCollegeStackActive');
+      var stackH = document.getElementById('dmCollegeStackArchived');
+      var btnAdd = document.getElementById('dmCollegeBtnAdd');
+      var panel = document.getElementById('dm-panel-college');
+
+      var ovC = document.getElementById('dmCollegeModalOverlay');
+      var ovD = document.getElementById('dmDeptModalOverlay');
+      var titleC = document.getElementById('dmCollegeModalTitle');
+      var inpCname = document.getElementById('dmCollegeModalName');
+      var inpCcode = document.getElementById('dmCollegeModalCode');
+      var chkCdept = document.getElementById('dmCollegeModalUseDept');
+      var secCdept = document.getElementById('dmCollegeModalDeptSection');
+      var listCdept = document.getElementById('dmCollegeModalDeptList');
+      var btnCaddDept = document.getElementById('dmCollegeModalAddDept');
+      var btnCsave = document.getElementById('dmCollegeModalSave');
+      var btnCcancel = document.getElementById('dmCollegeModalCancel');
+      var btnCarchive = document.getElementById('dmCollegeModalArchive');
+      var btnCclose = document.getElementById('dmCollegeModalCloseX');
+
+      var titleD = document.getElementById('dmDeptModalTitle');
+      var inpDname = document.getElementById('dmDeptModalName');
+      var btnDsave = document.getElementById('dmDeptModalSave');
+      var btnDcancel = document.getElementById('dmDeptModalCancel');
+      var btnDarchive = document.getElementById('dmDeptModalArchive');
+      var btnDdelete = document.getElementById('dmDeptModalDelete');
+      var btnDclose = document.getElementById('dmDeptModalCloseX');
+
+      var ovP = document.getElementById('dmProgramModalOverlay');
+      var hintP = document.getElementById('dmProgramModalHint');
+      var inpPname = document.getElementById('dmProgramModalName');
+      var btnPsave = document.getElementById('dmProgramModalSave');
+      var btnPcancel = document.getElementById('dmProgramModalCancel');
+      var btnPclose = document.getElementById('dmProgramModalCloseX');
+      var programModalCollegeId = null;
+      var programModalDeptId = null;
+
+      if (!segA || !segH || !paneA || !paneH || !stackA || !stackH || !ovC || !ovD) return;
+
+      function uid() {
+        return 'id-' + Math.random().toString(36).slice(2, 11);
+      }
+
+      function archiveLabel() {
+        var d = new Date();
+        return d.toLocaleString(undefined, { month: 'short', year: 'numeric' });
+      }
+
+      function esc(s) {
+        var d = document.createElement('div');
+        d.textContent = s == null ? '' : String(s);
+        return d.innerHTML;
+      }
+
+      // Colleges live in the shared store, not in this page, so that the
+      // curriculum upload dialog sees the same list whether or not this page
+      // has been opened. js/org-store.js supplies the starting list.
+      var DM_COLLEGE = window.OrgStore.load();
+
+      var collegeModalDraft = null;
+      var collegeModalMode = 'edit';
+      var deptModalCollegeId = null;
+      var deptModalDeptId = null;
+      var deptModalFromCollegeModal = false;
+
+      function go(active) {
+        segA.setAttribute('aria-selected', active ? 'true' : 'false');
+        segH.setAttribute('aria-selected', active ? 'false' : 'true');
+        paneA.hidden = !active;
+        paneH.hidden = active;
+      }
+
+      segA.addEventListener('click', function () { go(true); });
+      segH.addEventListener('click', function () { go(false); });
+
+      function findActiveCollege(id) {
+        return DM_COLLEGE.active.find(function (c) { return c.id === id; });
+      }
+
+      function findArchivedCollege(id) {
+        return DM_COLLEGE.archivedColleges.find(function (c) { return c.id === id; });
+      }
+
+      function findActiveByCode(code) {
+        return DM_COLLEGE.active.find(function (c) { return c.code === code; });
+      }
+
+      function renderActive() {
+        stackA.innerHTML = '';
+        DM_COLLEGE.active.forEach(function (c) {
+          var art = document.createElement('article');
+          art.className = 'dm-college-card';
+          var bodyHtml = '';
+          if (c.useDepartments) {
+            if (c.departments.length) {
+              var rows = c.departments.map(function (d) {
+                var programs = d.programs && d.programs.length ? d.programs : [{ name: d.name }];
+                var prog = programs.map(function (p) { return esc(p.name); }).join(', ');
+                return '<tr><td>' + esc(d.name) +
+                  '<div class="page-sub" style="margin:0.2rem 0 0;">Programs: ' + prog + '</div></td><td><div class="dm-dept-actions">' +
+                  '<button type="button" class="dm-btn-sm dm-add-program" data-college-id="' + esc(c.id) + '" data-dept-id="' + esc(d.id) + '">Add program</button>' +
+                  '<button type="button" class="dm-btn-sm dm-edit-dept" data-college-id="' + esc(c.id) + '" data-dept-id="' + esc(d.id) + '">Edit</button>' +
+                  '<button type="button" class="dm-btn-sm dm-btn-sm--archive dm-archive-dept" data-college-id="' + esc(c.id) + '" data-dept-id="' + esc(d.id) + '">Archive</button></div></td></tr>';
+              }).join('');
+              bodyHtml = '<div class="dm-dept-label">Departments</div><table class="dm-dept-table"><thead><tr><th scope="col">Name</th><th scope="col">Actions</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+                '<button type="button" class="dm-add-dept dm-add-dept-inline" data-college-id="' + esc(c.id) + '">+ Add department</button>';
+            } else {
+              bodyHtml = '<div class="dm-dept-label">Departments</div><p class="page-sub" style="margin:0 0 0.5rem;">No departments yet.</p>' +
+                '<button type="button" class="dm-add-dept dm-add-dept-inline" data-college-id="' + esc(c.id) + '">+ Add department</button>';
+            }
+          } else {
+            bodyHtml = '<p class="page-sub" style="margin:0;">This college does not use departments.</p>';
+          }
+          art.innerHTML = '<div class="dm-college-card__top"><div class="dm-college-card__headings"><div class="dm-college-card__title">' + esc(c.name) + '</div><div class="dm-college-card__meta">Code ' + esc(c.code) + ' · Active</div></div><div class="dm-college-card__actions">' +
+            '<button type="button" class="dm-btn-sm dm-edit-college" data-college-id="' + esc(c.id) + '">Edit</button>' +
+            '<button type="button" class="dm-btn-sm dm-btn-sm--archive dm-archive-college" data-college-id="' + esc(c.id) + '">Archive</button></div></div><div class="dm-college-card__body">' + bodyHtml + '</div>';
+          stackA.appendChild(art);
+        });
+      }
+
+      function renderArchived() {
+        stackH.innerHTML = '';
+        DM_COLLEGE.archivedColleges.forEach(function (c) {
+          var art = document.createElement('article');
+          art.className = 'dm-college-card dm-college-card--archived';
+          var deptBlock = '';
+          if (c.departments && c.departments.length) {
+            var deptRows = c.departments.map(function (d) {
+              return '<tr><td>' + esc(d.name) + '</td><td><div class="dm-dept-actions">' +
+                '<button type="button" class="dm-btn-sm dm-btn-sm--unarchive dm-unarchive-dept-nested" data-archived-college-id="' + esc(c.id) + '" data-dept-id="' + esc(d.id) + '">Unarchive</button></div></td></tr>';
+            }).join('');
+            deptBlock = '<div class="dm-dept-label">Departments (archived with college)</div><table class="dm-dept-table"><thead><tr><th scope="col">Name</th><th scope="col">Actions</th></tr></thead><tbody>' + deptRows + '</tbody></table>';
+          }
+          art.innerHTML = '<div class="dm-college-card__top"><div class="dm-college-card__headings"><div class="dm-college-card__title">' + esc(c.name) + '</div><div class="dm-college-card__meta">Code ' + esc(c.code) + ' · Archived · ' + esc(c.archivedLabel || '') + '</div></div><div class="dm-college-card__actions">' +
+            '<button type="button" class="dm-btn-sm dm-btn-sm--unarchive dm-unarchive-college" data-archived-college-id="' + esc(c.id) + '">Unarchive</button></div></div><div class="dm-college-card__body">' + deptBlock + '</div>';
+          stackH.appendChild(art);
+        });
+        DM_COLLEGE.archivedDeptOnly.forEach(function (x) {
+          var art = document.createElement('article');
+          art.className = 'dm-college-card dm-college-card--archived';
+          art.innerHTML = '<div class="dm-college-card__top"><div class="dm-college-card__headings"><div class="dm-college-card__title">Department only · ' + esc(x.deptName) + '</div><div class="dm-college-card__meta">Under ' + esc(x.parentCode) + ' · Archived · ' + esc(x.archivedLabel || '') + '</div></div><div class="dm-college-card__actions">' +
+            '<button type="button" class="dm-btn-sm dm-btn-sm--unarchive dm-unarchive-standalone-dept" data-standalone-id="' + esc(x.id) + '">Unarchive</button></div></div><div class="dm-college-card__body"><p class="page-sub" style="margin:0;font-size:0.86rem;">Previously under ' + esc(x.parentName) + '.</p></div>';
+          stackH.appendChild(art);
+        });
+      }
+
+      var orgReady = false;
+
+      function renderAll() {
+        renderActive();
+        renderArchived();
+        // Every mutation re-renders, so this is the one place persistence needs
+        // to happen for adds, edits, archives and unarchives alike.
+        if (orgReady && window.OrgStore) window.OrgStore.save(DM_COLLEGE);
+      }
+
+      function archiveCollegeFromActive(id) {
+        var i = DM_COLLEGE.active.findIndex(function (c) { return c.id === id; });
+        if (i < 0) return;
+        var c = DM_COLLEGE.active.splice(i, 1)[0];
+        var copy = JSON.parse(JSON.stringify(c));
+        copy.archivedLabel = archiveLabel();
+        DM_COLLEGE.archivedColleges.push(copy);
+        renderAll();
+        go(false);
+      }
+
+      function unarchiveCollege(id) {
+        var i = DM_COLLEGE.archivedColleges.findIndex(function (c) { return c.id === id; });
+        if (i < 0) return;
+        var c = DM_COLLEGE.archivedColleges.splice(i, 1)[0];
+        delete c.archivedLabel;
+        DM_COLLEGE.active.push(c);
+        renderAll();
+        go(true);
+      }
+
+      function archiveDeptFromActive(collegeId, deptId) {
+        var col = findActiveCollege(collegeId);
+        if (!col) return;
+        var di = col.departments.findIndex(function (d) { return d.id === deptId; });
+        if (di < 0) return;
+        var d = col.departments.splice(di, 1)[0];
+        DM_COLLEGE.archivedDeptOnly.push({
+          id: d.id,
+          deptName: d.name,
+          programs: d.programs || [],
+          parentCode: col.code,
+          parentName: col.name,
+          archivedLabel: archiveLabel()
+        });
+        renderAll();
+        go(false);
+      }
+
+      function unarchiveStandaloneDept(standaloneId) {
+        var i = DM_COLLEGE.archivedDeptOnly.findIndex(function (x) { return x.id === standaloneId; });
+        if (i < 0) return;
+        var x = DM_COLLEGE.archivedDeptOnly.splice(i, 1)[0];
+        var parent = findActiveByCode(x.parentCode);
+        if (!parent) {
+          DM_COLLEGE.archivedDeptOnly.push(x);
+          window.alert('No active college with code ' + x.parentCode + ' found. Unarchive or add the college first.');
+          return;
+        }
+        if (!parent.departments) parent.departments = [];
+        parent.departments.push({ id: x.id, name: x.deptName, programs: x.programs || [] });
+        renderAll();
+        go(true);
+      }
+
+      function unarchiveDeptFromArchivedCollege(archivedCollegeId, deptId) {
+        var ac = findArchivedCollege(archivedCollegeId);
+        if (!ac) return;
+        var di = ac.departments.findIndex(function (d) { return d.id === deptId; });
+        if (di < 0) return;
+        var d = ac.departments.splice(di, 1)[0];
+        var parent = findActiveByCode(ac.code);
+        if (!parent) {
+          ac.departments.splice(di, 0, d);
+          window.alert('Unarchive the college first (button on the card header) to restore departments under it.');
+          return;
+        }
+        parent.departments.push({ id: d.id, name: d.name, programs: d.programs || [] });
+        if (ac.departments.length === 0) {
+          var idx = DM_COLLEGE.archivedColleges.findIndex(function (c) { return c.id === archivedCollegeId; });
+          if (idx >= 0) DM_COLLEGE.archivedColleges.splice(idx, 1);
+        }
+        renderAll();
+        go(true);
+      }
+
+      function openCollegeModal(mode, collegeId) {
+        collegeModalMode = mode;
+        if (mode === 'new') {
+          collegeModalDraft = { id: uid(), name: '', code: '', useDepartments: true, departments: [] };
+          titleC.textContent = 'Add college';
+          btnCarchive.hidden = true;
+        } else {
+          var c = findActiveCollege(collegeId);
+          if (!c) return;
+          collegeModalDraft = JSON.parse(JSON.stringify(c));
+          titleC.textContent = 'Edit college';
+          btnCarchive.hidden = false;
+        }
+        inpCname.value = collegeModalDraft.name;
+        inpCcode.value = collegeModalDraft.code;
+        chkCdept.checked = !!collegeModalDraft.useDepartments;
+        refreshCollegeModalDeptList();
+        toggleDeptSection();
+        ovC.hidden = false;
+      }
+
+      function toggleDeptSection() {
+        var on = chkCdept.checked;
+        secCdept.hidden = !on;
+        collegeModalDraft.useDepartments = on;
+      }
+
+      function refreshCollegeModalDeptList() {
+        listCdept.innerHTML = '';
+        if (!collegeModalDraft.useDepartments) return;
+        collegeModalDraft.departments.forEach(function (d) {
+          var row = document.createElement('div');
+          row.className = 'dm-modal-dept-row';
+          var programs = (d.programs || []).map(function (p) { return p.name; }).filter(Boolean);
+          var progNote = programs.length ? '<span class="page-sub" style="display:block;margin:0;">Programs: ' + esc(programs.join(', ')) + '</span>' : '';
+          row.innerHTML = '<span class="dm-modal-dept-name">' + esc(d.name) + progNote + '</span><div class="dm-modal-dept-actions">' +
+            '<button type="button" class="dm-btn-sm dm-modal-edit-dept" data-dept-id="' + esc(d.id) + '">Edit</button>' +
+            '<button type="button" class="dm-btn-sm dm-btn-sm--archive dm-modal-archive-dept" data-dept-id="' + esc(d.id) + '">Archive</button>' +
+            '<button type="button" class="dm-btn-sm dm-modal-delete-dept" data-dept-id="' + esc(d.id) + '">Delete</button></div>';
+          listCdept.appendChild(row);
+        });
+      }
+
+      function closeCollegeModal() {
+        ovC.hidden = true;
+        collegeModalDraft = null;
+      }
+
+      function openDeptModal(collegeId, deptId, fromCollegeModal) {
+        deptModalCollegeId = collegeId;
+        deptModalDeptId = deptId;
+        deptModalFromCollegeModal = !!fromCollegeModal;
+        var col = findActiveCollege(collegeId);
+        var draft = collegeModalDraft && collegeModalDraft.id === collegeId ? collegeModalDraft : null;
+        if (!col && !draft) return;
+        if (deptId) {
+          var d = col ? col.departments.find(function (x) { return x.id === deptId; }) : null;
+          if (!d && draft) d = draft.departments.find(function (x) { return x.id === deptId; });
+          if (!d) return;
+          titleD.textContent = 'Edit department';
+          inpDname.value = d.name;
+          btnDdelete.hidden = false;
+          btnDarchive.hidden = false;
+        } else {
+          titleD.textContent = 'Add department';
+          inpDname.value = '';
+          btnDdelete.hidden = true;
+          btnDarchive.hidden = true;
+        }
+        ovD.hidden = false;
+      }
+
+      function closeDeptModal() {
+        ovD.hidden = true;
+        deptModalCollegeId = null;
+        deptModalDeptId = null;
+      }
+
+      function openProgramModal(collegeId, deptId) {
+        var col = findActiveCollege(collegeId);
+        var dept = col && col.departments.find(function (d) { return d.id === deptId; });
+        if (!dept || !ovP) return;
+        programModalCollegeId = collegeId;
+        programModalDeptId = deptId;
+        hintP.textContent = 'This program is added under ' + dept.name + '.';
+        inpPname.value = '';
+        ovP.hidden = false;
+        inpPname.focus();
+      }
+
+      function closeProgramModal() {
+        if (!ovP) return;
+        ovP.hidden = true;
+        programModalCollegeId = null;
+        programModalDeptId = null;
+      }
+
+      function saveProgramModal() {
+        var clean = String(inpPname.value || '').trim().replace(/\s+/g, ' ');
+        if (!clean) {
+          window.alert('Enter a program name.');
+          inpPname.focus();
+          return;
+        }
+        var pcol = findActiveCollege(programModalCollegeId);
+        var pdept = pcol && pcol.departments.find(function (d) { return d.id === programModalDeptId; });
+        if (!pdept) return;
+        if (!pdept.programs) pdept.programs = [];
+        var dup = pdept.programs.some(function (p) {
+          return String(p.name || '').trim().toLowerCase() === clean.toLowerCase();
+        });
+        if (dup) {
+          window.alert('"' + clean + '" is already under this department.');
+          return;
+        }
+        pdept.programs.push({ id: uid(), name: clean });
+        closeProgramModal();
+        renderAll();
+      }
+
+      function saveDeptModal() {
+        var name = inpDname.value.trim();
+        if (!name) {
+          window.alert('Enter a department name.');
+          return;
+        }
+        if (deptModalFromCollegeModal && collegeModalDraft && collegeModalDraft.id === deptModalCollegeId) {
+          if (deptModalDeptId) {
+            var ed = collegeModalDraft.departments.find(function (x) { return x.id === deptModalDeptId; });
+            if (ed) ed.name = name;
+          } else {
+            collegeModalDraft.departments.push({ id: uid(), name: name, programs: [{ id: uid(), name: name }] });
+          }
+          refreshCollegeModalDeptList();
+          closeDeptModal();
+          return;
+        }
+        var col = findActiveCollege(deptModalCollegeId);
+        if (!col) return;
+        if (deptModalDeptId) {
+          var d = col.departments.find(function (x) { return x.id === deptModalDeptId; });
+          if (d) d.name = name;
+        } else {
+          col.departments.push({ id: uid(), name: name, programs: [{ id: uid(), name: name }] });
+        }
+        renderAll();
+        closeDeptModal();
+      }
+
+      chkCdept.addEventListener('change', function () {
+        collegeModalDraft.useDepartments = chkCdept.checked;
+        toggleDeptSection();
+      });
+
+      btnCaddDept.addEventListener('click', function () {
+        if (!collegeModalDraft) return;
+        openDeptModal(collegeModalDraft.id, null, true);
+      });
+
+      listCdept.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!(t instanceof HTMLElement)) return;
+        var eid = t.getAttribute('data-dept-id');
+        if (!collegeModalDraft || !eid) return;
+        if (t.classList.contains('dm-modal-edit-dept')) {
+          openDeptModal(collegeModalDraft.id, eid, true);
+        }
+        if (t.classList.contains('dm-modal-archive-dept')) {
+          var di = collegeModalDraft.departments.findIndex(function (d) { return d.id === eid; });
+          if (di >= 0) {
+            var d = collegeModalDraft.departments.splice(di, 1)[0];
+            if (collegeModalMode === 'edit') {
+              DM_COLLEGE.archivedDeptOnly.push({
+                id: d.id,
+                deptName: d.name,
+                programs: d.programs || [],
+                parentCode: collegeModalDraft.code || '—',
+                parentName: collegeModalDraft.name || 'College',
+                archivedLabel: archiveLabel()
+              });
+            }
+            refreshCollegeModalDeptList();
+          }
+        }
+        if (t.classList.contains('dm-modal-delete-dept')) {
+          if (!window.confirm('Remove this department from the list?')) return;
+          collegeModalDraft.departments = collegeModalDraft.departments.filter(function (d) { return d.id !== eid; });
+          refreshCollegeModalDeptList();
+        }
+      });
+
+      btnCsave.addEventListener('click', function () {
+        if (!collegeModalDraft) return;
+        var name = inpCname.value.trim();
+        var code = inpCcode.value.trim().toUpperCase();
+        if (!name || !code) {
+          window.alert('College name and code are required.');
+          return;
+        }
+        collegeModalDraft.name = name;
+        collegeModalDraft.code = code;
+        collegeModalDraft.useDepartments = chkCdept.checked;
+        if (collegeModalMode === 'new') {
+          DM_COLLEGE.active.push(collegeModalDraft);
+        } else {
+          var idx = DM_COLLEGE.active.findIndex(function (c) { return c.id === collegeModalDraft.id; });
+          if (idx >= 0) DM_COLLEGE.active[idx] = collegeModalDraft;
+        }
+        closeCollegeModal();
+        renderAll();
+      });
+
+      btnCcancel.addEventListener('click', closeCollegeModal);
+      btnCclose.addEventListener('click', closeCollegeModal);
+      btnCarchive.addEventListener('click', function () {
+        if (!collegeModalDraft || collegeModalMode !== 'edit') return;
+        if (!window.confirm('Archive this college and all listed departments?')) return;
+        archiveCollegeFromActive(collegeModalDraft.id);
+        closeCollegeModal();
+      });
+
+      ovC.addEventListener('click', function (e) {
+        if (e.target === ovC) closeCollegeModal();
+      });
+
+      btnDsave.addEventListener('click', saveDeptModal);
+      btnDcancel.addEventListener('click', closeDeptModal);
+      btnDclose.addEventListener('click', closeDeptModal);
+      btnDdelete.addEventListener('click', function () {
+        if (!deptModalCollegeId || !deptModalDeptId) return;
+        if (!window.confirm('Delete this department permanently from this college?')) return;
+        if (deptModalFromCollegeModal && collegeModalDraft && collegeModalDraft.id === deptModalCollegeId) {
+          collegeModalDraft.departments = collegeModalDraft.departments.filter(function (d) { return d.id !== deptModalDeptId; });
+          refreshCollegeModalDeptList();
+          closeDeptModal();
+          return;
+        }
+        var col = findActiveCollege(deptModalCollegeId);
+        if (col) col.departments = col.departments.filter(function (d) { return d.id !== deptModalDeptId; });
+        renderAll();
+        closeDeptModal();
+      });
+      btnDarchive.addEventListener('click', function () {
+        if (!deptModalCollegeId || !deptModalDeptId) return;
+        if (deptModalFromCollegeModal && collegeModalDraft && collegeModalDraft.id === deptModalCollegeId) {
+          var di = collegeModalDraft.departments.findIndex(function (d) { return d.id === deptModalDeptId; });
+          if (di < 0) return;
+          var d = collegeModalDraft.departments.splice(di, 1)[0];
+          if (collegeModalMode === 'edit') {
+            DM_COLLEGE.archivedDeptOnly.push({
+              id: d.id,
+              deptName: d.name,
+              parentCode: collegeModalDraft.code || '—',
+              parentName: collegeModalDraft.name || 'College',
+              archivedLabel: archiveLabel()
+            });
+            renderAll();
+          }
+          refreshCollegeModalDeptList();
+          closeDeptModal();
+          return;
+        }
+        archiveDeptFromActive(deptModalCollegeId, deptModalDeptId);
+        closeDeptModal();
+      });
+      ovD.addEventListener('click', function (e) {
+        if (e.target === ovD) closeDeptModal();
+      });
+      if (btnPsave) btnPsave.addEventListener('click', saveProgramModal);
+      if (btnPcancel) btnPcancel.addEventListener('click', closeProgramModal);
+      if (btnPclose) btnPclose.addEventListener('click', closeProgramModal);
+      if (ovP) {
+        ovP.addEventListener('click', function (e) {
+          if (e.target === ovP) closeProgramModal();
+        });
+      }
+      if (inpPname) {
+        inpPname.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            saveProgramModal();
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        if (ovP && !ovP.hidden) closeProgramModal();
+        else if (!ovD.hidden) closeDeptModal();
+        else if (!ovC.hidden) closeCollegeModal();
+      });
+
+      if (btnAdd) {
+        btnAdd.addEventListener('click', function () {
+          openCollegeModal('new');
+        });
+      }
+
+      if (panel) {
+        panel.addEventListener('click', function (e) {
+          var t = e.target;
+          if (!(t instanceof HTMLElement)) return;
+          if (t.classList.contains('dm-edit-college')) {
+            openCollegeModal('edit', t.getAttribute('data-college-id'));
+          }
+          if (t.classList.contains('dm-archive-college')) {
+            var cid = t.getAttribute('data-college-id');
+            if (window.confirm('Archive this college and move it to the Archived list?')) archiveCollegeFromActive(cid);
+          }
+          if (t.classList.contains('dm-edit-dept')) {
+            openDeptModal(t.getAttribute('data-college-id'), t.getAttribute('data-dept-id'), false);
+          }
+          if (t.classList.contains('dm-archive-dept')) {
+            archiveDeptFromActive(t.getAttribute('data-college-id'), t.getAttribute('data-dept-id'));
+          }
+          if (t.classList.contains('dm-add-dept-inline')) {
+            openDeptModal(t.getAttribute('data-college-id'), null, false);
+          }
+          var addProgramBtn = t.closest('.dm-add-program');
+          if (addProgramBtn) {
+            openProgramModal(addProgramBtn.getAttribute('data-college-id'), addProgramBtn.getAttribute('data-dept-id'));
+          }
+          if (t.classList.contains('dm-unarchive-college')) {
+            unarchiveCollege(t.getAttribute('data-archived-college-id'));
+          }
+          if (t.classList.contains('dm-unarchive-dept-nested')) {
+            unarchiveDeptFromArchivedCollege(t.getAttribute('data-archived-college-id'), t.getAttribute('data-dept-id'));
+          }
+          if (t.classList.contains('dm-unarchive-standalone-dept')) {
+            unarchiveStandaloneDept(t.getAttribute('data-standalone-id'));
+          }
+        });
+      }
+
+      if (window.MCUNexReady) {
+        window.MCUNexReady.then(function () {
+          orgReady = true;
+          renderActive();
+          renderArchived();
+        });
+      } else {
+        orgReady = true;
+        renderActive();
+        renderArchived();
+      }
+    })();
+  </script>
+  <script src="../../js/notifications.js" defer></script>
+</body>
+</html>
